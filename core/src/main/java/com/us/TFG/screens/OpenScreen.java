@@ -82,7 +82,7 @@ public class OpenScreen implements Screen {
         signUpButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //Pantalla Registro
+                Render.app.setScreen(new RegisterScreen());
             }
         });
 
