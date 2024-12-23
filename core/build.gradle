@@ -12,6 +12,10 @@ dependencies {
   api "com.crashinvaders.lml:gdx-kiwi:$lmlVersion"
   api "com.crashinvaders.lml:gdx-lml:$lmlVersion"
   api "com.github.tommyettinger:anim8-gdx:$anim8Version"
+  implementation "org.xerial:sqlite-jdbc:3.36.0.3"  // Versión más reciente de SQLite JDBC
+
+  implementation 'org.mindrot:jbcrypt:0.4'
+
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"

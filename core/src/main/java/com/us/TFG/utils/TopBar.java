@@ -41,7 +41,7 @@ public class TopBar {
             public void clicked(InputEvent event, float x, float y) {
                 // Redirigir al menú principal
                 Render.app.setScreen(new Menu(
-                //    username
+                    username
                 ));
             }
         });
