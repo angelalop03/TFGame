@@ -1,6 +1,6 @@
 
-INSERT INTO users(username, password) VALUES ('Player1', 'play3r');
-INSERT INTO users(username, password) VALUES ('Player2', 'play3r');
+INSERT INTO users(username, password) VALUES ('Player1', '$2a$10$UhRcQWnxgZ1cZF5H76yE7eJGEcF1WDpqWI8RpKYnL.kbmKHZNf0EW');
+INSERT INTO users(username, password) VALUES ('Player2', '$2a$10$UhRcQWnxgZ1cZF5H76yE7eJGEcF1WDpqWI8RpKYnL.kbmKHZNf0EW');
 
 
 INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id)

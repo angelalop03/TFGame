@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.MyTfgGame;
 import com.us.TFG.elements.Imagen;
+import com.us.TFG.manager.UserManager;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -97,7 +98,7 @@ public class LoginScreen implements Screen {
                 String password = passwordField.getText();
 
                 // Verificar credenciales usando la instancia global de DatabaseManager
-                if (MyTfgGame.databaseManager.verifyLogin(username, password)) {
+                if (UserManager.verifyLogin(username, password)) {
                     Render.app.setScreen(new Menu(username));
                 } else {
                     errorLabel.setVisible(true);  // Mostrar el mensaje de error

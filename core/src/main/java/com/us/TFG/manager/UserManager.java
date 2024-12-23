@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.us.TFG.MyTfgGame;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,6 +20,8 @@ public class UserManager {
 
     // Métod para registrar un usuario en la base de datos
     public static boolean registerUser(String username, String password, String firstname, String lastname, String email) {
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
         String userSql = "INSERT INTO users (username, password) VALUES (?, ?)";
         String playerSql = "INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id) VALUES (?, ?, ?, 'default_image.png', 0, 0, ?)";
 
@@ -29,7 +32,7 @@ public class UserManager {
             // Insertar usuario
             try (PreparedStatement userStmt = connection.prepareStatement(userSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 userStmt.setString(1, username);
-                userStmt.setString(2, password);
+                userStmt.setString(2, hashedPassword); // Guardar contraseña encriptada
                 userStmt.executeUpdate();
 
                 ResultSet generatedKeys = userStmt.getGeneratedKeys();
@@ -54,6 +57,7 @@ public class UserManager {
             return false;
         }
     }
+
 
 
 
@@ -170,6 +174,21 @@ public class UserManager {
 
 
 
+    public static boolean verifyLogin(String username, String password) {
+        String sql = "SELECT password FROM users WHERE username = ?";
+        try (PreparedStatement statement = MyTfgGame.databaseManager.getConnection().prepareStatement(sql)) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String storedPassword = resultSet.getString("password");
+                return BCrypt.checkpw(password, storedPassword); // Comparar contraseñas
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al verificar login: " + e.getMessage());
+        }
+        return false;
+    }
 
 
     private static void showError(String message) {

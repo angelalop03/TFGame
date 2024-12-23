@@ -96,18 +96,7 @@ public class DatabaseManager {
     }
 
 
-    public boolean verifyLogin(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, username);
-            statement.setString(2, password);
-            ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();  // Retorna true si se encuentra una coincidencia
-        } catch (SQLException e) {
-            System.err.println("Error al verificar login: " + e.getMessage());
-            return false;
-        }
-    }
+
 
     // Método para devolver la conexión
     public Connection getConnection() {
