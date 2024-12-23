@@ -31,9 +31,9 @@ public class Menu implements Screen {
     private String username;
 
     //Para cuando haga los users
-    // public Menu(String username) {
-    //    this.username = username;
-    //}
+     public Menu(String username) {
+        this.username = username;
+    }
 
     @Override
     public void show() {

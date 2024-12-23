@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.us.TFG.MyTfgGame;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
@@ -66,7 +67,8 @@ public class OpenScreen implements Screen {
         loginButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //Pantalla Login
+                Render.app.setScreen(new LoginScreen());
+
             }
         });
 

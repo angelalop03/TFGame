@@ -10,20 +10,24 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.us.TFG.screens.LogoScreen;
 import com.us.TFG.screens.Menu;
 import com.us.TFG.screens.OpenScreen;
+import com.us.TFG.utils.DatabaseManager;
 import com.us.TFG.utils.RegistrationSystem;
 import com.us.TFG.utils.Render;
 
 public class MyTfgGame extends Game {
 
     private RegistrationSystem registrationSystem;
-    //public static DatabaseManager databaseManager; // Instancia global para la base de datos
+    public static DatabaseManager databaseManager; // Instancia global para la base de datos
 
     @Override
     public void create() {
         Render.app =this;
         Render.batch = new SpriteBatch();
 
-        this.setScreen(new Menu());
+        // Inicializar DatabaseManager solo una vez
+        databaseManager = new DatabaseManager();
+
+        this.setScreen(new LogoScreen());
     }
 
     @Override
