@@ -169,7 +169,8 @@ public class PerfilScreen implements Screen {
         logOutButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //Pantalla para Logout
+
+                Render.app.setScreen(new LogOutScreen(username));
             }
         });
         table.add(logOutButton).size(200, 50).padBottom(10);
