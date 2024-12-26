@@ -80,13 +80,7 @@ public class AdminViewPlayersScreen implements Screen {
         background.setPosition((Gdx.graphics.getWidth() - 1000) / 2f, 100);
         stage.addActor(background);
 
-        // Crear encabezados para la tabla
-        Table headerTable = new Table();
-        headerTable.setPosition((Gdx.graphics.getWidth() ) / 2f, 620);
-        headerTable.add(new Label("Nombre", labelStyle)).width(300).pad(10).center();
-        headerTable.add(new Label("Correo", labelStyle)).width(300).pad(10).center();
-        headerTable.add(new Label("", labelStyle)).width(200).pad(10).center(); // Espacio para botones
-        headerTable.row();
+
 
         // Crear la tabla de jugadores
         Table playersTable = createPlayersTable(labelStyle);
@@ -99,7 +93,6 @@ public class AdminViewPlayersScreen implements Screen {
         scrollPane.setFadeScrollBars(true); // Mostrar siempre las barras de desplazamiento
 
         // Añadir encabezados y ScrollPane al stage
-        stage.addActor(headerTable);
         stage.addActor(scrollPane);
     }
 
