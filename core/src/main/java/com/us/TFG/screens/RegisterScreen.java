@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.UserManager;
+import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -102,7 +103,7 @@ public class RegisterScreen implements Screen {
                 }
 
                 if (UserManager.registerUser(username, password, firstname, lastname, email)) {
-                    Render.app.setScreen(new Menu(username));
+                    Render.app.setScreen(new PlayerMenuScreen(username));
                 } else {
                     showError("Error: Nombre de usuario ya existe.");
                 }

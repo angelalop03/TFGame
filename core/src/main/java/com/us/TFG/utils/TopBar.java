@@ -12,8 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.us.TFG.screens.Menu;
-import com.us.TFG.screens.PerfilScreen;
+import com.us.TFG.manager.UserManager;
+import com.us.TFG.model.Authorities;
+import com.us.TFG.screens.Admin.AdminMenuScreen;
+import com.us.TFG.screens.Admin.AdminPerfilScreen;
+import com.us.TFG.screens.Player.PlayerMenuScreen;
+import com.us.TFG.screens.Player.PlayerPerfilScreen;
 
 public class TopBar {
 
@@ -40,10 +44,15 @@ public class TopBar {
         logoButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                Authorities authority = UserManager.getAuthority(username);
+                if (authority == Authorities.ADMIN) {
+                    Render.app.setScreen(new AdminMenuScreen(username));
+                } else if (authority == Authorities.PLAYER) {
+                    Render.app.setScreen(new PlayerMenuScreen(
+                        username
+                    ));                }
                 // Redirigir al menú principal
-                Render.app.setScreen(new Menu(
-                    username
-                ));
+
             }
         });
 
@@ -55,14 +64,23 @@ public class TopBar {
         usernameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new PerfilScreen(username));
+                Authorities authority = UserManager.getAuthority(username);
+                if (authority == Authorities.ADMIN) {
+                    Render.app.setScreen(new AdminPerfilScreen(username));
+
+                } else if (authority == Authorities.PLAYER) {
+                    Render.app.setScreen(new PlayerPerfilScreen(username));
+                }
             }
         });
 
         // Agregar elementos a la barra superior
         topBar.add(logoButton).size(120, 120).pad(10);
         topBar.add().expandX();  // Espacio para centrar
-        topBar.add(usernameButton).padRight(20);
+        Authorities authority = UserManager.getAuthority(username);
+
+            topBar.add(usernameButton).padRight(20);
+
 
         // Añadir la barra al stage
         stage.addActor(topBar);

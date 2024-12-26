@@ -1,4 +1,4 @@
-package com.us.TFG.screens;
+package com.us.TFG.screens.Admin;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -8,38 +8,36 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
+import com.us.TFG.screens.LogOutScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
 import com.us.TFG.utils.TopBar;
 
-public class Menu implements Screen {
-
-    private Stage stage;
-    private SpriteBatch b;
-    private Skin skin;
+public class AdminPerfilScreen implements Screen {
+    private String username;
     private Imagen fondo;
+    private SpriteBatch b;
+    private Stage stage;
+    private Skin skin;
     private BitmapFont font;
     private TopBar topBar;
-    private String username;
 
-    //Para cuando haga los users
-     public Menu(String username) {
+    public AdminPerfilScreen(String username) {
         this.username = username;
     }
 
     @Override
     public void show() {
-
-        //Cargar el fondo
-        fondo = new Imagen(Resources.MENU);
+        // Cargar el fondo
+        fondo = new Imagen(Resources.FONDON);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         b = Render.batch;
 
@@ -51,7 +49,7 @@ public class Menu implements Screen {
 
         // Generar la fuente
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 34;
         font = generator.generateFont(parameter);
         generator.dispose();
@@ -70,48 +68,65 @@ public class Menu implements Screen {
         // Crear y agregar la barra superior
         topBar = new TopBar(username, stage, font);
 
-        // Crear los botones de texto
-        TextButton newGameButton = new TextButton("Nueva Partida", style);
-        TextButton loadGameButton = new TextButton("Cargar Partida", style);
-        TextButton historialButton = new TextButton("Historial", style);
-        TextButton newsForumButton = new TextButton("Foro de Noticias", style);
-        TextButton instructionsButton = new TextButton("Instrucciones", style);
+        // Crear el cuadro gris translúcido
+        Pixmap pixmap = new Pixmap(700, 200, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(0.8f, 0.8f, 0.8f, 0.6f)); // Gris claro con transparencia
+        pixmap.fill();
+        TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(pixmap));
+        pixmap.dispose();
 
-        // Ajustar el tamaño de los botones
-        newGameButton.setSize(300, 75);
-        loadGameButton.setSize(300, 75);
-        historialButton.setSize(300,75);
-        newsForumButton.setSize(300, 75);
-        newsForumButton.setSize(300, 75);
-        instructionsButton.setSize(300, 75);
+        Image background = new Image(backgroundDrawable);
+        background.setPosition((Gdx.graphics.getWidth() - 700) / 2, 230);
+        stage.addActor(background);
 
-        // Posicionar los botones
-        newGameButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 420);
-        loadGameButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 340);
-        historialButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 260);
-        newsForumButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 180);
-        instructionsButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 100);
+        // Crear la tabla para mostrar la información
+        Table table = new Table();
+        table.setFillParent(true);
 
-        // Añadir los botones al stage
-        stage.addActor(newGameButton);
-        stage.addActor(loadGameButton);
-        stage.addActor(historialButton);
-        stage.addActor(newsForumButton);
-        stage.addActor(instructionsButton);
+        // Mostrar el nombre de usuario
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
 
+        Label usernameLabel = new Label("Usuario: " + username, labelStyle);
+        table.add(usernameLabel).padBottom(10);
+        table.row();
 
+        // Botón para editar perfil
+        TextButton editProfileButton = new TextButton("Editar Perfil", style);
+        editProfileButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminEditScreen(username));
+            }
 
+        });
+        table.add(editProfileButton).size(200, 50).padBottom(10);
+        table.row();
+
+        // Botón para cerrar sesión
+        TextButton logOutButton = new TextButton("Cerrar Sesión", style);
+        logOutButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new LogOutScreen(username));
+            }
+        });
+        table.add(logOutButton).size(200, 50).padBottom(10);
+
+        // Ajustar la posición de la tabla sobre el cuadro gris
+        table.setPosition(0, -50);
+        stage.addActor(table);
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float v) {
         b.begin();
-            fondo.draw();
+        fondo.draw();
         b.end();
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
-
     }
 
     @Override
@@ -120,27 +135,21 @@ public class Menu implements Screen {
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
         stage.dispose();
         font.dispose();
-        //musicManager.dispose();
     }
 
-    // Boton trasnparente
+    // Método para crear Pixmap redondeado
     private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
         Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
         pixmap.setBlending(Pixmap.Blending.SourceOver);
@@ -151,9 +160,6 @@ public class Menu implements Screen {
 
         pixmap.fillRectangle(0, 20, width, height - 2 * 20);  // Centro vertical
 
-
         return pixmap;
     }
-
-
 }

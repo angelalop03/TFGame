@@ -14,9 +14,14 @@ public class User{
     @Column(name = "password", type = "TEXT",notNull = true)
     private String password;
 
-    public User(String username, String password) {
+    @Column(name = "authority", type = "INTEGER", notNull = true)
+    private Authorities authority; // Rol del usuario (ADMIN o PLAYER)
+
+
+    public User(String username, String password, Authorities  authority) {
         this.username = username;
         this.password = password;
+        this.authority = authority;
     }
 
     // Getters y Setters
@@ -42,5 +47,13 @@ public class User{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Authorities getAuthority() {
+        return authority;
+    }
+
+    public void setAuthority(Authorities authority) {
+        this.authority = authority;
     }
 }

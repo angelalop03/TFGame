@@ -5,7 +5,7 @@ import org.mindrot.jbcrypt.BCrypt;
 public class PasswordEncryptor {
     public static void main(String[] args) {
         // Contraseña a encriptar
-        String password = "play3r";
+        String password = "4dmin";
 
         // Generar el hash encriptado
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
