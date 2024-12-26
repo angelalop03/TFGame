@@ -33,6 +33,7 @@ public class LogOutScreen implements Screen {
 
 
     public LogOutScreen(String username){
+
         this.username =username;
     }
     @Override
@@ -57,7 +58,7 @@ public class LogOutScreen implements Screen {
         skin.add("Caveat", font);
 
         // Crear el cuadro grisáceo transparente
-        Pixmap pixmap = new Pixmap(700, 300, Pixmap.Format.RGBA8888); // Tamaño del cuadro
+        Pixmap pixmap = new Pixmap(700, 250, Pixmap.Format.RGBA8888); // Tamaño del cuadro
         pixmap.setColor(new Color(0.8f, 0.8f, 0.8f, 0.6f));  // Gris claro con 60% de transparencia
         pixmap.fill();
         TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(pixmap));
@@ -79,9 +80,9 @@ public class LogOutScreen implements Screen {
 
         // Crear estilo para los botones usando Pixmap
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        buttonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.DARK_GRAY, 0.4f)));
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 80, Color.GRAY, 0.4f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 80, Color.LIGHT_GRAY, 0.4f)));
+        buttonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 80, Color.DARK_GRAY, 0.4f)));
         buttonStyle.fontColor = Color.WHITE;
         buttonStyle.font = font;
 
@@ -108,11 +109,11 @@ public class LogOutScreen implements Screen {
         // Crear una tabla para organizar los elementos en la pantalla
         Table table = new Table();
         table.setFillParent(true);
-        table.add(new Label("¿Estas seguro que quieres cerrar sesión? ", labelStyle)).colspan(2).padBottom(30);
+        table.add(new Label("¿Estas seguro que quieres cerrar sesión? ", labelStyle)).colspan(2).padBottom(-9);
         table.row();
-        table.add(logOutButton).width(200).padBottom(20);
+        table.add(logOutButton).width(200).padBottom(5);
         table.row();
-        table.add(backButton).width(200).padBottom(20);
+        table.add(backButton).width(200).padBottom(5);
         table.row();
 
         stage.addActor(table);
