@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.manager.PlayerManager.PlayerData;
-import com.us.TFG.screens.LogOutScreen;
+import com.us.TFG.screens.General.LogOutScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;

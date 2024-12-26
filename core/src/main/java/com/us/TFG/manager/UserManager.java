@@ -20,11 +20,11 @@ import java.sql.SQLException;
 public class UserManager {
     private static Label feedbackLabel;
 
-    // Métod para registrar un usuario en la base de datos
     public static boolean registerUser(String username, String password, String firstname, String lastname, String email) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        String userSql = "INSERT INTO users (username, password) VALUES (?, ?)";
+        String userSql = "INSERT INTO users (username, password, authority" +
+            ") VALUES (?, ?, ?)";
         String playerSql = "INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id) VALUES (?, ?, ?, 'default_image.png', 0, 0, ?)";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
@@ -35,6 +35,7 @@ public class UserManager {
             try (PreparedStatement userStmt = connection.prepareStatement(userSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 userStmt.setString(1, username);
                 userStmt.setString(2, hashedPassword); // Guardar contraseña encriptada
+                userStmt.setInt(3, 2); // Establecer authorities a 2
                 userStmt.executeUpdate();
 
                 ResultSet generatedKeys = userStmt.getGeneratedKeys();
@@ -56,6 +57,11 @@ public class UserManager {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
             return false;
         }
     }

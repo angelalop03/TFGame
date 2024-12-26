@@ -1,4 +1,4 @@
-package com.us.TFG.screens;
+package com.us.TFG.screens.General;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

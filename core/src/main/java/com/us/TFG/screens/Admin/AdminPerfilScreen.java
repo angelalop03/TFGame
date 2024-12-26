@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.screens.LogOutScreen;
+import com.us.TFG.screens.General.LogOutScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -93,15 +93,15 @@ public class AdminPerfilScreen implements Screen {
         table.row();
 
         // Botón para editar perfil
-        TextButton editProfileButton = new TextButton("Editar Perfil", style);
-        editProfileButton.addListener(new ClickListener(){
+        TextButton changepasswordButton = new TextButton("Cambiar Contraseña", style);
+        changepasswordButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new AdminEditScreen(username));
+                //Pantalla de Cambiar contraseña
             }
 
         });
-        table.add(editProfileButton).size(200, 50).padBottom(10);
+        table.add(changepasswordButton).size(250, 60).padBottom(10);
         table.row();
 
         // Botón para cerrar sesión
@@ -112,7 +112,7 @@ public class AdminPerfilScreen implements Screen {
                 Render.app.setScreen(new LogOutScreen(username));
             }
         });
-        table.add(logOutButton).size(200, 50).padBottom(10);
+        table.add(logOutButton).size(250, 60).padBottom(10);
 
         // Ajustar la posición de la tabla sobre el cuadro gris
         table.setPosition(0, -50);
