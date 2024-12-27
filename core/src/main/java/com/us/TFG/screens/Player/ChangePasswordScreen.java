@@ -1,4 +1,4 @@
-package com.us.TFG.screens;
+package com.us.TFG.screens.Player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;

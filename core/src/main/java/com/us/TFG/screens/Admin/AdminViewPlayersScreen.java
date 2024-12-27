@@ -265,7 +265,6 @@ public class AdminViewPlayersScreen implements Screen {
                     boolean success = UserManager.updateProfile(
                         PlayerManager.getUsername(player.getId()),
                         usernameField.getText(),
-                        PlayerManager.getPassword(player.getId()),
                         firstnameField.getText(),
                         lastnameField.getText(),
                         emailField.getText(),
@@ -350,18 +349,18 @@ public class AdminViewPlayersScreen implements Screen {
                 } else {
                     //Necesito la funcion updatePassword que esta en otra rama
                     //Ahora pone que las contraseñas no coinciden
-//                    boolean success = UserManager.updatePassword(
-//                        PlayerManager.getUsername(player.getId()),
-//                        newPasswordField.getText()
-//                    );
+                    boolean success = UserManager.updatePassword(
+                        PlayerManager.getUsername(player.getId()),
+                        newPasswordField.getText()
+                    );
 
-//                    if (success) {
-//                        feedbackLabel.setText("Contraseña actualizada con éxito.");
-//                        feedbackLabel.setColor(Color.GREEN);
-//                    } else {
-//                        feedbackLabel.setText("Error al actualizar la contraseña.");
-//                        feedbackLabel.setColor(Color.RED);
-//                    }
+                    if (success) {
+                        feedbackLabel.setText("Contraseña actualizada con éxito.");
+                        feedbackLabel.setColor(Color.GREEN);
+                    } else {
+                        feedbackLabel.setText("Error al actualizar la contraseña.");
+                        feedbackLabel.setColor(Color.RED);
+                    }
 
                 }
             }
