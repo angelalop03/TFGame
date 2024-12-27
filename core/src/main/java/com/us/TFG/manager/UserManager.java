@@ -272,5 +272,46 @@ public class UserManager {
             return false;
         }
     }
+
+    public static boolean deleteUser(String username) {
+        String deletePlayerSql = "DELETE FROM players WHERE user_id = (SELECT id FROM users WHERE username = ?)";
+        String deleteUserSql = "DELETE FROM users WHERE username = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            System.out.println("Error: No se pudo conectar a la base de datos.");
+            return false;
+        }
+
+        try {
+            connection.setAutoCommit(false);
+
+            // Eliminar de la tabla de jugadores
+            try (PreparedStatement playerStmt = connection.prepareStatement(deletePlayerSql)) {
+                playerStmt.setString(1, username);
+                playerStmt.executeUpdate();
+            }
+
+            // Eliminar de la tabla de usuarios
+            try (PreparedStatement userStmt = connection.prepareStatement(deleteUserSql)) {
+                userStmt.setString(1, username);
+                userStmt.executeUpdate();
+            }
+
+            connection.commit();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+            return false;
+        }
+    }
+
 }
 
