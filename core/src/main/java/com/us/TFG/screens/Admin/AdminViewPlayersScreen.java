@@ -240,6 +240,8 @@ public class AdminViewPlayersScreen implements Screen {
                 showChangePasswordDialog(player);
                 editDialog.hide();
                 editDialog.remove();
+                feedbackLabel.clear();
+
             }
         });
         editDialog.getContentTable().add(changePasswordButton).colspan(2).center().pad(10).row();
@@ -304,7 +306,7 @@ public class AdminViewPlayersScreen implements Screen {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 300, Color.PINK, 1.0f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(500, 300, Color.PINK, 1.0f)));
 
         Dialog passwordDialog = new Dialog("", dialogStyle);
 
@@ -333,6 +335,7 @@ public class AdminViewPlayersScreen implements Screen {
         buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.DARK_GRAY, 0.7f)));
         buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.GRAY, 0.7f)));
 
+        //Boton guardar
         TextButton saveButton = new TextButton("Guardar", buttonStyle);
         saveButton.addListener(new ClickListener() {
             @Override
@@ -345,25 +348,21 @@ public class AdminViewPlayersScreen implements Screen {
                     feedbackLabel.setText("Las contraseñas no coinciden.");
                     feedbackLabel.setColor(Color.RED);
                 } else {
-                    boolean success = UserManager.updateProfile(
-                        PlayerManager.getUsername(player.getId()),
-                        PlayerManager.getUsername(player.getId()),
-                        newPasswordField.getText(),
-                        player.getFirstname(),
-                        player.getLastname(),
-                        player.getEmail(),
-                        player.getImage()
-                    );
+                    //Necesito la funcion updatePassword que esta en otra rama
+                    //Ahora pone que las contraseñas no coinciden
+//                    boolean success = UserManager.updatePassword(
+//                        PlayerManager.getUsername(player.getId()),
+//                        newPasswordField.getText()
+//                    );
 
-                    if (success) {
-                        feedbackLabel.setText("Contraseña actualizada con éxito.");
-                        feedbackLabel.setColor(Color.GREEN);
-                    } else {
-                        feedbackLabel.setText("Error al actualizar la contraseña.");
-                        feedbackLabel.setColor(Color.RED);
-                    }
-                    passwordDialog.hide();
-                    passwordDialog.remove();
+//                    if (success) {
+//                        feedbackLabel.setText("Contraseña actualizada con éxito.");
+//                        feedbackLabel.setColor(Color.GREEN);
+//                    } else {
+//                        feedbackLabel.setText("Error al actualizar la contraseña.");
+//                        feedbackLabel.setColor(Color.RED);
+//                    }
+
                 }
             }
         });
@@ -375,13 +374,15 @@ public class AdminViewPlayersScreen implements Screen {
                 passwordDialog.hide();
                 passwordDialog.remove();
                 showEditDialog(player);
+                feedbackLabel.remove();
+
 
             }
         });
 
-        passwordDialog.getContentTable().add(feedbackLabel).colspan(2).center().pad(10).row();
         passwordDialog.getButtonTable().add(saveButton).pad(10);
         passwordDialog.getButtonTable().add(cancelButton).pad(10);
+        passwordDialog.getContentTable().add(feedbackLabel).colspan(2).center().pad(10).row();
 
         passwordDialog.show(stage);
     }
