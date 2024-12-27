@@ -1,4 +1,4 @@
-package com.us.TFG.screens;
+package com.us.TFG.screens.General;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -10,7 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -18,28 +19,21 @@ import com.us.TFG.elements.Imagen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
 
-public class LogOutScreen implements Screen {
-    private String username;
+public class OpenScreen implements Screen {
     private Stage stage;
-    private Skin skin;
-    private Imagen fondo;
     private SpriteBatch batch;
-    private TopBar topBar;
+    private Skin skin;
     private BitmapFont font;
+    private Imagen fondo;
 
 
-
-
-    public LogOutScreen(String username){
-        this.username =username;
-    }
     @Override
     public void show() {
+//
 
         //Cargar el fondo
-        fondo = new Imagen(Resources.FONDON);
+        fondo = new Imagen(Resources.MENU);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
@@ -56,73 +50,47 @@ public class LogOutScreen implements Screen {
         generator.dispose();
         skin.add("Caveat", font);
 
-        // Crear el cuadro grisáceo transparente
-        Pixmap pixmap = new Pixmap(700, 300, Pixmap.Format.RGBA8888); // Tamaño del cuadro
-        pixmap.setColor(new Color(0.8f, 0.8f, 0.8f, 0.6f));  // Gris claro con 60% de transparencia
-        pixmap.fill();
-        TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(pixmap));
-        pixmap.dispose();
-
-        Image background = new Image(backgroundDrawable);
-        background.setPosition((Gdx.graphics.getWidth() - background.getWidth()) / 2, 240); // Centramos el fondo en la pantalla
-        stage.addActor(background);
-
-        // Crear estilo para Label
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-        skin.add("default", labelStyle);
-
-        // Crear y agregar la barra superior
-
-        topBar = new TopBar(username, stage, font);
-
-        // Crear estilo para los botones usando Pixmap
+        // Estilo de botón
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        buttonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.DARK_GRAY, 0.4f)));
-        buttonStyle.fontColor = Color.WHITE;
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
         buttonStyle.font = font;
 
-        // Botón de cerrar sesión
-        TextButton logOutButton = new TextButton("Cerrar Sesión", buttonStyle);
-        logOutButton.addListener(new ClickListener() {
+        // Botón de inicio de sesión
+        TextButton loginButton = new TextButton("Iniciar Sesión", buttonStyle);
+        loginButton.setSize(300, 75);
+        loginButton.setPosition(Gdx.graphics.getWidth() / 2f - 150, 200);
+        stage.addActor(loginButton);
+
+        // Agregar el listener para cambiar a LoginScreen
+        loginButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new OpenScreen());
+                Render.app.setScreen(new LoginScreen());
+
             }
         });
 
+        // Botón de registro
+        TextButton signUpButton = new TextButton("Registrarse", buttonStyle);
+        signUpButton.setSize(300, 75);
+        signUpButton.setPosition(Gdx.graphics.getWidth() / 2f - 150, 100);
+        stage.addActor(signUpButton);
 
-        // Botón para volver a la pantalla anterior
-        TextButton backButton = new TextButton("Cancelar", buttonStyle);
-        backButton.addListener(new ClickListener() {
+        // Agregar el listener para cambiar a LoginScreen
+        signUpButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new PerfilScreen(username));
+                Render.app.setScreen(new RegisterScreen());
             }
         });
-
-
-        // Crear una tabla para organizar los elementos en la pantalla
-        Table table = new Table();
-        table.setFillParent(true);
-        table.add(new Label("¿Estas seguro que quieres cerrar sesión? ", labelStyle)).colspan(2).padBottom(30);
-        table.row();
-        table.add(logOutButton).width(200).padBottom(20);
-        table.row();
-        table.add(backButton).width(200).padBottom(20);
-        table.row();
-
-        stage.addActor(table);
 
     }
 
     @Override
-    public void render(float v) {
+    public void render(float delta) {
         batch.begin();
-        fondo.draw();
+            fondo.draw();
         batch.end();
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
@@ -132,13 +100,10 @@ public class LogOutScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
-
-
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
@@ -148,13 +113,13 @@ public class LogOutScreen implements Screen {
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
         stage.dispose();
-
+        font.dispose();
+        //musicManager.dispose();
     }
 
     private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
@@ -164,4 +129,6 @@ public class LogOutScreen implements Screen {
         pixmap.fillRectangle(0, 20, width, height - 40);
         return pixmap;
     }
+
+
 }

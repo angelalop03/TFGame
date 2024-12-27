@@ -1,4 +1,4 @@
-package com.us.TFG.screens;
+package com.us.TFG.screens.Player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -15,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
+import com.us.TFG.manager.PlayerManager;
+import com.us.TFG.screens.General.LogOutScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -22,7 +24,7 @@ import com.us.TFG.utils.TopBar;
 
 import java.sql.*;
 
-public class PerfilScreen implements Screen {
+public class PlayerPerfilScreen implements Screen {
 
     private Stage stage;
     private Skin skin;
@@ -41,29 +43,22 @@ public class PerfilScreen implements Screen {
 
 
 
-    public PerfilScreen(String username) {
+    public PlayerPerfilScreen(String username) {
 
         this.username = username;
 
-        // Conectar y obtener la información del jugador directamente en PerfilScreen
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:game.db")) {
-            String sql = "SELECT p.firstname, p.lastname, p.email, p.image, p.pointsM, p.pointsR " +
-                "FROM players p JOIN users u ON p.user_id = u.id " +
-                "WHERE u.username = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, username);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                firstname = resultSet.getString("firstname");
-                lastname = resultSet.getString("lastname");
-                email = resultSet.getString("email");
-                image = resultSet.getString("image");
-                pointsM = resultSet.getInt("pointsM");
-                pointsR = resultSet.getInt("pointsR");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        // Obtener datos del jugador desde PlayerManager
+        PlayerManager.PlayerData playerData = PlayerManager.getPlayerData(username);
+        if (playerData != null) {
+            this.firstname = playerData.getFirstname();
+            this.lastname = playerData.getLastname();
+            this.email = playerData.getEmail();
+            this.image = playerData.getImage();
+            this.pointsM = playerData.getPointsM();
+            this.pointsR = playerData.getPointsR();
+        } else {
+            // Manejar caso en el que no se encuentren datos del jugador
+            System.err.println("No se encontraron datos para el jugador: " + username);
         }
     }
 
@@ -158,7 +153,7 @@ public class PerfilScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
-                Render.app.setScreen(new EditProfileScreen( username ));
+                Render.app.setScreen(new EditProfileScreen(username));
             }
         });
         table.add(editProfileButton).size(200, 50).padBottom(10);

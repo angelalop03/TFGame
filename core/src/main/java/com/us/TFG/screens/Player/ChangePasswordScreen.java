@@ -1,4 +1,4 @@
-package com.us.TFG.screens;
+package com.us.TFG.screens.Player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -15,6 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
+import com.us.TFG.model.Authorities;
+import com.us.TFG.screens.Admin.AdminMenuScreen;
+import com.us.TFG.screens.Admin.AdminPerfilScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -127,7 +130,12 @@ public class ChangePasswordScreen implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new EditProfileScreen(currentUsername));
+                Authorities authority = UserManager.getAuthority(currentUsername);
+                if (authority == Authorities.ADMIN) {
+                    Render.app.setScreen(new AdminPerfilScreen(currentUsername));
+                } else if (authority == Authorities.PLAYER) {
+                    Render.app.setScreen(new EditProfileScreen(currentUsername));
+                }
             }
         });
 

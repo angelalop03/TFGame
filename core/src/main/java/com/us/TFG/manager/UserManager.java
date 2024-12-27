@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.us.TFG.MyTfgGame;
+import com.us.TFG.model.Authorities;
+import com.us.TFG.model.Player;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
@@ -18,11 +20,11 @@ import java.sql.SQLException;
 public class UserManager {
     private static Label feedbackLabel;
 
-    // Métod para registrar un usuario en la base de datos
     public static boolean registerUser(String username, String password, String firstname, String lastname, String email) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        String userSql = "INSERT INTO users (username, password) VALUES (?, ?)";
+        String userSql = "INSERT INTO users (username, password, authority" +
+            ") VALUES (?, ?, ?)";
         String playerSql = "INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id) VALUES (?, ?, ?, 'default_image.png', 0, 0, ?)";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
@@ -33,6 +35,7 @@ public class UserManager {
             try (PreparedStatement userStmt = connection.prepareStatement(userSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 userStmt.setString(1, username);
                 userStmt.setString(2, hashedPassword); // Guardar contraseña encriptada
+                userStmt.setInt(3, 2); // Establecer authorities a 2
                 userStmt.executeUpdate();
 
                 ResultSet generatedKeys = userStmt.getGeneratedKeys();
@@ -54,6 +57,11 @@ public class UserManager {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
             return false;
         }
     }
@@ -97,7 +105,7 @@ public class UserManager {
 
         // Si no se proporciona una nueva imagen, se usa la imagen actual (o una predeterminada si es necesario)
         if (profileImage == null || profileImage.isEmpty()) {
-            profileImage = getCurrentProfileImage(currentUsername); // Obtener imagen actual si no se proporciona una nueva
+            profileImage = PlayerManager.getCurrentProfileImage(currentUsername); // Obtener imagen actual si no se proporciona una nueva
         }
 
         String updateUserSql = "UPDATE users SET username = ?, password = ? WHERE username = ?";
@@ -143,33 +151,7 @@ public class UserManager {
         }
     }
 
-    // Función para obtener la imagen actual del perfil si no se ha proporcionado una nueva
-    private static String getCurrentProfileImage(String currentUsername) {
-        String query = "SELECT image FROM players WHERE user_id = (SELECT id FROM users WHERE username = ?)";
-        Connection connection = MyTfgGame.databaseManager.getConnection();
-        String currentImage = "default_image.png"; // Imagen predeterminada
 
-        if (connection == null) {
-            return currentImage;
-        }
-
-        try {
-            PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setString(1, currentUsername);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                currentImage = rs.getString("image");
-            }
-
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return currentImage;
-    }
 
 
 
@@ -224,6 +206,36 @@ public class UserManager {
             e.printStackTrace();
         }
     }
+
+    public static Authorities getAuthority(String username) {
+        String query = "SELECT authority FROM users WHERE username = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("Error: No se pudo conectar a la base de datos.");
+        }
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int authorityValue = rs.getInt("authority");
+                rs.close();
+                stmt.close();
+                return Authorities.fromValue(authorityValue); // Convertir el valor entero al enum Authorities
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Si no se encuentra el usuario o hay un error, lanzar una excepción o manejar de forma adecuada
+        throw new RuntimeException("No se encontró el usuario o la autoridad no es válida.");
+    }
+
 
 
     public static boolean updatePassword(String currentUsername, String newPassword) {
