@@ -94,7 +94,7 @@ public class UserManager {
         }
     }
 
-    public static boolean updateProfile(String currentUsername, String newUsername, String password, String firstname,
+    public static boolean updateProfile(String currentUsername, String newUsername, String firstname,
                                         String lastname, String email, String profileImage) {
 
         // Comprobar si el nuevo nombre de usuario ya existe, excepto si es el mismo que el actual
@@ -122,8 +122,7 @@ public class UserManager {
 
             PreparedStatement userStmt = connection.prepareStatement(updateUserSql);
             userStmt.setString(1, newUsername);
-            userStmt.setString(2, password);
-            userStmt.setString(3, currentUsername);
+            userStmt.setString(2, currentUsername);
             userStmt.executeUpdate();
 
             PreparedStatement playerStmt = connection.prepareStatement(updatePlayerSql);
@@ -179,10 +178,9 @@ public class UserManager {
     }
 
 
-    //Pasar esto a UserService
-    public static void loadUserProfile(String currentUsername, TextField usernameField, TextField passwordField,
+    public static void loadUserProfile(String currentUsername, TextField usernameField,
                                  TextField firstnameField, TextField lastnameField, TextField emailField, String currentProfileImage , Image profileImage) {
-        String query = "SELECT username, password, firstname, lastname, email,image FROM users u JOIN players p ON u.id = p.user_id WHERE username = ?";
+        String query = "SELECT username, firstname, lastname, email,image FROM users u JOIN players p ON u.id = p.user_id WHERE username = ?";
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
         if (connection == null) {
@@ -196,7 +194,6 @@ public class UserManager {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 usernameField.setText(rs.getString("username"));
-                passwordField.setText(rs.getString("password"));
                 firstnameField.setText(rs.getString("firstname"));
                 lastnameField.setText(rs.getString("lastname"));
                 emailField.setText(rs.getString("email"));
@@ -241,8 +238,31 @@ public class UserManager {
 
 
 
+    public static boolean updatePassword(String currentUsername, String newPassword) {
+        // Encriptar la nueva contraseña
+        String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
 
+        String sql = "UPDATE users SET password = ? WHERE username = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
 
+        if (connection == null) {
+            showError("Error: No se pudo conectar a la base de datos.");
+            return false;
+        }
 
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, hashedPassword);
+            stmt.setString(2, currentUsername);
+            int rowsUpdated = stmt.executeUpdate();
+
+            stmt.close();
+            return rowsUpdated > 0; // Devuelve true si se actualizó al menos una fila
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
 
