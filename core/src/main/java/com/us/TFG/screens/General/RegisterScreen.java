@@ -104,8 +104,11 @@ public class RegisterScreen implements Screen {
 
                 if (UserManager.registerUser(username, password, firstname, lastname, email)) {
                     Render.app.setScreen(new PlayerMenuScreen(username));
-                } else {
-                    showError("Error: Nombre de usuario ya existe.");
+                } else if (UserManager.usernameExists(username)){
+                    showError("Nombre de usuario no disponible ");
+                }
+                else {
+                    showError("Error al crear usuario");
                 }
             }
         });

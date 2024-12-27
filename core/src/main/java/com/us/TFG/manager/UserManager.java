@@ -23,6 +23,11 @@ public class UserManager {
     public static boolean registerUser(String username, String password, String firstname, String lastname, String email) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
+        if (usernameExists(username)) {
+            System.out.println(usernameExists(username));
+            return false;
+        }
+
         String userSql = "INSERT INTO users (username, password, authority" +
             ") VALUES (?, ?, ?)";
         String playerSql = "INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id) VALUES (?, ?, ?, 'default_image.png', 0, 0, ?)";
