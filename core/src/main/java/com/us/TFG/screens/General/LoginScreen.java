@@ -1,4 +1,4 @@
-package com.us.TFG.screens;
+package com.us.TFG.screens.General;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -17,9 +17,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.us.TFG.MyTfgGame;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.UserManager;
+import com.us.TFG.model.Authorities;
+import com.us.TFG.screens.Admin.AdminMenuScreen;
+import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -99,7 +101,12 @@ public class LoginScreen implements Screen {
 
                 // Verificar credenciales usando la instancia global de DatabaseManager
                 if (UserManager.verifyLogin(username, password)) {
-                    Render.app.setScreen(new Menu(username));
+                    Authorities authority = UserManager.getAuthority(username);
+                    if (authority == Authorities.ADMIN) {
+                        Render.app.setScreen(new AdminMenuScreen(username));
+                    } else if (authority == Authorities.PLAYER) {
+                        Render.app.setScreen(new PlayerMenuScreen(username));
+                    }
                 } else {
                     errorLabel.setVisible(true);  // Mostrar el mensaje de error
                 }

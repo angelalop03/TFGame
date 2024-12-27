@@ -1,4 +1,4 @@
-package com.us.TFG.screens;
+package com.us.TFG.screens.Player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -157,7 +157,7 @@ public class EditProfileScreen implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new PerfilScreen(currentUsername));
+                Render.app.setScreen(new PlayerPerfilScreen(currentUsername));
             }
         });
 

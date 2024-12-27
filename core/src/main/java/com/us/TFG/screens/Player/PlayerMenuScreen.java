@@ -1,4 +1,4 @@
-package com.us.TFG.screens;
+package com.us.TFG.screens.Player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -20,7 +20,7 @@ import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
 import com.us.TFG.utils.TopBar;
 
-public class Menu implements Screen {
+public class PlayerMenuScreen implements Screen {
 
     private Stage stage;
     private SpriteBatch b;
@@ -31,7 +31,7 @@ public class Menu implements Screen {
     private String username;
 
     //Para cuando haga los users
-     public Menu(String username) {
+     public PlayerMenuScreen(String username) {
         this.username = username;
     }
 
@@ -116,7 +116,8 @@ public class Menu implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
+
+         stage.getViewport().update(width, height, true);
     }
 
     @Override

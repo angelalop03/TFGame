@@ -1,15 +1,8 @@
 package com.us.TFG;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.us.TFG.screens.LogoScreen;
-import com.us.TFG.screens.Menu;
-import com.us.TFG.screens.OpenScreen;
+import com.us.TFG.screens.Admin.AdminMenuScreen;
 import com.us.TFG.utils.DatabaseManager;
 import com.us.TFG.utils.RegistrationSystem;
 import com.us.TFG.utils.Render;
@@ -28,7 +21,8 @@ public class MyTfgGame extends Game {
         databaseManager = new DatabaseManager();
 
         //this.setScreen(new LogoScreen());
-        this.setScreen(new Menu("Player1"));
+        //this.setScreen(new Menu("Player1"));
+        this.setScreen(new AdminMenuScreen("Admin1"));
     }
 
     @Override
