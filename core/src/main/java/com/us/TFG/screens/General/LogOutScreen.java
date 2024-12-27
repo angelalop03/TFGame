@@ -15,9 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.manager.UserManager;
-import com.us.TFG.model.Authorities;
-import com.us.TFG.screens.Admin.AdminPerfilScreen;
+import com.us.TFG.screens.General.OpenScreen;
 import com.us.TFG.screens.Player.PlayerPerfilScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
@@ -105,12 +103,7 @@ public class LogOutScreen implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Authorities authority = UserManager.getAuthority(username);
-                if (authority == Authorities.ADMIN) {
-                    Render.app.setScreen(new AdminPerfilScreen(username));
-                } else if (authority == Authorities.PLAYER) {
-                    Render.app.setScreen(new PlayerPerfilScreen(username));
-                }
+                Render.app.setScreen(new PlayerPerfilScreen(username));
             }
         });
 
