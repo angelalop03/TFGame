@@ -3,6 +3,8 @@ package com.us.TFG;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.us.TFG.screens.Admin.AdminMenuScreen;
+import com.us.TFG.screens.General.LogoScreen;
+import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.DatabaseManager;
 import com.us.TFG.utils.RegistrationSystem;
 import com.us.TFG.utils.Render;
@@ -20,9 +22,9 @@ public class MyTfgGame extends Game {
         // Inicializar DatabaseManager solo una vez
         databaseManager = new DatabaseManager();
 
-        //this.setScreen(new LogoScreen());
-        //this.setScreen(new Menu("Player1"));
-        this.setScreen(new AdminMenuScreen("Admin1"));
+        this.setScreen(new LogoScreen());
+        //this.setScreen(new PlayerMenuScreen("Player1"));
+        //this.setScreen(new AdminMenuScreen("Admin1"));
     }
 
     @Override
