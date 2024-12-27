@@ -136,8 +136,14 @@ public class EditProfileScreen implements Screen {
                     feedbackLabel.setText("Perfil actualizado con éxito.");
                     feedbackLabel.setColor(Color.GREEN);
 
-                } else {
-                    showError("Error al actualizar el perfil.");
+
+                }
+                else if(UserManager.usernameExists(newUsername)){
+                    showError("Nombre de usuario no disponible");
+                }
+                else {
+
+                    showError("Error al actualizar el perfil");
                 }
             }
         });

@@ -75,7 +75,7 @@ public class UserManager {
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
         if (connection == null) {
-            showError("Error: No se pudo conectar a la base de datos.");
+            System.out.println("Error: No se pudo conectar a la base de datos.");
             return false;
         }
 
@@ -96,59 +96,65 @@ public class UserManager {
 
     public static boolean updateProfile(String currentUsername, String newUsername, String firstname,
                                         String lastname, String email, String profileImage) {
-
-        // Comprobar si el nuevo nombre de usuario ya existe, excepto si es el mismo que el actual
-        if (!newUsername.equals(currentUsername) && usernameExists(newUsername)) {
-            showError("El nombre de usuario ya está en uso.");
-            return false;
-        }
-
+        System.out.println(usernameExists(newUsername));
         // Si no se proporciona una nueva imagen, se usa la imagen actual (o una predeterminada si es necesario)
         if (profileImage == null || profileImage.isEmpty()) {
             profileImage = PlayerManager.getCurrentProfileImage(currentUsername); // Obtener imagen actual si no se proporciona una nueva
         }
 
-        String updateUserSql = "UPDATE users SET username = ?, password = ? WHERE username = ?";
-        String updatePlayerSql = "UPDATE players SET firstname = ?, lastname = ?, email = ?, image = ? WHERE user_id = (SELECT id FROM users WHERE username = ?)";
-
-        Connection connection = MyTfgGame.databaseManager.getConnection();
-        if (connection == null) {
-            showError("Error: No se pudo conectar a la base de datos.");
-            return false;
-        }
-
-        try {
-            connection.setAutoCommit(false);
-
-            PreparedStatement userStmt = connection.prepareStatement(updateUserSql);
-            userStmt.setString(1, newUsername);
-            userStmt.setString(2, currentUsername);
-            userStmt.executeUpdate();
-
-            PreparedStatement playerStmt = connection.prepareStatement(updatePlayerSql);
-            playerStmt.setString(1, firstname);
-            playerStmt.setString(2, lastname);
-            playerStmt.setString(3, email);
-            playerStmt.setString(4, profileImage); // Asignar la imagen
-            playerStmt.setString(5, newUsername);
-            playerStmt.executeUpdate();
-
-            userStmt.close();
-            playerStmt.close();
-
-            connection.commit();
-            currentUsername = newUsername;
-            return true;
-
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
+        // Comprobar si el nuevo nombre de usuario ya existe, excepto si es el mismo que el actual
+        if (!newUsername.equals(currentUsername)) {
+            if (usernameExists(newUsername)) {
+                System.out.println(usernameExists(newUsername));
+                return false;
             }
-            e.printStackTrace();
-            return false;
         }
+
+
+            String updateUserSql = "UPDATE users SET username = ?, password = ? WHERE username = ?";
+            String updatePlayerSql = "UPDATE players SET firstname = ?, lastname = ?, email = ?, image = ? WHERE user_id = (SELECT id FROM users WHERE username = ?)";
+
+
+            Connection connection = MyTfgGame.databaseManager.getConnection();
+            if (connection == null) {
+                System.out.println("Error: No se pudo conectar a la base de datos.");
+                return false;
+            }
+
+            try {
+                connection.setAutoCommit(false);
+
+                PreparedStatement userStmt = connection.prepareStatement(updateUserSql);
+                userStmt.setString(1, newUsername);
+                userStmt.setString(2, currentUsername);
+                userStmt.executeUpdate();
+
+                PreparedStatement playerStmt = connection.prepareStatement(updatePlayerSql);
+                playerStmt.setString(1, firstname);
+                playerStmt.setString(2, lastname);
+                playerStmt.setString(3, email);
+                playerStmt.setString(4, profileImage); // Asignar la imagen
+                playerStmt.setString(5, newUsername);
+                playerStmt.executeUpdate();
+
+                userStmt.close();
+                playerStmt.close();
+
+                connection.commit();
+                currentUsername = newUsername;
+                return true;
+
+
+            } catch (SQLException e) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+                e.printStackTrace();
+                return false;
+            }
+
     }
 
 
@@ -172,10 +178,7 @@ public class UserManager {
     }
 
 
-    private static void showError(String message) {
-        feedbackLabel.setText(message);
-        feedbackLabel.setColor(Color.RED);
-    }
+
 
 
     public static void loadUserProfile(String currentUsername, TextField usernameField,
@@ -184,7 +187,7 @@ public class UserManager {
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
         if (connection == null) {
-            showError("Error: No se pudo conectar a la base de datos.");
+            System.out.println("Error: No se pudo conectar a la base de datos.");
             return;
         }
 
@@ -246,7 +249,7 @@ public class UserManager {
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
         if (connection == null) {
-            showError("Error: No se pudo conectar a la base de datos.");
+            System.out.println("Error: No se pudo conectar a la base de datos.");
             return false;
         }
 
