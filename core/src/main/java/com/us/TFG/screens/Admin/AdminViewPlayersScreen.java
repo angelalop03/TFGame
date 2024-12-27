@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.PlayerManager;
+import com.us.TFG.manager.UserManager;
 import com.us.TFG.screens.Player.PlayerPerfilScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
@@ -113,15 +114,16 @@ public class AdminViewPlayersScreen implements Screen {
             table.add(new Label(player.getFirstname() + " " + player.getLastname(), labelStyle)).width(300).pad(10).center();
             table.add(new Label(player.getEmail(), labelStyle)).width(300).pad(10).center();
 
-            // Botón de Detalles
-            TextButton detailsButton = new TextButton("Editar", buttonStyle);
-            detailsButton.addListener(new ClickListener() {
+            // Botón de Editar
+            TextButton editButton = new TextButton("Editar", buttonStyle);
+            editButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    //Render.app.setScreen(new PlayerPerfilScreen(PlayerManager.getUsername(player.getId()))); // Cambia a la pantalla del perfil
+                    showCustomDialog();
+
                 }
             });
-            table.add(detailsButton).width(150).pad(10).center();
+            table.add(editButton).width(150).pad(10).center();
 
             // Botón de Historial
             TextButton historyButton = new TextButton("Historial", buttonStyle);
@@ -174,4 +176,42 @@ public class AdminViewPlayersScreen implements Screen {
         stage.dispose();
         font.dispose();
     }
+
+
+    private void showCustomDialog() {
+        // Crear un estilo para el diálogo
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font; // Usa tu fuente personalizada (por ejemplo, Caveat.ttf)
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 300, Color.VIOLET, 1.0f)));
+
+        // Crear el diálogo
+        Dialog customDialog = new Dialog("Editar", dialogStyle);
+
+        // Crear un estilo para los botones
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = font;
+        buttonStyle.fontColor = Color.WHITE;
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(200, 50, Color.LIGHT_GRAY, 1.0f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(200, 50, Color.GRAY, 1.0f)));
+
+        // Añadir contenido al diálogo
+        customDialog.getContentTable().add(new Label("Este es un diálogo sin uiskin.json", new Label.LabelStyle(font, Color.WHITE))).pad(20);
+
+        // Añadir botones
+        TextButton closeButton = new TextButton("Cerrar", buttonStyle);
+        closeButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                customDialog.hide();
+            }
+        });
+        customDialog.getButtonTable().add(closeButton).pad(5);
+
+        // Mostrar el diálogo
+        customDialog.show(stage);
+    }
+
+
+
 }
