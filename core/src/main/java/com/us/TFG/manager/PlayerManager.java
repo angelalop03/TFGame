@@ -67,6 +67,38 @@ public class PlayerManager {
 
         return username;
     }
+
+    public static String getPassword(int playerId) {
+        String query = "SELECT u.password " +
+            "FROM users u " +
+            "JOIN players p ON u.id = p.user_id " +
+            "WHERE p.id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        String password = null;
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, playerId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                password = rs.getString("password");
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return password;
+    }
+
+
     public static PlayerData getPlayerData(String username) {
         String query = "SELECT p.id, p.firstname, p.lastname, p.email, p.image, p.pointsM, p.pointsR " +
             "FROM players p JOIN users u ON p.user_id = u.id " +

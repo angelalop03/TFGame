@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.PlayerManager;
@@ -22,8 +23,10 @@ import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
 import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.validators.InputValidator;
 
 import java.util.List;
+
 
 public class AdminViewPlayersScreen implements Screen {
 
@@ -34,6 +37,8 @@ public class AdminViewPlayersScreen implements Screen {
     private Skin skin;
     private BitmapFont font;
     private TopBar topBar;
+    private Label feedbackLabel;
+
 
     public AdminViewPlayersScreen(String adminUsername) {
         this.adminUsername = adminUsername;
@@ -119,7 +124,7 @@ public class AdminViewPlayersScreen implements Screen {
             editButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    showCustomDialog();
+                    showEditDialog(player);
 
                 }
             });
@@ -178,39 +183,209 @@ public class AdminViewPlayersScreen implements Screen {
     }
 
 
-    private void showCustomDialog() {
+    private void showEditDialog(PlayerManager.PlayerData player) {
         // Crear un estilo para el diálogo
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
-        dialogStyle.titleFont = font; // Usa tu fuente personalizada (por ejemplo, Caveat.ttf)
+        dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
         dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 300, Color.VIOLET, 1.0f)));
 
         // Crear el diálogo
-        Dialog customDialog = new Dialog("Editar", dialogStyle);
+        Dialog editDialog = new Dialog("", dialogStyle);
 
-        // Crear un estilo para los botones
+        // Crear estilos para los campos de texto
+        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
+        textFieldStyle.font = font;
+        textFieldStyle.fontColor = Color.WHITE;
+        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 50, Color.GRAY, 0.8f)));
+
+        // Crear campos de texto con valores iniciales
+        TextField usernameField = new TextField(PlayerManager.getUsername(player.getId()), textFieldStyle);
+        TextField firstnameField = new TextField(player.getFirstname(), textFieldStyle);
+        TextField lastnameField = new TextField(player.getLastname(), textFieldStyle);
+        TextField emailField = new TextField(player.getEmail(), textFieldStyle);
+
+        // Añadir campos al diálogo
+        editDialog.getContentTable().add(new Label("Usuario:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
+        editDialog.getContentTable().add(usernameField).width(300).pad(5).row();
+        editDialog.getContentTable().add(new Label("Nombre:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
+        editDialog.getContentTable().add(firstnameField).width(300).pad(5).row();
+        editDialog.getContentTable().add(new Label("Apellido:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
+        editDialog.getContentTable().add(lastnameField).width(300).pad(5).row();
+        editDialog.getContentTable().add(new Label("Correo:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
+        editDialog.getContentTable().add(emailField).width(300).pad(5).row();
+
+        //Estilo para las etiquetas
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
+
+        // Etiqueta para mostrar mensajes de feedback
+        feedbackLabel = new Label("", labelStyle);
+        feedbackLabel.setWrap(false);
+        feedbackLabel.setAlignment(Align.center); // Centra el texto horizontalmente
+
+        // Estilo para los botones
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
         buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(200, 50, Color.LIGHT_GRAY, 1.0f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(200, 50, Color.GRAY, 1.0f)));
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.DARK_GRAY, 0.7f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.GRAY, 0.7f)));
 
-        // Añadir contenido al diálogo
-        customDialog.getContentTable().add(new Label("Este es un diálogo sin uiskin.json", new Label.LabelStyle(font, Color.WHITE))).pad(20);
-
-        // Añadir botones
-        TextButton closeButton = new TextButton("Cerrar", buttonStyle);
-        closeButton.addListener(new ClickListener() {
+        // Botón Cambiar Contraseña
+        TextButton changePasswordButton = new TextButton("Cambiar Contraseña", buttonStyle);
+        changePasswordButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                customDialog.hide();
+                showChangePasswordDialog(player);
+                editDialog.hide();
+                editDialog.remove();
             }
         });
-        customDialog.getButtonTable().add(closeButton).pad(5);
+        editDialog.getContentTable().add(changePasswordButton).colspan(2).center().pad(10).row();
+
+        //Boton Guardar
+        TextButton saveButton = new TextButton("Guardar", buttonStyle);
+        saveButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                String usernameError = InputValidator.validateUsername(usernameField.getText());
+                String firstnameError = InputValidator.validateFirstname(firstnameField.getText());
+                String lastnameError = InputValidator.validateLastname(lastnameField.getText());
+                String emailError = InputValidator.validateEmail(emailField.getText());
+
+                if (usernameError != null || firstnameError != null || lastnameError != null || emailError != null) {
+                    feedbackLabel.setText(usernameError != null ? usernameError :
+                        firstnameError != null ? firstnameError :
+                            lastnameError != null ? lastnameError : emailError);
+                    feedbackLabel.setColor(Color.RED);
+                } else {
+                    boolean success = UserManager.updateProfile(
+                        PlayerManager.getUsername(player.getId()),
+                        usernameField.getText(),
+                        PlayerManager.getPassword(player.getId()),
+                        firstnameField.getText(),
+                        lastnameField.getText(),
+                        emailField.getText(),
+                        player.getImage()
+                    );
+
+                    if (success) {
+                        feedbackLabel.setText("Perfil actualizado con éxito.");
+                        feedbackLabel.setColor(Color.GREEN);
+                    } else {
+                        feedbackLabel.setText("Error al actualizar el perfil.");
+                        feedbackLabel.setColor(Color.RED);
+                    }
+                }
+            }
+        });
+        editDialog.getButtonTable().add(saveButton).pad(10);
+
+        // Botón de Cancelar
+        TextButton cancelButton = new TextButton("Cerrar", buttonStyle);
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editDialog.hide();
+                editDialog.remove();
+            }
+        });
+        editDialog.getButtonTable().add(cancelButton).pad(10);
+        editDialog.getContentTable().add(feedbackLabel).colspan(2).center().pad(10).row();
 
         // Mostrar el diálogo
-        customDialog.show(stage);
+        editDialog.show(stage);
+
     }
+
+    private void showChangePasswordDialog(PlayerManager.PlayerData player) {
+        // Crear un estilo para el diálogo
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 300, Color.PINK, 1.0f)));
+
+        Dialog passwordDialog = new Dialog("", dialogStyle);
+
+        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
+        textFieldStyle.font = font;
+        textFieldStyle.fontColor = Color.WHITE;
+        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 50, Color.LIGHT_GRAY, 0.8f)));
+
+        TextField newPasswordField = new TextField("", textFieldStyle);
+        newPasswordField.setPasswordMode(true);
+        newPasswordField.setPasswordCharacter('*');
+
+        TextField confirmPasswordField = new TextField("", textFieldStyle);
+        confirmPasswordField.setPasswordMode(true);
+        confirmPasswordField.setPasswordCharacter('*');
+
+        passwordDialog.getContentTable().add(new Label("Nueva Contraseña:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
+        passwordDialog.getContentTable().add(newPasswordField).width(300).pad(5).row();
+
+        passwordDialog.getContentTable().add(new Label("Confirmar Contraseña:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
+        passwordDialog.getContentTable().add(confirmPasswordField).width(300).pad(5).row();
+
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = font;
+        buttonStyle.fontColor = Color.WHITE;
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.DARK_GRAY, 0.7f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.GRAY, 0.7f)));
+
+        TextButton saveButton = new TextButton("Guardar", buttonStyle);
+        saveButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                String passwordError = InputValidator.validatePassword(newPasswordField.getText());
+                if (passwordError != null) {
+                    feedbackLabel.setText(passwordError);
+                    feedbackLabel.setColor(Color.RED);
+                } else if (!newPasswordField.getText().equals(confirmPasswordField.getText())) {
+                    feedbackLabel.setText("Las contraseñas no coinciden.");
+                    feedbackLabel.setColor(Color.RED);
+                } else {
+                    boolean success = UserManager.updateProfile(
+                        PlayerManager.getUsername(player.getId()),
+                        PlayerManager.getUsername(player.getId()),
+                        newPasswordField.getText(),
+                        player.getFirstname(),
+                        player.getLastname(),
+                        player.getEmail(),
+                        player.getImage()
+                    );
+
+                    if (success) {
+                        feedbackLabel.setText("Contraseña actualizada con éxito.");
+                        feedbackLabel.setColor(Color.GREEN);
+                    } else {
+                        feedbackLabel.setText("Error al actualizar la contraseña.");
+                        feedbackLabel.setColor(Color.RED);
+                    }
+                    passwordDialog.hide();
+                    passwordDialog.remove();
+                }
+            }
+        });
+
+        TextButton cancelButton = new TextButton("Cancelar", buttonStyle);
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                passwordDialog.hide();
+                passwordDialog.remove();
+                showEditDialog(player);
+
+            }
+        });
+
+        passwordDialog.getContentTable().add(feedbackLabel).colspan(2).center().pad(10).row();
+        passwordDialog.getButtonTable().add(saveButton).pad(10);
+        passwordDialog.getButtonTable().add(cancelButton).pad(10);
+
+        passwordDialog.show(stage);
+    }
+
 
 
 
