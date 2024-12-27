@@ -37,7 +37,6 @@ public class AdminViewPlayersScreen implements Screen {
     private Skin skin;
     private BitmapFont font;
     private TopBar topBar;
-    private Label feedbackLabel;
 
 
     public AdminViewPlayersScreen(String adminUsername) {
@@ -221,7 +220,7 @@ public class AdminViewPlayersScreen implements Screen {
         labelStyle.fontColor = Color.WHITE;
 
         // Etiqueta para mostrar mensajes de feedback
-        feedbackLabel = new Label("", labelStyle);
+        Label feedbackLabel = new Label("", labelStyle);
         feedbackLabel.setWrap(false);
         feedbackLabel.setAlignment(Align.center); // Centra el texto horizontalmente
 
@@ -240,7 +239,6 @@ public class AdminViewPlayersScreen implements Screen {
                 showChangePasswordDialog(player);
                 editDialog.hide();
                 editDialog.remove();
-                feedbackLabel.clear();
 
             }
         });
@@ -309,6 +307,17 @@ public class AdminViewPlayersScreen implements Screen {
 
         Dialog passwordDialog = new Dialog("", dialogStyle);
 
+        //Estilo para las etiquetas
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
+
+        // Etiqueta para mostrar mensajes de feedback
+        Label feedbackLabel = new Label("", labelStyle);
+        feedbackLabel.setWrap(false);
+        feedbackLabel.setAlignment(Align.center);
+
+
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = font;
         textFieldStyle.fontColor = Color.WHITE;
@@ -366,14 +375,13 @@ public class AdminViewPlayersScreen implements Screen {
             }
         });
 
-        TextButton cancelButton = new TextButton("Cancelar", buttonStyle);
+        TextButton cancelButton = new TextButton("Cerrar", buttonStyle);
         cancelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 passwordDialog.hide();
                 passwordDialog.remove();
                 showEditDialog(player);
-                feedbackLabel.remove();
 
 
             }

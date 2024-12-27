@@ -158,7 +158,8 @@ public class PlayerPerfilScreen implements Screen {
         editProfileButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //Pantalla para editar perfil
+
+                Render.app.setScreen(new EditProfileScreen(username));
             }
         });
         table.add(editProfileButton).size(200, 50).padBottom(10);

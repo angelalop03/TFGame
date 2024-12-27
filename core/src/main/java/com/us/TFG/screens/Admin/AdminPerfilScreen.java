@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.screens.General.LogOutScreen;
+import com.us.TFG.screens.Player.ChangePasswordScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -97,7 +98,8 @@ public class AdminPerfilScreen implements Screen {
         changepasswordButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //Pantalla de Cambiar contraseña
+
+                Render.app.setScreen(new ChangePasswordScreen(username));
             }
 
         });
