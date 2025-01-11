@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.screens.General.LogOutScreen;
+import com.us.TFG.screens.General.LoginScreen;
 import com.us.TFG.screens.Player.ChangePasswordScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
@@ -111,7 +111,8 @@ public class AdminPerfilScreen implements Screen {
         logOutButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new LogOutScreen(username));
+
+                showLogoutDialog();
             }
         });
         table.add(logOutButton).size(250, 60).padBottom(10);
@@ -164,4 +165,52 @@ public class AdminPerfilScreen implements Screen {
 
         return pixmap;
     }
+
+    private void showLogoutDialog() {
+        // Crear estilo del diálogo
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(500, 300, Color.PINK, 1f)));
+
+        Dialog logoutDialog = new Dialog("", dialogStyle);
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
+
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = font;
+        buttonStyle.fontColor = Color.WHITE;
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 80, Color.GRAY, 0.7f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 80, Color.LIGHT_GRAY, 0.7f)));
+
+        // Etiqueta de confirmación
+        Label confirmLabel = new Label("¿Estás seguro de que deseas cerrar sesión?", labelStyle);
+
+        // Botón de confirmar
+        TextButton confirmButton = new TextButton("Confirmar", buttonStyle);
+        confirmButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new LoginScreen());
+            }
+        });
+
+        // Botón de cancelar
+        TextButton cancelButton = new TextButton("Cancelar", buttonStyle);
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                logoutDialog.hide();
+            }
+        });
+
+        logoutDialog.getContentTable().add(confirmLabel).padBottom(10).row();
+        logoutDialog.getButtonTable().add(confirmButton).pad(10);
+        logoutDialog.getButtonTable().add(cancelButton).pad(10);
+
+        logoutDialog.show(stage);
+    }
+
 }
