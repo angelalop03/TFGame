@@ -13,21 +13,23 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.PlayerManager;
+import com.us.TFG.manager.UserManager;
 import com.us.TFG.screens.General.LogOutScreen;
+import com.us.TFG.screens.General.OpenScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
 import com.us.TFG.utils.TopBar;
 
-import java.sql.*;
 
 public class PlayerPerfilScreen implements Screen {
 
     private Stage stage;
-    private Skin skin;
     private String firstname;
     private String lastname;
     private String email;
@@ -37,6 +39,7 @@ public class PlayerPerfilScreen implements Screen {
     private SpriteBatch batch;
     private Imagen fondo;
     private BitmapFont font;
+    private Skin skin;
     private TopBar topBar;
     private String username;
 
@@ -64,12 +67,6 @@ public class PlayerPerfilScreen implements Screen {
 
     @Override
     public void show() {
-        stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage);
-
-        skin = new Skin();
-        BitmapFont font = new BitmapFont();
-
         //Cargar el fondo
         fondo = new Imagen(Resources.FONDON);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
@@ -78,7 +75,9 @@ public class PlayerPerfilScreen implements Screen {
         // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+
         skin = new Skin();
+
 
         // Generar fuente
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
@@ -86,17 +85,19 @@ public class PlayerPerfilScreen implements Screen {
         parameter.size = 34;
         font = generator.generateFont(parameter);
         generator.dispose();
+
+        // Añadir la fuente generada al skin
         skin.add("Caveat", font);
 
         // Crear el cuadro grisáceo transparente
-        Pixmap pixmap = new Pixmap(700, 600, Pixmap.Format.RGBA8888); // Tamaño del cuadro
+        Pixmap pixmap = new Pixmap(700, 750, Pixmap.Format.RGBA8888); // Tamaño del cuadro
         pixmap.setColor(new Color(0.8f, 0.8f, 0.8f, 0.6f));  // Gris claro con 60% de transparencia
         pixmap.fill();
         TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
 
         Image background = new Image(backgroundDrawable);
-        background.setPosition((Gdx.graphics.getWidth() - background.getWidth()) / 2, 100); // Centramos el fondo en la pantalla
+        background.setPosition((Gdx.graphics.getWidth() - background.getWidth()) / 2, 65); // Centramos el fondo en la pantalla
         stage.addActor(background);
 
         // Crear estilo para Label
@@ -170,6 +171,18 @@ public class PlayerPerfilScreen implements Screen {
         });
         table.add(logOutButton).size(200, 50).padBottom(10);
 
+        // Botón para borrar el perfil
+        TextButton deleteProfileButton = new TextButton("Borrar Perfil", buttonStyle);
+        deleteProfileButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showDeleteProfileDialog();
+            }
+        });
+        table.row();
+        table.add(deleteProfileButton).size(200, 50).padBottom(10);
+
+
 
         // Agregar la tabla al stage
         stage.addActor(table);
@@ -204,6 +217,94 @@ public class PlayerPerfilScreen implements Screen {
     public void hide() {
 
     }
+    private void showDeleteProfileDialog() {
+        // Crear estilo del diálogo
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(500, 300, Color.VIOLET, 1f)));
+
+        Dialog deleteDialog = new Dialog("", dialogStyle);
+
+
+        // Crear estilos para  campos de texto
+        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
+        textFieldStyle.font = font;
+        textFieldStyle.fontColor = Color.WHITE;
+        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 80, Color.DARK_GRAY, 0.8f)));
+
+        // Crear campo para ingresar contraseña
+        TextField passwordField = new TextField("", textFieldStyle);
+        passwordField.setPasswordMode(true);
+        passwordField.setPasswordCharacter('*');
+
+
+        //Estilo para las etiquetas
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
+
+        // Etiqueta para mostrar mensajes de feedback
+        Label feedbackLabel = new Label("", labelStyle);
+        feedbackLabel.setWrap(false);
+        feedbackLabel.setAlignment(Align.center);
+
+
+        // Estilo para los botones
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = font;
+        buttonStyle.fontColor = Color.WHITE;
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 80, Color.DARK_GRAY, 0.7f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 80, Color.GRAY, 0.7f)));
+
+        // Botón de confirmar
+        TextButton confirmButton = new TextButton("Confirmar", buttonStyle);
+        confirmButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                String password = passwordField.getText().trim();
+
+                if (UserManager.verifyLogin(username, password)) {
+                    if (UserManager.deleteUser(username)) {
+                        feedbackLabel.setText("Perfil eliminado con éxito.");
+                        feedbackLabel.setColor(Color.GREEN);
+
+                        Timer.schedule(new Timer.Task() {
+                            @Override
+                            public void run() {
+                                Render.app.setScreen(new OpenScreen()); // Redirigir a la pantalla OpenScreen
+                            }
+                        }, 3);                    }
+                    else {
+                        feedbackLabel.setText("Error al eliminar el perfil.");
+                        feedbackLabel.setColor(Color.RED);
+                    }
+                } else {
+                    feedbackLabel.setText("Contraseña incorrecta.");
+                    feedbackLabel.setColor(Color.RED);
+                }
+
+            }
+        });
+
+        // Botón de cancelar
+        TextButton cancelButton = new TextButton("Cerrar", buttonStyle);
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                deleteDialog.hide();
+            }
+        });
+        deleteDialog.getContentTable().add(new Label("¿Estás seguro de borrar tu perfil?", labelStyle)).padBottom(5).padTop(25).row();
+        deleteDialog.getContentTable().add(new Label("Introduce tu contraseña:", labelStyle)).padBottom(5).row();
+        //deleteDialog.getContentTable().add(new Label("Contraseña", new Label.LabelStyle(font, Color.WHITE))).pad(5);
+        deleteDialog.getContentTable().add(passwordField).width(300).pad(5).padBottom(5).row();
+        deleteDialog.getContentTable().add(feedbackLabel).colspan(2).center().pad(10).row();
+        deleteDialog.getButtonTable().add(confirmButton).padBottom(10);
+        deleteDialog.getButtonTable().add(cancelButton).padBottom(10);
+
+        deleteDialog.show(stage);
+    }
 
     @Override
     public void dispose() {
@@ -217,4 +318,6 @@ public class PlayerPerfilScreen implements Screen {
         pixmap.fillRectangle(0, 20, width, height - 40);
         return pixmap;
     }
+
+
 }
