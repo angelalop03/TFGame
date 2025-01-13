@@ -13,3 +13,14 @@ VALUES ('Feyre', 'Archeron', 'player1@example.com', 'default_image.png', 0, 0, 3
 
 INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id)
 VALUES ('Nesta', 'Archeron', 'player2@example.com', 'Perfil_2.png', 0, 0, 4);
+
+
+INSERT INTO news (id, name, text, image)
+VALUES
+(1, 'News Title 1', 'This is the content of the first news item.', 'libgdx.png'),
+(2, 'News Title 2', 'Content for the second news item.', 'libgdx.png'),
+(3, 'News Title 3', 'Detailed content of the third news item.', 'libgdx.png');
+
+
+
+
