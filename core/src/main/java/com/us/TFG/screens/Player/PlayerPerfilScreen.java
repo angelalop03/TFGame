@@ -333,7 +333,7 @@ public class PlayerPerfilScreen implements Screen {
         confirmButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new LoginScreen());
+                Render.app.setScreen(new OpenScreen());
             }
         });
 

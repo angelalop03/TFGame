@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.screens.General.LoginScreen;
+import com.us.TFG.screens.General.OpenScreen;
 import com.us.TFG.screens.Player.ChangePasswordScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
@@ -193,7 +194,7 @@ public class AdminPerfilScreen implements Screen {
         confirmButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new LoginScreen());
+                Render.app.setScreen(new OpenScreen());
             }
         });
 
