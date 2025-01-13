@@ -127,9 +127,11 @@ public class AdminViewPlayersScreen implements Screen {
 
                 }
             });
-            table.add(editButton).width(150).pad(10).center();
+            table.add(editButton).width(100).pad(10).center();
 
             // Botón de Historial
+            Table actionTable = new Table();
+
             TextButton historyButton = new TextButton("Historial", buttonStyle);
             historyButton.addListener(new ClickListener() {
                 @Override
@@ -137,7 +139,18 @@ public class AdminViewPlayersScreen implements Screen {
                     //Render.app.setScreen(new HistorialScreen(player.getUsername())); // Cambia a la pantalla del historial
                 }
             });
-            table.add(historyButton).width(150).pad(10).center();
+            actionTable.add(historyButton).width(110).padRight(10);
+
+            TextButton deleteButton = new TextButton("Eliminar", buttonStyle);
+            deleteButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    showDeleteDialog(player);
+                }
+            });
+            actionTable.add(deleteButton).width(100);
+
+            table.add(actionTable).pad(10).center();
             table.row();
         }
 
@@ -392,6 +405,61 @@ public class AdminViewPlayersScreen implements Screen {
         passwordDialog.getContentTable().add(feedbackLabel).colspan(2).center().pad(10).row();
 
         passwordDialog.show(stage);
+    }
+
+    private void showDeleteDialog(PlayerManager.PlayerData player) {
+        // Crear un estilo para el diálogo
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 300, Color.RED, 1f)));
+
+        Dialog deleteDialog = new Dialog("", dialogStyle);
+
+        // Estilo para las etiquetas
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
+
+        // Crear contenido del diálogo
+        deleteDialog.text(new Label("¿Estás seguro de eliminar este perfil?", labelStyle)).pad(10);
+
+        // Estilo para los botones
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = font;
+        buttonStyle.fontColor = Color.WHITE;
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.DARK_GRAY, 0.7f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.GRAY, 0.7f)));
+
+        // Botón de Confirmar
+        TextButton confirmButton = new TextButton("Confirmar", buttonStyle);
+        confirmButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (UserManager.deleteUser(PlayerManager.getUsername(player.getId()))) {
+                    deleteDialog.hide();
+                    deleteDialog.remove();
+                    Render.app.setScreen(new AdminViewPlayersScreen(adminUsername)); // Actualizar la pantalla
+                } else {
+                    deleteDialog.text(new Label("Error al eliminar el perfil.", labelStyle)).pad(10);
+                }
+            }
+        });
+
+        // Botón de Cancelar
+        TextButton cancelButton = new TextButton("Cancelar", buttonStyle);
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                deleteDialog.hide();
+                deleteDialog.remove();
+            }
+        });
+
+        deleteDialog.getButtonTable().add(confirmButton).pad(10);
+        deleteDialog.getButtonTable().add(cancelButton).pad(10);
+
+        deleteDialog.show(stage);
     }
 
 
