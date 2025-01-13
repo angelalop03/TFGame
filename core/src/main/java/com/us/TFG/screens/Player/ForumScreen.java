@@ -3,18 +3,19 @@ package com.us.TFG.screens.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
@@ -66,41 +67,63 @@ public class ForumScreen implements Screen {
         // Crear la barra superior
         topBar = new TopBar(username, stage, font);
 
-        // Crear el contenedor para mostrar las noticias
-        Table newsTable = new Table();
-        newsTable.setFillParent(true);
-        newsTable.top().padTop(100);
+        // Añadir la barra superior al Stage
+        stage.addActor(topBar.getTopBar());
 
+        // Crear el contenedor principal
+        Table mainTable = new Table();
+        mainTable.setFillParent(true);
+
+
+        // Crear el contenedor para las noticias
+        Table newsTable = new Table();
+        newsTable.top().padTop(100); // Asegurarse de que las noticias no estén demasiado pegadas al `TopBar`
 
         // Obtener las noticias desde NewsManager
         List<NewsManager.NewsData> newsList = NewsManager.getAllNews();
 
-        // Crear un diseño vertical tipo feed
+        // Crear un diseño vertical tipo feed con solo la imagen y el título
         for (NewsManager.NewsData news : newsList) {
+            // Contenedor para cada noticia
+            Table newsContainer = new Table();
+
             // Mostrar imagen de la noticia
-            Texture newsImageTexture = new Texture(Gdx.files.internal(news.getImage()));
+            Texture newsImageTexture = new Texture(Gdx.files.internal("assets/photos/News/" + news.getImage()));
             Image newsImage = new Image(new TextureRegionDrawable(newsImageTexture));
-            newsImage.setSize(300, 300); // Tamaño de la imagen
-            newsTable.add(newsImage).center().pad(10).row();
+            newsImage.setSize(1000, 300);
 
             // Mostrar título de la noticia
             Label newsTitleLabel = new Label(news.getName(), new Label.LabelStyle(font, Color.WHITE));
-            newsTitleLabel.setFontScale(1.2f);
-            newsTable.add(newsTitleLabel).center().pad(5).row();
+            newsTitleLabel.setWrap(true); // Habilitar ajuste automático
+            newsTitleLabel.setAlignment(1); // Centrar el texto
+            newsContainer.add(newsImage).center().padTop(5).size(1000, 300).row();
+            newsContainer.add(newsTitleLabel).width(1000).center().pad(10).row(); // Establecer ancho fijo
 
-            // Mostrar contenido de la noticia
-            Label newsContentLabel = new Label(news.getText(), new Label.LabelStyle(font, Color.LIGHT_GRAY));
-            newsContentLabel.setWrap(true);
-            newsTable.add(newsContentLabel).width(Gdx.graphics.getWidth() * 0.8f).pad(10).row();
+            // Añadir listener para cambiar a la pantalla de detalle
+            newsContainer.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Render.app.setScreen(new NewsDetailScreen(username, news));
+                }
+            });
+
+            // Añadir el contenedor al Table principal
+            newsTable.add(newsContainer).padTop(5).center().pad(10).row();
         }
 
-        // Crear un ScrollPane para hacer que el feed sea desplazable
+        // Crear un ScrollPane para las noticias
         ScrollPane scrollPane = new ScrollPane(newsTable);
-        scrollPane.setFillParent(true);
+        scrollPane.setScrollingDisabled(true, false); // Permitir scroll solo vertical
+        scrollPane.setFadeScrollBars(false);
 
-        // Añadir el ScrollPane al stage
-        stage.addActor(scrollPane);
+        // Añadir el ScrollPane al contenedor principal debajo del TopBar
+        mainTable.add(scrollPane).fill().expand();
+
+        // Añadir el contenedor principal al stage
+        stage.addActor(mainTable);
     }
+
+
 
     @Override
     public void render(float delta) {
@@ -130,14 +153,5 @@ public class ForumScreen implements Screen {
     public void dispose() {
         stage.dispose();
         font.dispose();
-    }
-
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setBlending(Pixmap.Blending.SourceOver);
-        Color transparentColor = new Color(color.r, color.g, color.b, transparency);
-        pixmap.setColor(transparentColor);
-        pixmap.fillRectangle(0, 0, width, height);
-        return pixmap;
     }
 }
