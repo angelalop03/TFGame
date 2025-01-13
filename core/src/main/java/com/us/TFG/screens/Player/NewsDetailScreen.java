@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
@@ -70,6 +72,20 @@ public class NewsDetailScreen implements Screen {
         // Crear la barra superior
         topBar = new TopBar(username, stage, font);
 
+        // Crear la flecha de retroceso
+        Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setSize(100, 100); // Tamaño de la flecha
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150); // Posición en la esquina superior izquierda
+        backArrowButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new ForumScreen(username)); // Volver a ForumScreen
+            }
+        });
+
+
+
         // Crear el contenedor principal con scroll
         Table contentTable = new Table();
         contentTable.top(); // Asegurar que el contenido comienza desde arriba
@@ -85,7 +101,18 @@ public class NewsDetailScreen implements Screen {
         // Mostrar imagen de la noticia
         Texture newsImageTexture = new Texture(Gdx.files.internal("assets/photos/News/" + news.getImage()));
         Image newsImage = new Image(new TextureRegionDrawable(newsImageTexture));
-        contentTable.add(newsImage).center().size(900, 300).padTop(25).row();
+        // Calcular proporciones
+        float maxImageWidth = 800; // Ancho máximo deseado
+        float originalWidth = newsImageTexture.getWidth();
+        float originalHeight = newsImageTexture.getHeight();
+        float aspectRatio = originalHeight / originalWidth;
+
+        // Ajustar el tamaño manteniendo la relación de aspecto
+        float scaledWidth = maxImageWidth;
+        float scaledHeight = maxImageWidth * aspectRatio;
+
+        // Añadir imagen ajustada al contenedor
+        contentTable.add(newsImage).center().size(scaledWidth, scaledHeight).padTop(5).row();
 
         // Mostrar título de la noticia
         Label newsTitleLabel = new Label(news.getName(), new Label.LabelStyle(titleFont, Color.DARK_GRAY));
@@ -110,7 +137,10 @@ public class NewsDetailScreen implements Screen {
 
         // Añadir elementos al Stage
         stage.addActor(mainTable);
+        // Añadir la flecha al Stage
+        stage.addActor(backArrowButton);
     }
+
 
     @Override
     public void render(float delta) {

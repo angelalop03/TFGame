@@ -3,6 +3,7 @@ package com.us.TFG.screens.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -67,36 +68,50 @@ public class ForumScreen implements Screen {
         // Crear la barra superior
         topBar = new TopBar(username, stage, font);
 
-        // Añadir la barra superior al Stage
-        stage.addActor(topBar.getTopBar());
-
         // Crear el contenedor principal
         Table mainTable = new Table();
-        mainTable.setFillParent(true);
-
+        mainTable.padTop(60).setFillParent(true);
 
         // Crear el contenedor para las noticias
         Table newsTable = new Table();
-        newsTable.top().padTop(100); // Asegurarse de que las noticias no estén demasiado pegadas al `TopBar`
+        newsTable.top().padTop(50); // Asegurarse de que las noticias no estén demasiado pegadas al `TopBar`
 
         // Obtener las noticias desde NewsManager
         List<NewsManager.NewsData> newsList = NewsManager.getAllNews();
 
         // Crear un diseño vertical tipo feed con solo la imagen y el título
         for (NewsManager.NewsData news : newsList) {
-            // Contenedor para cada noticia
+            // Contenedor para cada noticia con fondo grisáceo
             Table newsContainer = new Table();
+
+            // Crear fondo grisáceo translúcido
+            Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+            pixmap.setColor(new Color(0.8f, 0.8f, 0.8f, 0.8f)); // Gris translúcido
+            pixmap.fill();
+            TextureRegionDrawable background = new TextureRegionDrawable(new Texture(pixmap));
+            pixmap.dispose();
+            newsContainer.setBackground(background);
 
             // Mostrar imagen de la noticia
             Texture newsImageTexture = new Texture(Gdx.files.internal("assets/photos/News/" + news.getImage()));
             Image newsImage = new Image(new TextureRegionDrawable(newsImageTexture));
-            newsImage.setSize(1000, 300);
+            // Calcular proporciones
+            float maxImageWidth = 800; // Ancho máximo deseado
+            float originalWidth = newsImageTexture.getWidth();
+            float originalHeight = newsImageTexture.getHeight();
+            float aspectRatio = originalHeight / originalWidth;
+
+            // Ajustar el tamaño manteniendo la relación de aspecto
+            float scaledWidth = maxImageWidth;
+            float scaledHeight = maxImageWidth * aspectRatio;
+
+            // Añadir imagen ajustada al contenedor
+            newsContainer.add(newsImage).center().size(scaledWidth, scaledHeight).padTop(5).row();
 
             // Mostrar título de la noticia
             Label newsTitleLabel = new Label(news.getName(), new Label.LabelStyle(font, Color.WHITE));
             newsTitleLabel.setWrap(true); // Habilitar ajuste automático
             newsTitleLabel.setAlignment(1); // Centrar el texto
-            newsContainer.add(newsImage).center().padTop(5).size(1000, 300).row();
             newsContainer.add(newsTitleLabel).width(1000).center().pad(10).row(); // Establecer ancho fijo
 
             // Añadir listener para cambiar a la pantalla de detalle
@@ -107,14 +122,15 @@ public class ForumScreen implements Screen {
                 }
             });
 
-            // Añadir el contenedor al Table principal
+            // Añadir el contenedor de noticias al Table principal
             newsTable.add(newsContainer).padTop(5).center().pad(10).row();
         }
 
         // Crear un ScrollPane para las noticias
         ScrollPane scrollPane = new ScrollPane(newsTable);
         scrollPane.setScrollingDisabled(true, false); // Permitir scroll solo vertical
-        scrollPane.setFadeScrollBars(false);
+        scrollPane.setScrollbarsVisible(true);
+        scrollPane.setScrollBarPositions(false,true);
 
         // Añadir el ScrollPane al contenedor principal debajo del TopBar
         mainTable.add(scrollPane).fill().expand();
@@ -122,8 +138,6 @@ public class ForumScreen implements Screen {
         // Añadir el contenedor principal al stage
         stage.addActor(mainTable);
     }
-
-
 
     @Override
     public void render(float delta) {
@@ -134,6 +148,7 @@ public class ForumScreen implements Screen {
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
+
 
     @Override
     public void resize(int width, int height) {
