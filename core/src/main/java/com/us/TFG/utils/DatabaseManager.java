@@ -2,6 +2,7 @@ package com.us.TFG.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.us.TFG.model.News;
 import com.us.TFG.model.Player;
 import com.us.TFG.model.User;
 
@@ -24,7 +25,8 @@ public class DatabaseManager {
             // Lista de clases que tienen anotaciones @Table
             List<Class<?>> tableClasses = Arrays.asList(
                 User.class,
-                Player.class
+                Player.class,
+                News.class
             );
 
             // Resetear todas las tablas al iniciar el juego

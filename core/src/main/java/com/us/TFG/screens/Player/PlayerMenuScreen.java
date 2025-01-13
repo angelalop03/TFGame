@@ -9,9 +9,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
@@ -91,6 +93,15 @@ public class PlayerMenuScreen implements Screen {
         historialButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 260);
         newsForumButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 180);
         instructionsButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 100);
+
+
+        //Boton para pantalla de cambio de contraseña
+        newsForumButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new ForumScreen(username));
+            }
+        });
 
         // Añadir los botones al stage
         stage.addActor(newGameButton);
