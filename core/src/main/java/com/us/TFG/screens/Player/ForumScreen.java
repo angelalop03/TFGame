@@ -79,6 +79,9 @@ public class ForumScreen implements Screen {
         // Obtener las noticias desde NewsManager
         List<NewsManager.NewsData> newsList = NewsManager.getAllNews();
 
+        // Invertir el orden de las noticias para que las más nuevas aparezcan primero
+        java.util.Collections.reverse(newsList);
+
         // Crear un diseño vertical tipo feed con solo la imagen y el título
         for (NewsManager.NewsData news : newsList) {
             // Contenedor para cada noticia con fondo grisáceo
