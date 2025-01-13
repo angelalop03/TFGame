@@ -43,6 +43,31 @@ public class NewsManager {
         return newsList;
     }
 
+    // Método para eliminar una noticia por su ID
+    public static boolean deleteNews(int newsId) {
+        String query = "DELETE FROM news WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, newsId);
+
+            int rowsAffected = stmt.executeUpdate();
+            stmt.close();
+
+            return rowsAffected > 0; // Retorna true si se eliminó una fila
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // Retorna false si ocurrió un error
+    }
+
+
     // Clase auxiliar para encapsular los datos de una noticia
     public static class NewsData {
         private final int id;
