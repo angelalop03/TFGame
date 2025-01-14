@@ -103,7 +103,7 @@ public class AdminNewsDetailScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Acción para editar la noticia
-                //Render.app.setScreen(new AdminEditNewsScreen(username, news));
+                Render.app.setScreen(new AdminEditNewsScreen(username, news));
             }
         });
 

@@ -1,5 +1,6 @@
 package com.us.TFG.manager;
 
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.us.TFG.MyTfgGame;
 
 import java.sql.Connection;
@@ -66,6 +67,33 @@ public class NewsManager {
 
         return false; // Retorna false si ocurrió un error
     }
+
+    public static boolean updateNews(int newsId, String newTitle, String newText, String newImage) {
+        String query = "UPDATE news SET name = ?, text = ?, image = ? WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, newTitle);
+            stmt.setString(2, newText);
+            stmt.setString(3, newImage);
+            stmt.setInt(4, newsId);
+
+            int rowsAffected = stmt.executeUpdate();
+            stmt.close();
+
+            return rowsAffected > 0; // Retorna true si se actualizó al menos una fila
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // Retorna false si ocurrió un error
+    }
+
 
 
     // Clase auxiliar para encapsular los datos de una noticia
