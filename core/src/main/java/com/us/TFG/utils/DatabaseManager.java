@@ -2,9 +2,7 @@ package com.us.TFG.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.us.TFG.model.News;
-import com.us.TFG.model.Player;
-import com.us.TFG.model.User;
+import com.us.TFG.model.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -26,7 +24,11 @@ public class DatabaseManager {
             List<Class<?>> tableClasses = Arrays.asList(
                 User.class,
                 Player.class,
-                News.class
+                News.class,
+                Game.class,
+                Chapter.class,
+                Scene.class,
+                Option.class
             );
 
             // Resetear todas las tablas al iniciar el juego
