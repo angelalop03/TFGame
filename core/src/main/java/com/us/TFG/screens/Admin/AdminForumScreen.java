@@ -82,7 +82,7 @@ public class AdminForumScreen implements Screen {
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Render.app.setScreen(new CreateNewsScreen(username));
+                Render.app.setScreen(new AdminCreateNewsScreen(username));
             }
         });
 

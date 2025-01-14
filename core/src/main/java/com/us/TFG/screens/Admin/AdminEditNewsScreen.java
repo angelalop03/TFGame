@@ -64,6 +64,18 @@ public class AdminEditNewsScreen implements Screen {
         // Crear y agregar la barra superior
         topBar = new TopBar(username, stage, font);
 
+        // Crear flecha para volver
+        Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
+        backArrowButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminNewsDetailScreen(username,news));
+            }
+        });
+
         // Estilos
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = font;
@@ -145,6 +157,8 @@ public class AdminEditNewsScreen implements Screen {
         scrollPane.setFillParent(true);
         scrollPane.setFadeScrollBars(false);
         stage.addActor(scrollPane);
+        stage.addActor(backArrowButton);
+
     }
 
     @Override

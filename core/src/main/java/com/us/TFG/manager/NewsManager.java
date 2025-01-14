@@ -95,6 +95,31 @@ public class NewsManager {
     }
 
 
+    // Método para crear una nueva noticia
+    public static boolean createNews(String title, String text, String image) {
+        String query = "INSERT INTO news (name, text, image) VALUES (?, ?, ?)";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, title);
+            stmt.setString(2, text);
+            stmt.setString(3, image);
+
+            int rowsAffected = stmt.executeUpdate();
+            stmt.close();
+
+            return rowsAffected > 0; // Retorna true si se insertó al menos una fila
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // Retorna false si ocurrió un error
+    }
 
     // Clase auxiliar para encapsular los datos de una noticia
     public static class NewsData {
