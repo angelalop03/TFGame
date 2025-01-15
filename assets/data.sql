@@ -24,8 +24,12 @@ VALUES
 -- "Game base" en la tabla games
 INSERT INTO games (name, current_chapter, current_scene, player_id, start_date, last_activity_date, state, total_score)
 VALUES
-('Aventura Inicial', 1, 1, 3, '2025-01-01', '2025-01-01', 'IN_PROGRESS', 0),
-('El Misterio Oscuro', 2, 5, 4, '2025-01-05', '2025-01-06', 'PAUSED', 100);
+('Partida1', 1, 1, 1, '1736965255031', '1736965255031', 'IN_PROGRESS', 0),
+('Partida2', 1, 1, 1, '1736965255031', '1736965255031', 'IN_PROGRESS', 0),
+('Partida3', 1, 1, 1, '1736965255031', '1736965255031', 'IN_PROGRESS', 0),
+('Partida4', 1, 1, 1, '1736965255031', '1736965255031', 'IN_PROGRESS', 0),
+
+('El Misterio Oscuro', 2, 5, 2, '1736965255031', '1736965255031', 'PAUSED', 100);
 
 -- Capítulos base
 INSERT INTO chapters (id, name, chapter_number,game_id)

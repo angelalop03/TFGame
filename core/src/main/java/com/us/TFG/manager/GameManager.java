@@ -7,7 +7,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class GameManager {
 
@@ -139,6 +141,44 @@ public class GameManager {
 
 
 
+    public static List<Game> getGamesForPlayer(int playerId) {
+        List<Game> games = new ArrayList<>();
+
+        String query = "SELECT id, name, player_id, start_date, last_activity_date, state, total_score, " +
+            "current_chapter, current_scene " +
+            "FROM games " +
+            "WHERE player_id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, playerId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Game game = new Game(rs.getString("name"), rs.getInt("player_id"));
+                    game.setId(rs.getInt("id"));
+                    game.setStartDate(rs.getDate("start_date"));
+                    game.setLastActivityDate(rs.getDate("last_activity_date"));
+                    game.setState(GameState.valueOf(rs.getString("state")));
+                    game.setTotalScore(rs.getInt("total_score"));
+                    game.setCurrentChapterId(rs.getInt("current_chapter"));
+                    game.setCurrentSceneId(rs.getInt("current_scene"));
+
+                    games.add(game);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return games;
+    }
+
 
 
     //RESTRICCIONES
@@ -164,4 +204,6 @@ public class GameManager {
 
         return false;
     }
+
+
 }
