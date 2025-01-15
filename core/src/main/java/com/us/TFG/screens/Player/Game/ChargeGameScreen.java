@@ -118,6 +118,13 @@ public class ChargeGameScreen implements Screen {
             Label gameNameLabel = new Label(game.getName(), labelStyle);
             cardTable.add(gameNameLabel).center().pad(10);
 
+            cardTable.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Render.app.setScreen(new ChapterCatalogScreen(username, game.getId()));
+                }
+            });
+
             contentTable.add(cardTable).width(300).height(200).padTop(50).colspan(3);
         } else {
             // Flecha izquierda
@@ -155,6 +162,14 @@ public class ChargeGameScreen implements Screen {
                 cardTable.setBackground(new TextureRegionDrawable(new Texture("assets/photos/FondoPartidas.png")));
                 Label gameNameLabel = new Label(game.getName(), labelStyle);
                 cardTable.add(gameNameLabel).center().pad(10);
+
+                cardTable.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        Render.app.setScreen(new ChapterCatalogScreen(username, game.getId()));
+                    }
+                });
+
                 carouselTable.add(cardTable).width(300).height(200).pad(20);
             }
 

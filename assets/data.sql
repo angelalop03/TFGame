@@ -32,10 +32,29 @@ VALUES
 ('El Misterio Oscuro', 2, 5, 2, '1736965255031', '1736965255031', 'PAUSED', 100);
 
 -- Capítulos base
-INSERT INTO chapters (id, name, chapter_number,game_id)
+INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state)
 VALUES
-(1, 'El Inicio de la Aventura', 1,1),
-(2, 'El Misterio se Profundiza', 2,1);
+    ('Inicio', '1', 'path/to/image1.png', NULL),
+    ('Avance', '2', 'path/to/image2.png', NULL),
+    ('Conflicto', '3', 'path/to/image3.png', NULL),
+    ('Resolución', '4', 'path/to/image4.png', NULL),
+    ('Final', '5', 'path/to/image5.png', NULL),
+    ('Bifurcación 1', '6.1', 'path/to/image6_1.png', 'CONFIDENCE'),
+    ('Bifurcación 2', '6.2', 'path/to/image6_2.png', 'LOW_TENSION'),
+    ('Bifurcación 3', '6.3', 'path/to/image6_3.png', 'HIGH_TENSION'),
+    ('Bifurcación 4', '6.4', 'path/to/image6_4.png', 'CRITICAL');
+
+INSERT INTO player_chapter_state (player_id, chapter_id, played, unlocked)
+VALUES
+    (1, 1, false, true),
+    (1, 2, false, false),
+    (1, 3, false, false),
+    (1, 4, false, false),
+    (1, 5, false, false),
+    (1, 6, false, false),
+    (1, 7, false, false),
+    (1, 8, false, false),
+    (1, 9, false, false);
 
 -- Escenas base, sustituir por las de verdad
 INSERT INTO scenes (id, name, description, image_url, chapter_id)

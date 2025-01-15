@@ -12,17 +12,21 @@ public class Chapter {
     @Column(name = "name", type = "TEXT", notNull = true)
     private String name; // Nombre del capítulo
 
-    @Column(name = "chapter_number", type = "INTEGER", notNull = true)
-    private int chapterNumber; // Número del capítulo
+    @Column(name = "chapter_number", type = "TEXT", notNull = true)
+    private String chapterNumber; // Número del capítulo (e.g., 6.1, 6.2)
 
-    @Column(name = "game_id", type = "INTEGER", notNull = true) // Relación con el juego (clave foránea)
-    private int gameId;
+    @Column(name = "image_path", type = "TEXT")
+    private String imagePath; // Ruta de la imagen asociada al capítulo
+
+    @Column(name = "required_relationship_state", type = "TEXT")
+    private String requiredRelationshipState; // Estado de relación necesario para desbloquear el capítulo
 
     // Constructor principal
-    public Chapter(String name, int chapterNumber, int gameId) {
+    public Chapter(String name, String chapterNumber, String imagePath, String requiredRelationshipState) {
         this.name = name;
         this.chapterNumber = chapterNumber;
-        this.gameId = gameId;
+        this.imagePath = imagePath;
+        this.requiredRelationshipState = requiredRelationshipState;
     }
 
     // Constructor vacío
@@ -45,20 +49,28 @@ public class Chapter {
         this.name = name;
     }
 
-    public int getChapterNumber() {
+    public String getChapterNumber() {
         return chapterNumber;
     }
 
-    public void setChapterNumber(int chapterNumber) {
+    public void setChapterNumber(String chapterNumber) {
         this.chapterNumber = chapterNumber;
     }
 
-    public int getGameId() {
-        return gameId;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setGameId(int gameId) {
-        this.gameId = gameId;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public String getRequiredRelationshipState() {
+        return requiredRelationshipState;
+    }
+
+    public void setRequiredRelationshipState(String requiredRelationshipState) {
+        this.requiredRelationshipState = requiredRelationshipState;
     }
 
     @Override
@@ -66,8 +78,9 @@ public class Chapter {
         return "Chapter{" +
             "id=" + id +
             ", name='" + name + '\'' +
-            ", chapterNumber=" + chapterNumber +
-            ", gameId=" + gameId +
+            ", chapterNumber='" + chapterNumber + '\'' +
+            ", imagePath='" + imagePath + '\'' +
+            ", requiredRelationshipState='" + requiredRelationshipState + '\'' +
             '}';
     }
 }

@@ -27,6 +27,7 @@ public class DatabaseManager {
                 News.class,
                 Game.class,
                 Chapter.class,
+                PlayerChapterState.class,
                 Scene.class,
                 Option.class
             );
