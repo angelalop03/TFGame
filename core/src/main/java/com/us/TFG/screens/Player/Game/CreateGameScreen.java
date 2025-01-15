@@ -125,19 +125,27 @@ public class CreateGameScreen implements Screen {
                     feedbackLabel.setText("Por favor, introduce un nombre para el juego.");
                     feedbackLabel.setColor(Color.RED);
                 } else {
-                    GameManager.createGame(gameName, PlayerManager.getPlayerData(username).getId());
-                    feedbackLabel.setText("Juego creado con éxito.");
-                    feedbackLabel.setColor(Color.GREEN);
+                    if (!GameManager.doesGameExist(gameName,PlayerManager.getPlayerData(username).getId())) {
+                        GameManager.createGame(gameName, PlayerManager.getPlayerData(username).getId());
+                        feedbackLabel.setText("Juego creado con éxito.");
+                        feedbackLabel.setColor(Color.GREEN);
 
-                    Gdx.app.postRunnable(() -> {
-                        try {
-                            Thread.sleep(3000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        //Que te lleve al catalogo de capitulos
-                        Render.app.setScreen(new PlayerMenuScreen(username));
-                    });
+                        Gdx.app.postRunnable(() -> {
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            //Que te lleve al catalogo de capitulos
+                            Render.app.setScreen(new PlayerMenuScreen(username));
+                        });
+                    }else{
+                        feedbackLabel.setText("Ya existe una partida con ese nombre" + gameName);
+                        feedbackLabel.setColor(Color.RED);
+
+                    }
+
+
                 }
             }
         });

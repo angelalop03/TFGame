@@ -5,12 +5,16 @@ import com.us.TFG.model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
 public class GameManager {
 
     public static Game createGame(String name, int playerId) {
+
+
+        // Crear el objeto Game
         Game game = new Game(name, playerId);
         game.setStartDate(new Date());
         game.setLastActivityDate(new Date());
@@ -18,7 +22,7 @@ public class GameManager {
         game.setTotalScore(0);
 
         String query = "INSERT INTO games (name, player_id, start_date, last_activity_date, state, total_score) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+            "VALUES (?, ?, ?, ?, ?, ?)";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
@@ -46,6 +50,9 @@ public class GameManager {
 
         return game;
     }
+
+
+
 
     // Avanzar a la siguiente escena
     public static void advanceScene(Game game) {
@@ -128,5 +135,33 @@ public class GameManager {
         // Devuelve el ID de la primera escena del capítulo o -1 si no existe
         System.out.println("Buscando la primera escena en el capítulo ID: " + chapterId);
         return chapterId * 100 + 1; // Ejemplo
+    }
+
+
+
+
+
+    //RESTRICCIONES
+    // Método auxiliar para verificar si ya existe un juego con el mismo nombre para el jugador
+    public static boolean doesGameExist(String name, int playerId) {
+        String query = "SELECT 1 FROM games WHERE name = ? AND player_id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, name);
+            stmt.setInt(2, playerId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // Si hay resultados, el juego ya existe
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
