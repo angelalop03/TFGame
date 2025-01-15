@@ -1,12 +1,15 @@
 package com.us.TFG.manager;
 
+import com.us.TFG.MyTfgGame;
 import com.us.TFG.model.*;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class GameManager {
 
-    // Crear una nueva partida
     public static Game createGame(String name, int playerId) {
         Game game = new Game(name, playerId);
         game.setStartDate(new Date());
@@ -14,8 +17,32 @@ public class GameManager {
         game.setState(GameState.IN_PROGRESS);
         game.setTotalScore(0);
 
-        // Simulación de persistencia (debería insertarse en la base de datos)
-        System.out.println("Juego creado: " + game);
+        String query = "INSERT INTO games (name, player_id, start_date, last_activity_date, state, total_score) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, game.getName());
+            stmt.setInt(2, game.getPlayerId());
+            stmt.setDate(3, new java.sql.Date(game.getStartDate().getTime()));
+            stmt.setDate(4, new java.sql.Date(game.getLastActivityDate().getTime()));
+            stmt.setString(5, game.getState().toString());
+            stmt.setInt(6, game.getTotalScore());
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Juego creado y guardado en la base de datos: " + game);
+            } else {
+                System.err.println("Error al guardar el juego en la base de datos.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         return game;
     }

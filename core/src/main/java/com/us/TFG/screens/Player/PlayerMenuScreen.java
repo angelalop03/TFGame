@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
+import com.us.TFG.screens.Player.Game.CreateGameScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -94,8 +95,15 @@ public class PlayerMenuScreen implements Screen {
         newsForumButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 180);
         instructionsButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 100);
 
+        //Boton para Foro
+        newGameButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new CreateGameScreen(username));
+            }
+        });
 
-        //Boton para pantalla de cambio de contraseña
+        //Boton para Foro
         newsForumButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

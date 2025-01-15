@@ -1,16 +1,13 @@
 INSERT INTO users (username, password, authority) VALUES ('Admin1', '$2a$10$CJNLaQiaItzVV2v5ZmQH3.nDYohoZEg5MrUgFdlKjI1IeKxE./WRG', 1);
-
 INSERT INTO users (username, password, authority) VALUES ('Admin2', '$2a$10$CJNLaQiaItzVV2v5ZmQH3.nDYohoZEg5MrUgFdlKjI1IeKxE./WRG', 1);
 
 
 INSERT INTO users (username, password, authority) VALUES ('Player1', '$2a$10$UhRcQWnxgZ1cZF5H76yE7eJGEcF1WDpqWI8RpKYnL.kbmKHZNf0EW', 2);
-
 INSERT INTO users (username, password, authority) VALUES ('Player2', '$2a$10$UhRcQWnxgZ1cZF5H76yE7eJGEcF1WDpqWI8RpKYnL.kbmKHZNf0EW', 2);
 
 
 INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id)
 VALUES ('Feyre', 'Archeron', 'player1@example.com', 'default_image.png', 0, 0, 3);
-
 INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id)
 VALUES ('Nesta', 'Archeron', 'player2@example.com', 'Perfil_2.png', 0, 0, 4);
 
@@ -23,4 +20,29 @@ VALUES
 
 
 
+
+-- "Game base" en la tabla games
+INSERT INTO games (name, current_chapter, current_scene, player_id, start_date, last_activity_date, state, total_score)
+VALUES
+('Aventura Inicial', 1, 1, 3, '2025-01-01', '2025-01-01', 'IN_PROGRESS', 0),
+('El Misterio Oscuro', 2, 5, 4, '2025-01-05', '2025-01-06', 'PAUSED', 100);
+
+-- Capítulos base
+INSERT INTO chapters (id, name, chapter_number,game_id)
+VALUES
+(1, 'El Inicio de la Aventura', 1,1),
+(2, 'El Misterio se Profundiza', 2,1);
+
+-- Escenas base, sustituir por las de verdad
+INSERT INTO scenes (id, name, description, image_url, chapter_id)
+VALUES
+(1, 'La Llegada al Pueblo', 'El héroe llega a un pueblo tranquilo, pero algo extraño sucede.', 'TFG-A.png', 1),
+(2, 'La Casa Misteriosa', 'Una casa abandonada en el bosque esconde secretos.', 'TFG-A.png', 1),
+(5, 'La Sombra del Pasado', 'El protagonista enfrenta recuerdos oscuros.', 'TFG-A.png', 2);
+
+-- Opciones base
+INSERT INTO options (id, text, points_impact, relationship_impact, next_scene_id, scene_id)
+VALUES
+(1, 'Entrar a la casa', 5, 0, 2, 1),
+(2, 'Volver al pueblo', -3, 0, 1, 1);
 
