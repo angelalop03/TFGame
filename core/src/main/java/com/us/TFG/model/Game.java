@@ -2,6 +2,8 @@ package com.us.TFG.model;
 
 import com.us.TFG.annotations.Column;
 import com.us.TFG.annotations.Table;
+import com.us.TFG.screens.Player.Game.PsychologicalState;
+import com.us.TFG.screens.Player.Game.RelationshipState;
 
 import java.util.Date;
 
@@ -14,23 +16,23 @@ public class Game {
     @Column(name = "name", type = "TEXT", notNull = true)
     private String name;  // Nombre del juego
 
-    @Column(name = "current_chapter_id", type = "INTEGER", notNull = true, defaultValue = "0") // Relación con el capítulo actual (clave foránea)
+    @Column(name = "current_chapter_id", type = "INTEGER", notNull = true, defaultValue = "0")
     private int currentChapterId;
 
-    @Column(name = "current_scene_id", type = "INTEGER", notNull = true, defaultValue = "0") // Relación con la escena actual (clave foránea)
+    @Column(name = "current_scene_id", type = "INTEGER", notNull = true, defaultValue = "0")
     private int currentSceneId;
 
-    @Column(name = "current_decision_id", type = "INTEGER", notNull = true, defaultValue = "0") // Relación con la decisión actual (clave foránea)
+    @Column(name = "current_decision_id", type = "INTEGER", notNull = true, defaultValue = "0")
     private int currentDecisionId;
 
-    @Column(name = "player_id", type = "INTEGER", notNull = true) // Relación con el jugador (clave foránea)
+    @Column(name = "player_id", type = "INTEGER", notNull = true)
     private int playerId;
 
     @Column(name = "start_date", type = "DATE", notNull = true)
     private Date startDate;  // Fecha de inicio de la partida
 
     @Column(name = "state", type = "TEXT", notNull = true, defaultValue = "'IN_PROGRESS'")
-    private GameState state;  // Estado del juego (En curso, Completado, Pausado)
+    private GameState state;  // Estado del juego
 
     @Column(name = "points_m", type = "INTEGER", notNull = true, defaultValue = "0")
     private int pointsM; // Puntos emocionales/morales
@@ -42,7 +44,7 @@ public class Game {
     public Game(String name, int playerId) {
         this.name = name;
         this.playerId = playerId;
-        this.startDate = new Date(); // Fecha de creación
+        this.startDate = new Date();
         this.state = GameState.IN_PROGRESS;
         this.pointsM = 0;
         this.pointsR = 0;
@@ -53,6 +55,31 @@ public class Game {
 
     // Constructor vacío
     public Game() {}
+
+    // Métodos para calcular los estados basados en los puntos
+    public PsychologicalState getPsychologicalState() {
+        if (pointsM >= 0 && pointsM < 25) {
+            return PsychologicalState.STABLE;
+        } else if (pointsM >= 25 && pointsM < 50) {
+            return PsychologicalState.SLIGHTLY_ANXIOUS;
+        } else if (pointsM >= 50 && pointsM < 75) {
+            return PsychologicalState.ANXIOUS;
+        } else {
+            return PsychologicalState.DISTRESSED;
+        }
+    }
+
+    public RelationshipState getRelationshipState() {
+        if (pointsR >= 0 && pointsR < 30) {
+            return RelationshipState.CONFIDENT;
+        } else if (pointsR >= 30 && pointsR < 60) {
+            return RelationshipState.LOW_TENSION;
+        } else if (pointsR >= 60 && pointsR < 80) {
+            return RelationshipState.HIGH_TENSION;
+        } else {
+            return RelationshipState.CRITICAL;
+        }
+    }
 
     // Getters y Setters
     public int getId() {
@@ -148,6 +175,8 @@ public class Game {
             ", state=" + state +
             ", pointsM=" + pointsM +
             ", pointsR=" + pointsR +
+            ", psychologicalState=" + getPsychologicalState() +
+            ", relationshipState=" + getRelationshipState() +
             '}';
     }
 }
