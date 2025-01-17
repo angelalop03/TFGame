@@ -14,11 +14,14 @@ public class Game {
     @Column(name = "name", type = "TEXT", notNull = true)
     private String name;  // Nombre del juego
 
-    @Column(name = "current_chapter", type = "INTEGER") // Relación con el capítulo actual (clave foránea)
+    @Column(name = "current_chapter_id", type = "INTEGER", notNull = true, defaultValue = "0") // Relación con el capítulo actual (clave foránea)
     private int currentChapterId;
 
-    @Column(name = "current_scene", type = "INTEGER") // Relación con la escena actual (clave foránea)
+    @Column(name = "current_scene_id", type = "INTEGER", notNull = true, defaultValue = "0") // Relación con la escena actual (clave foránea)
     private int currentSceneId;
+
+    @Column(name = "current_decision_id", type = "INTEGER", notNull = true, defaultValue = "0") // Relación con la decisión actual (clave foránea)
+    private int currentDecisionId;
 
     @Column(name = "player_id", type = "INTEGER", notNull = true) // Relación con el jugador (clave foránea)
     private int playerId;
@@ -26,23 +29,26 @@ public class Game {
     @Column(name = "start_date", type = "DATE", notNull = true)
     private Date startDate;  // Fecha de inicio de la partida
 
-    @Column(name = "last_activity_date", type = "DATE", notNull = true)
-    private Date lastActivityDate;  // Fecha de la última actividad
-
     @Column(name = "state", type = "TEXT", notNull = true, defaultValue = "'IN_PROGRESS'")
     private GameState state;  // Estado del juego (En curso, Completado, Pausado)
 
-    @Column(name = "total_score", type = "INTEGER", defaultValue = "0")
-    private int totalScore;  // Puntaje acumulado
+    @Column(name = "points_m", type = "INTEGER", notNull = true, defaultValue = "0")
+    private int pointsM; // Puntos emocionales/morales
+
+    @Column(name = "points_r", type = "INTEGER", notNull = true, defaultValue = "0")
+    private int pointsR; // Puntos de relación
 
     // Constructor principal
     public Game(String name, int playerId) {
         this.name = name;
         this.playerId = playerId;
         this.startDate = new Date(); // Fecha de creación
-        this.lastActivityDate = new Date();
         this.state = GameState.IN_PROGRESS;
-        this.totalScore = 0;
+        this.pointsM = 0;
+        this.pointsR = 0;
+        this.currentChapterId = 0;
+        this.currentSceneId = 0;
+        this.currentDecisionId = 0;
     }
 
     // Constructor vacío
@@ -81,6 +87,14 @@ public class Game {
         this.currentSceneId = currentSceneId;
     }
 
+    public int getCurrentDecisionId() {
+        return currentDecisionId;
+    }
+
+    public void setCurrentDecisionId(int currentDecisionId) {
+        this.currentDecisionId = currentDecisionId;
+    }
+
     public int getPlayerId() {
         return playerId;
     }
@@ -97,14 +111,6 @@ public class Game {
         this.startDate = startDate;
     }
 
-    public Date getLastActivityDate() {
-        return lastActivityDate;
-    }
-
-    public void setLastActivityDate(Date lastActivityDate) {
-        this.lastActivityDate = lastActivityDate;
-    }
-
     public GameState getState() {
         return state;
     }
@@ -113,12 +119,20 @@ public class Game {
         this.state = state;
     }
 
-    public int getTotalScore() {
-        return totalScore;
+    public int getPointsM() {
+        return pointsM;
     }
 
-    public void setTotalScore(int totalScore) {
-        this.totalScore = totalScore;
+    public void setPointsM(int pointsM) {
+        this.pointsM = pointsM;
+    }
+
+    public int getPointsR() {
+        return pointsR;
+    }
+
+    public void setPointsR(int pointsR) {
+        this.pointsR = pointsR;
     }
 
     @Override
@@ -128,11 +142,12 @@ public class Game {
             ", name='" + name + '\'' +
             ", currentChapterId=" + currentChapterId +
             ", currentSceneId=" + currentSceneId +
+            ", currentDecisionId=" + currentDecisionId +
             ", playerId=" + playerId +
             ", startDate=" + startDate +
-            ", lastActivityDate=" + lastActivityDate +
-            ", state='" + state + '\'' +
-            ", totalScore=" + totalScore +
+            ", state=" + state +
+            ", pointsM=" + pointsM +
+            ", pointsR=" + pointsR +
             '}';
     }
 }

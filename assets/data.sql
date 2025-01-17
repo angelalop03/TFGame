@@ -22,14 +22,13 @@ VALUES
 
 
 -- "Game base" en la tabla games
-INSERT INTO games (name, current_chapter, current_scene, player_id, start_date, last_activity_date, state, total_score)
+INSERT INTO games (name, current_chapter_id, current_scene_id, current_decision_id, player_id, start_date, state, points_m, points_r)
 VALUES
-('Partida1', 1, 1, 1, '1736965255031', '1736965255031', 'IN_PROGRESS', 0),
-('Partida2', 1, 1, 1, '1736965255031', '1736965255031', 'IN_PROGRESS', 0),
-('Partida3', 1, 1, 1, '1736965255031', '1736965255031', 'IN_PROGRESS', 0),
-('Partida4', 1, 1, 1, '1736965255031', '1736965255031', 'IN_PROGRESS', 0),
+('Partida1', 1, 1, 0, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida2', 1, 1, 0, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida3', 1, 1, 0, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida4', 2, 5, 3, 2, '1736965255031', 'PAUSED', 50, 25);
 
-('El Misterio Oscuro', 2, 5, 2, '1736965255031', '1736965255031', 'PAUSED', 100);
 
 -- Capítulos base
 INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state)
@@ -44,17 +43,17 @@ VALUES
     ('Bifurcación 3', '6.3', 'path/to/image6_3.png', 'HIGH_TENSION'),
     ('Bifurcación 4', '6.4', 'path/to/image6_4.png', 'CRITICAL');
 
-INSERT INTO player_chapter_state (player_id, chapter_id, played, unlocked)
+INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked)
 VALUES
-    (1, 1, false, true),
-    (1, 2, false, false),
-    (1, 3, false, false),
-    (1, 4, false, false),
-    (1, 5, false, false),
-    (1, 6, false, false),
-    (1, 7, false, false),
-    (1, 8, false, false),
-    (1, 9, false, false);
+    (1, 1,1, false, true),
+    (1, 2,1, false, true),
+    (1, 3,1, false, true),
+    (1, 4,1, false, true),
+    (1, 5,1, false, true),
+    (1, 6,1, false, true),
+    (1, 7,1, false, true),
+    (1, 8,1, false, true),
+    (1, 9,1, false, true);
 
 -- Escenas base, sustituir por las de verdad
 INSERT INTO scenes (id, name, description, image_url, chapter_id)
