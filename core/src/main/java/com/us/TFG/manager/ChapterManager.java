@@ -19,13 +19,13 @@ public class ChapterManager {
      * @param playerId ID del jugador.
      * @return Lista de capítulos desbloqueados.
      */
-    public static List<Chapter> getChaptersForPlayer(int playerId) {
+    public static List<Chapter> getChaptersForPlayerandGame(int playerId, int gameId) {
         List<Chapter> unlockedChapters = new ArrayList<>();
 
         String query = "SELECT c.id, c.name, c.chapter_number, c.image_path, c.required_relationship_state " +
             "FROM chapters c " +
             "JOIN player_chapter_state pcs ON c.id = pcs.chapter_id " +
-            "WHERE pcs.player_id = ? AND pcs.unlocked = true";
+            "WHERE pcs.player_id = ? AND pcs.game_id= ? AND pcs.unlocked = true";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
@@ -35,6 +35,7 @@ public class ChapterManager {
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, playerId);
+            stmt.setInt(2,gameId);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {

@@ -15,6 +15,9 @@ public class PlayerChapterState {
     @Column(name = "chapter_id", type = "INTEGER", notNull = true)
     private int chapterId; // ID del capítulo asociado
 
+    @Column(name = "game_id", type = "INTEGER", notNull = true)
+    private int gameId; // ID del juego asociado
+
     @Column(name = "played", type = "BOOLEAN", notNull = true, defaultValue = "false")
     private boolean played; // Indica si el capítulo ha sido jugado
 
@@ -22,9 +25,10 @@ public class PlayerChapterState {
     private boolean unlocked; // Indica si el capítulo está desbloqueado
 
     // Constructor principal
-    public PlayerChapterState(int playerId, int chapterId, boolean played, boolean unlocked) {
+    public PlayerChapterState(int playerId, int chapterId, int gameId, boolean played, boolean unlocked) {
         this.playerId = playerId;
         this.chapterId = chapterId;
+        this.gameId = gameId;
         this.played = played;
         this.unlocked = unlocked;
     }
@@ -57,6 +61,14 @@ public class PlayerChapterState {
         this.chapterId = chapterId;
     }
 
+    public int getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(int gameId) {
+        this.gameId = gameId;
+    }
+
     public boolean isPlayed() {
         return played;
     }
@@ -79,6 +91,7 @@ public class PlayerChapterState {
             "id=" + id +
             ", playerId=" + playerId +
             ", chapterId=" + chapterId +
+            ", gameId=" + gameId +
             ", played=" + played +
             ", unlocked=" + unlocked +
             '}';

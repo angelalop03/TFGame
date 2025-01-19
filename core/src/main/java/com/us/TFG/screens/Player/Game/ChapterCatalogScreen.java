@@ -18,13 +18,11 @@ import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.ChapterManager;
 import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.model.Chapter;
-import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
 import com.us.TFG.utils.TopBar;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChapterCatalogScreen implements Screen {
@@ -35,9 +33,12 @@ public class ChapterCatalogScreen implements Screen {
     private Imagen fondo;
     private BitmapFont font;
     private TopBar topBar;
-    private Label feedbackLabel;
     private String username;
     private int gameId;
+    private int currentPage = 0;
+    private static final int CHAPTERS_PER_PAGE = 5;
+    private static final int MAX_UNLOCKED_CHAPTERS = 10;
+    private List<Chapter> chapters;
 
     public ChapterCatalogScreen(String username, int gameId) {
         this.username = username;
@@ -70,6 +71,22 @@ public class ChapterCatalogScreen implements Screen {
         // Crear y agregar la barra superior
         topBar = new TopBar(username, stage, font);
 
+
+        // Obtener los capítulos desbloqueados
+        chapters = ChapterManager.getChaptersForPlayerandGame(PlayerManager.getPlayerData(username).getId(), gameId);
+
+        // Renderizar la primera página
+        renderPage();
+
+    }
+
+    private void renderPage() {
+        stage.clear();
+
+        // Fondo y top bar
+        topBar = new TopBar(username, stage, font);
+
+
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
         ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
@@ -82,52 +99,103 @@ public class ChapterCatalogScreen implements Screen {
             }
         });
 
-        // Crear el contenedor principal centrado con el recuadro grisáceo
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        stage.addActor(mainTable);
+        // Crear flechas
+        Texture flechaDTexture = new Texture(Gdx.files.internal("assets/photos/flechaD.png"));
+        ImageButton flechaDButton = new ImageButton(new TextureRegionDrawable(flechaDTexture));
+        flechaDButton.setSize(100, 100);
+        flechaDButton.setPosition(1150, Gdx.graphics.getHeight() - 700);
+
+        // Crear flechas
+        Texture flechaTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        ImageButton flechaButton = new ImageButton(new TextureRegionDrawable(flechaTexture));
+        flechaButton.setSize(100, 100);
+        flechaButton.setPosition(20, Gdx.graphics.getHeight() - 700);
+
+
+        // Crear tabla de capítulos
+        Table chapterTable = new Table();
+        chapterTable.setFillParent(true);
+        chapterTable.padTop(30).padLeft(150).padRight(150);
 
         // Estilos
-        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font;
-        textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(1000, 40, Color.GRAY, 0.8f)));
+        TextButton.TextButtonStyle unlockedButtonStyle = new TextButton.TextButtonStyle();
+        unlockedButtonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 100, Color.PURPLE, 1.0f)));
+        unlockedButtonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 100, Color.DARK_GRAY, 1.0f)));
+        unlockedButtonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 100, Color.LIGHT_GRAY, 1.0f)));
+        unlockedButtonStyle.fontColor = Color.WHITE;
+        unlockedButtonStyle.font = font;
 
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
+        TextButton.TextButtonStyle lockedButtonStyle = new TextButton.TextButtonStyle();
+        lockedButtonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 100, Color.GRAY, 0.5f)));
+        lockedButtonStyle.fontColor = Color.DARK_GRAY;
+        lockedButtonStyle.font = font;
 
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        buttonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.DARK_GRAY, 0.4f)));
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.font = font;
+        // Renderizar capítulos
+        int start = currentPage * CHAPTERS_PER_PAGE;
+        int end = Math.min(start + CHAPTERS_PER_PAGE, MAX_UNLOCKED_CHAPTERS);
 
-        // Obtener los capítulos del juego
-        List<Chapter> chapters =  ChapterManager.getChaptersForPlayer(PlayerManager.getPlayerData(username).getId());
+        for (int i = start; i < end; i++) {
+            Table chapterRow = new Table();
 
-        // Crear un scroll pane para listar los capítulos
-        Table chapterTable = new Table();
-        ScrollPane scrollPane = new ScrollPane(chapterTable);
-        scrollPane.setScrollingDisabled(true, false);
-        mainTable.add(scrollPane).expand().fill().pad(10);
+            if (i < chapters.size()) {
+                Chapter chapter = chapters.get(i);
 
-        for (Chapter chapter : chapters) {
-            TextButton chapterButton = new TextButton(chapter.getChapterNumber() + ". " + chapter.getName(), buttonStyle);
-            chapterButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    System.out.println("Capítulo seleccionado: " + chapter.getName());
-                    // Aquí puedes añadir lógica para manejar la selección del capítulo
-                }
-            });
-            chapterTable.row().pad(5);
-            chapterTable.add(chapterButton).expandX().fillX().height(60);
+                // Imagen del capítulo desbloqueado
+                Texture chapterImageTexture = new Texture(Gdx.files.internal("assets/photos/Chapters/"+chapter.getImagePath()));
+                Image chapterImage = new Image(new TextureRegionDrawable(chapterImageTexture));
+                chapterImage.setSize(100, 100);
+                chapterRow.add(chapterImage).size(100, 100).padRight(20);
+
+                // Botón del capítulo desbloqueado
+                TextButton chapterButton = new TextButton(chapter.getChapterNumber() + "\n" + chapter.getName(), unlockedButtonStyle);
+                chapterButton.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        System.out.println("Capítulo seleccionado: " + chapter.getName());
+                    }
+                });
+
+                chapterRow.add(chapterButton).width(300).height(100);
+
+            } else {
+                // Imagen del capítulo bloqueado
+                Texture defaultImageTexture = new Texture(Gdx.files.internal("assets/photos/Chapters/Default_Chapter.png"));
+                Image defaultImage = new Image(new TextureRegionDrawable(defaultImageTexture));
+                defaultImage.setSize(100, 100);
+                chapterRow.add(defaultImage).size(100, 100).padRight(20);
+
+                // Botón del capítulo bloqueado
+                TextButton chapterButton = new TextButton("No desbloqueado", lockedButtonStyle);
+                chapterRow.add(chapterButton).width(300).height(100);
+            }
+
+            chapterTable.add(chapterRow).padBottom(20);
+
+            // Nueva fila después de dos columnas
+            if ((i - start + 1) % 2 == 0) {
+                chapterTable.row();
+            }
         }
 
-        // Agregar la flecha de retroceso al stage
+        // Detectar clic en cualquier parte de la pantalla para avanzar página
+        stage.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if ((currentPage + 1) * CHAPTERS_PER_PAGE < MAX_UNLOCKED_CHAPTERS) {
+                    currentPage++;
+                } else {
+                    currentPage = 0; // Reiniciar a la primera página si se alcanza el final
+                }
+                renderPage();
+            }
+        });
+
+        stage.addActor(chapterTable);
         stage.addActor(backArrowButton);
+        stage.addActor(flechaDButton);
+        stage.addActor(flechaButton);
+
+
     }
 
     @Override
@@ -138,35 +206,26 @@ public class ChapterCatalogScreen implements Screen {
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
-
     }
 
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
-
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
         stage.dispose();
         font.dispose();
-
     }
 
     private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {

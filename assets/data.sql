@@ -33,15 +33,32 @@ VALUES
 -- Capítulos base
 INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state)
 VALUES
-    ('Inicio', '1', 'path/to/image1.png', NULL),
-    ('Avance', '2', 'path/to/image2.png', NULL),
-    ('Conflicto', '3', 'path/to/image3.png', NULL),
-    ('Resolución', '4', 'path/to/image4.png', NULL),
-    ('Final', '5', 'path/to/image5.png', NULL),
-    ('Bifurcación 1', '6.1', 'path/to/image6_1.png', 'CONFIDENCE'),
-    ('Bifurcación 2', '6.2', 'path/to/image6_2.png', 'LOW_TENSION'),
-    ('Bifurcación 3', '6.3', 'path/to/image6_3.png', 'HIGH_TENSION'),
-    ('Bifurcación 4', '6.4', 'path/to/image6_4.png', 'CRITICAL');
+    ('Capitulo', '1', 'Default_Chapter.png', NULL),
+    ('Capitulo', '2', 'Default_Chapter.png', NULL),
+    ('Capitulo', '3', 'Default_Chapter.png', NULL),
+    ('Capitulo', '4', 'Default_Chapter.png', NULL),
+    ('Capitulo', '5', 'Default_Chapter.png', NULL),
+    ('Capitulo', '6.1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Capitulo', '6.2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Capitulo', '6.3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Capitulo', '6.4', 'Default_Chapter.png', 'CRITICAL'),
+    ('Capitulo', '7.1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Capitulo', '7.2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Capitulo', '7.3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Capitulo', '7.4', 'Default_Chapter.png', 'CRITICAL'),
+    ('Capitulo', '8.1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Capitulo', '8.2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Capitulo', '8.3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Capitulo', '8.4', 'Default_Chapter.png', 'CRITICAL'),
+    ('Capitulo', '9.1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Capitulo', '9.2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Capitulo ','9.3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Capitulo', '9.4', 'Default_Chapter.png', 'CRITICAL'),
+    ('Final', '1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Final', '2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Final', '3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Final ','4', 'Default_Chapter.png', 'CRITICAL');
+
 
 INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked)
 VALUES
@@ -51,9 +68,12 @@ VALUES
     (1, 4,1, false, true),
     (1, 5,1, false, true),
     (1, 6,1, false, true),
-    (1, 7,1, false, true),
-    (1, 8,1, false, true),
-    (1, 9,1, false, true);
+    (1, 7,1, false, false),
+    (1, 8,1, false, false),
+    (1, 9,1, false, false),
+     (1, 10,1, false, true),
+    (1, 1,2, false, true),
+    (1, 2,2, false, true);
 
 -- Escenas base, sustituir por las de verdad
 INSERT INTO scenes (id, name, description, image_url, chapter_id)

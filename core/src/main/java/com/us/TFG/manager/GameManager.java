@@ -20,7 +20,7 @@ public class GameManager {
         game.setState(GameState.IN_PROGRESS);
         game.setPointsM(0);
         game.setPointsR(0);
-        game.setCurrentChapterId(0); // Inicialmente, ningún capítulo
+        game.setCurrentChapterId(1); // Desbloquear el primer capítulo
         game.setCurrentSceneId(0); // Inicialmente, ninguna escena
         game.setCurrentDecisionId(0); // Inicialmente, ninguna decisión
 
@@ -44,10 +44,19 @@ public class GameManager {
             stmt.setInt(8, game.getPointsM());
             stmt.setInt(9, game.getPointsR());
 
-
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
-                System.out.println("Juego creado y guardado en la base de datos: " + game);
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        game.setId(generatedKeys.getInt(1)); // Asignar el ID generado al objeto Game
+                        System.out.println("Juego creado y guardado en la base de datos: " + game);
+
+                        // Desbloquear el primer capítulo
+                        unlockFirstChapter(playerId, game);
+                    } else {
+                        throw new SQLException("No se pudo obtener el ID del juego insertado.");
+                    }
+                }
             } else {
                 System.err.println("Error al guardar el juego en la base de datos.");
             }
@@ -56,6 +65,34 @@ public class GameManager {
         }
 
         return game;
+    }
+
+    private static void unlockFirstChapter(int playerId, Game game) {
+        String query = "INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked) " +
+            "VALUES (?, ?, ?, ?, ?)";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, playerId);
+            stmt.setInt(2, 1); // ID del primer capítulo
+            stmt.setInt(3, game.getId());
+            stmt.setBoolean(4, false); // No jugado aún
+            stmt.setBoolean(5, true); // Desbloqueado
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Primer capítulo desbloqueado para el jugador con ID: " + playerId +" "+ game.getId());
+            } else {
+                System.err.println("Error al desbloquear el primer capítulo.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static List<Game> getGamesForPlayer(int playerId) {
