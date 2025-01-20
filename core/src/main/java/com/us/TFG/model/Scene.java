@@ -3,30 +3,29 @@ package com.us.TFG.model;
 import com.us.TFG.annotations.Column;
 import com.us.TFG.annotations.Table;
 
+import java.util.List;
+
 @Table(name = "scenes")
 public class Scene {
 
     @Column(name = "id", type = "INTEGER", primaryKey = true, notNull = true)
-    private int id; // ID único para la base de datos
+    private int id;
 
-    @Column(name = "name", type = "TEXT", notNull = true)
-    private String name; // Nombre de la escena
-
-    @Column(name = "image_url", type = "TEXT", notNull = true)
-    private String imageUrl; // URL de la imagen asociada a la escena
-
-    @Column(name = "description", type = "TEXT", notNull = true)
-    private String description; // Descripción o texto de la escena
-
-    @Column(name = "chapter_id", type = "INTEGER", notNull = true) // Relación con Chapter (clave foránea)
+    @Column(name = "chapter_id", type = "INTEGER", notNull = true) // Relación con capítulos
     private int chapterId;
 
+    @Column(name = "background_image", type = "TEXT") // Imagen de fondo de la escena
+    private String backgroundImage;
+
+    @Column(name = "scene_order", type = "INTEGER", notNull = true) // Orden de la escena dentro del capítulo
+    private int sceneOrder;
+
+
     // Constructor principal
-    public Scene(String name, String imageUrl, String description, int chapterId) {
-        this.name = name;
-        this.imageUrl = imageUrl;
-        this.description = description;
+    public Scene(int chapterId, String backgroundImage, int sceneOrder) {
         this.chapterId = chapterId;
+        this.backgroundImage = backgroundImage;
+        this.sceneOrder = sceneOrder;
     }
 
     // Constructor vacío
@@ -41,30 +40,6 @@ public class Scene {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public int getChapterId() {
         return chapterId;
     }
@@ -73,14 +48,31 @@ public class Scene {
         this.chapterId = chapterId;
     }
 
+    public String getBackgroundImage() {
+        return backgroundImage;
+    }
+
+    public void setBackgroundImage(String backgroundImage) {
+        this.backgroundImage = backgroundImage;
+    }
+
+    public int getSceneOrder() {
+        return sceneOrder;
+    }
+
+    public void setSceneOrder(int sceneOrder) {
+        this.sceneOrder = sceneOrder;
+    }
+
+
+
     @Override
     public String toString() {
         return "Scene{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", description='" + description + '\'' +
-                ", chapterId=" + chapterId +
-                '}';
+            "id=" + id +
+            ", chapterId=" + chapterId +
+            ", backgroundImage='" + backgroundImage + '\'' +
+            ", sceneOrder=" + sceneOrder +
+            '}';
     }
 }

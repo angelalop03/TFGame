@@ -7,30 +7,34 @@ import com.us.TFG.annotations.Table;
 public class Option {
 
     @Column(name = "id", type = "INTEGER", primaryKey = true, notNull = true)
-    private int id; // ID único para la base de datos
+    private int id;
 
-    @Column(name = "text", type = "TEXT", notNull = true)
-    private String text; // Texto que describe la opción
+    @Column(name = "decision_id", type = "INTEGER", notNull = true) // Relación con decisiones
+    private int decisionId;
 
-    @Column(name = "points_impact", type = "INTEGER")
-    private int pointsImpact; // Impacto en los puntos del jugador
+    @Column(name = "text", type = "TEXT", notNull = true) // Texto de la opción
+    private String text;
 
-    @Column(name = "relationship_impact", type = "INTEGER")
-    private int relationshipImpact; // Impacto en las relaciones del jugador
+    @Column(name = "points_m", type = "INTEGER", defaultValue = "0") // Cambio en puntos emocionales
+    private int pointsM;
 
-    @Column(name = "next_scene_id", type = "INTEGER", notNull = true)
-    private int nextSceneId; // ID de la siguiente escena (clave foránea)
+    @Column(name = "points_r", type = "INTEGER", defaultValue = "0") // Cambio en puntos de relación
+    private int pointsR;
 
-    @Column(name = "scene_id", type = "INTEGER", notNull = true) // Relación con Scene (clave foránea)
-    private int sceneId;
+    @Column(name = "next_decision_id", type = "INTEGER") // Relación con la siguiente decisión
+    private Integer nextDecisionId;
+
+    @Column(name = "required_psychological_state", type = "TEXT") // Estado psicológico requerido
+    private String requiredPsychologicalState;
 
     // Constructor principal
-    public Option(String text, int pointsImpact, int relationshipImpact, int nextSceneId, int sceneId) {
+    public Option(int decisionId, String text, int pointsM, int pointsR, Integer nextDecisionId, String requiredPsychologicalState) {
+        this.decisionId = decisionId;
         this.text = text;
-        this.pointsImpact = pointsImpact;
-        this.relationshipImpact = relationshipImpact;
-        this.nextSceneId = nextSceneId;
-        this.sceneId = sceneId;
+        this.pointsM = pointsM;
+        this.pointsR = pointsR;
+        this.nextDecisionId = nextDecisionId;
+        this.requiredPsychologicalState = requiredPsychologicalState;
     }
 
     // Constructor vacío
@@ -45,6 +49,14 @@ public class Option {
         this.id = id;
     }
 
+    public int getDecisionId() {
+        return decisionId;
+    }
+
+    public void setDecisionId(int decisionId) {
+        this.decisionId = decisionId;
+    }
+
     public String getText() {
         return text;
     }
@@ -53,48 +65,48 @@ public class Option {
         this.text = text;
     }
 
-    public int getPointsImpact() {
-        return pointsImpact;
+    public int getPointsM() {
+        return pointsM;
     }
 
-    public void setPointsImpact(int pointsImpact) {
-        this.pointsImpact = pointsImpact;
+    public void setPointsM(int pointsM) {
+        this.pointsM = pointsM;
     }
 
-    public int getRelationshipImpact() {
-        return relationshipImpact;
+    public int getPointsR() {
+        return pointsR;
     }
 
-    public void setRelationshipImpact(int relationshipImpact) {
-        this.relationshipImpact = relationshipImpact;
+    public void setPointsR(int pointsR) {
+        this.pointsR = pointsR;
     }
 
-    public int getNextSceneId() {
-        return nextSceneId;
+    public Integer getNextDecisionId() {
+        return nextDecisionId;
     }
 
-    public void setNextSceneId(int nextSceneId) {
-        this.nextSceneId = nextSceneId;
+    public void setNextDecisionId(Integer nextDecisionId) {
+        this.nextDecisionId = nextDecisionId;
     }
 
-    public int getSceneId() {
-        return sceneId;
+    public String getRequiredPsychologicalState() {
+        return requiredPsychologicalState;
     }
 
-    public void setSceneId(int sceneId) {
-        this.sceneId = sceneId;
+    public void setRequiredPsychologicalState(String requiredPsychologicalState) {
+        this.requiredPsychologicalState = requiredPsychologicalState;
     }
 
-    // Método toString para depuración
     @Override
     public String toString() {
         return "Option{" +
-                "id=" + id +
-                ", text='" + text + '\'' +
-                ", pointsImpact=" + pointsImpact +
-                ", relationshipImpact=" + relationshipImpact +
-                ", nextSceneId=" + nextSceneId +
-                ", sceneId=" + sceneId +
-                '}';
+            "id=" + id +
+            ", decisionId=" + decisionId +
+            ", text='" + text + '\'' +
+            ", pointsM=" + pointsM +
+            ", pointsR=" + pointsR +
+            ", nextDecisionId=" + nextDecisionId +
+            ", requiredPsychologicalState='" + requiredPsychologicalState + '\'' +
+            '}';
     }
 }

@@ -3,6 +3,7 @@ package com.us.TFG.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.us.TFG.model.*;
+import com.us.TFG.model.Character;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -29,7 +30,9 @@ public class DatabaseManager {
                 Chapter.class,
                 PlayerChapterState.class,
                 Scene.class,
-                Option.class
+                Option.class,
+                Decision.class,
+                Character.class
             );
 
             // Resetear todas las tablas al iniciar el juego
