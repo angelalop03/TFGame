@@ -18,6 +18,8 @@ import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.ChapterManager;
 import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.model.Chapter;
+import com.us.TFG.model.Scene;
+import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -152,6 +154,8 @@ public class ChapterCatalogScreen implements Screen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         System.out.println("Capítulo seleccionado: " + chapter.getName());
+                        Render.app.setScreen(new SceneGameScreen(gameId,chapter.getId(),username));
+
                     }
                 });
 
