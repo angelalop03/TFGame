@@ -3,7 +3,7 @@ package com.us.TFG.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.us.TFG.model.*;
-import com.us.TFG.model.Character;
+import com.us.TFG.model.CharacterGame;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -32,7 +32,7 @@ public class DatabaseManager {
                 Scene.class,
                 Option.class,
                 Decision.class,
-                Character.class,
+                CharacterGame.class,
                 PlayerDecisionState.class
             );
 

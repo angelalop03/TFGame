@@ -89,19 +89,19 @@ VALUES
 
 INSERT INTO decisions (scene_id, decision_order, character_id, dialogue)
 VALUES
-(1, 1, 1, '¿Qué camino deberíamos tomar?'),
-(1, 2, 1, '¿Estás seguro de que es seguro?'),
-(1, 3, 1, 'El castillo parece tranquilo. ¿Entramos?');
+(0, 1, 1, '¡Hola! Que tal'),
+(0, 2, 1, 'Soy David'),
+(0, 3, 1, '¿Que hacemos hoy?');
 
 INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state)
 VALUES
-(1, 'Bien, gracias. ¿Y tú?', 0, 0, 2, NULL),
-(2,'Estoy pensando en algo emocionante.', 0, 0, 3, NULL),
-(3,'Salgamos a explorar la ciudad.', 10, 5, NULL, 'STABLE'),
-(3,'Mejor quedémonos en casa.', -5, -10, NULL, 'LOW_TENSION');
+(0, 'Bien, gracias. ¿Y tú?', 0, 0, 2, NULL),
+(1,'Yo soy Bella', 0, 0, 3, NULL),
+(2,'Salgamos a explorar la ciudad.', 10, 5, NULL, NULL),
+(2,'Mejor quedémonos en casa.', -5, -10, NULL, NULL);
 
 INSERT INTO player_decision_state (player_id, game_id, decision_id, completed)
 VALUES
+(1, 1, 0, 0),
 (1, 1, 1, 0),
-(1, 1, 2, 0),
-(1, 1, 3, 0);
+(1, 1, 2, 0);

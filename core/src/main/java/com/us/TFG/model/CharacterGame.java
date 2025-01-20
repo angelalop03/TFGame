@@ -4,7 +4,7 @@ import com.us.TFG.annotations.Column;
 import com.us.TFG.annotations.Table;
 
 @Table(name = "characters")
-public class Character {
+public class CharacterGame {
 
     @Column(name = "id", type = "INTEGER", primaryKey = true, notNull = true)
     private int id;
@@ -16,13 +16,15 @@ public class Character {
     private String imagePath;
 
     // Constructor principal
-    public Character(String name, String imagePath) {
+    public CharacterGame(int id, String name, String imagePath) {
+        this.id = id;
         this.name = name;
         this.imagePath = imagePath;
     }
 
+
     // Constructor vacío
-    public Character() {}
+    public CharacterGame() {}
 
     // Getters y Setters
     public int getId() {
