@@ -2,8 +2,9 @@ package com.us.TFG.model;
 
 import com.us.TFG.annotations.Column;
 import com.us.TFG.annotations.Table;
-import com.us.TFG.screens.Player.Game.PsychologicalState;
-import com.us.TFG.screens.Player.Game.RelationshipState;
+import com.us.TFG.model.RelationshipState;
+import com.us.TFG.model.PsychologicalState;
+
 
 import java.util.Date;
 

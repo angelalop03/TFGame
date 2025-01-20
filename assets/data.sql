@@ -33,7 +33,7 @@ VALUES
 -- Capítulos base
 INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state)
 VALUES
-    ('Capitulo', '1', 'Default_Chapter.png', NULL),
+    ('Capitulo', '1', 'Chapter1.png', NULL),
     ('Capitulo', '2', 'Default_Chapter.png', NULL),
     ('Capitulo', '3', 'Default_Chapter.png', NULL),
     ('Capitulo', '4', 'Default_Chapter.png', NULL),
@@ -99,3 +99,9 @@ VALUES
 (2,'Estoy pensando en algo emocionante.', 0, 0, 3, NULL),
 (3,'Salgamos a explorar la ciudad.', 10, 5, NULL, 'STABLE'),
 (3,'Mejor quedémonos en casa.', -5, -10, NULL, 'LOW_TENSION');
+
+INSERT INTO player_decision_state (player_id, game_id, decision_id, completed)
+VALUES
+(1, 1, 1, 0),
+(1, 1, 2, 0),
+(1, 1, 3, 0);

@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.GameManager;
 import com.us.TFG.manager.PlayerManager;
+import com.us.TFG.model.Game;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
@@ -126,7 +127,7 @@ public class CreateGameScreen implements Screen {
                     feedbackLabel.setColor(Color.RED);
                 } else {
                     if (!GameManager.doesGameExist(gameName,PlayerManager.getPlayerData(username).getId())) {
-                        GameManager.createGame(gameName, PlayerManager.getPlayerData(username).getId());
+                        Game game =GameManager.createGame(gameName, PlayerManager.getPlayerData(username).getId());
                         feedbackLabel.setText("Juego creado con éxito.");
                         feedbackLabel.setColor(Color.GREEN);
 
@@ -137,7 +138,7 @@ public class CreateGameScreen implements Screen {
                                 e.printStackTrace();
                             }
                             //Que te lleve al catalogo de capitulos
-                            Render.app.setScreen(new PlayerMenuScreen(username));
+                            Render.app.setScreen(new ChapterCatalogScreen(username,game.getId()));
                         });
                     }else{
                         feedbackLabel.setText("Ya existe una partida con ese nombre" + gameName);

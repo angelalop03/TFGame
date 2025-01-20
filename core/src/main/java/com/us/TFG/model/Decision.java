@@ -51,11 +51,11 @@ public class Decision {
         this.sceneId = sceneId;
     }
 
-    public int getdecisionOrder() {
+    public int getDecisionOrder() {
         return decisionOrder;
     }
 
-    public void setdecisionOrder(int decisionOrder) {
+    public void setDecisionOrder(int decisionOrder) {
         this.decisionOrder = decisionOrder;
     }
 
