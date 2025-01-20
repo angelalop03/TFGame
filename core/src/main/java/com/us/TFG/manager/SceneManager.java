@@ -27,6 +27,7 @@ public class SceneManager {
 
             if (rs.next()) {
                 scene = new Scene(
+                    rs.getInt("id"),
                     rs.getInt("chapter_id"),
                     rs.getString("background_image"),
                     rs.getInt("scene_order")

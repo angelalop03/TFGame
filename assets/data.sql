@@ -75,33 +75,33 @@ VALUES
     (1, 1,2, false, true),
     (1, 2,2, false, true);
 
-INSERT INTO scenes (chapter_id, background_image, scene_order)
+INSERT INTO scenes (id,chapter_id, background_image, scene_order)
 VALUES
-(1, 'Living_Room.jpg', 1),
-(1, 'Living_Room.jpg', 2),
-(1, 'Living_Room.jpg', 3),
-(1, 'Living_Room.jpg', 4);
+(1,1, 'Living_Room.jpg', 1),
+(2,1, 'Living_Room.jpg', 2),
+(3,1, 'Living_Room.jpg', 3),
+(4,1, 'Living_Room.jpg', 4);
 
 INSERT INTO characters (name, image_path)
 VALUES
 ('David', 'David.png');
 
 
-INSERT INTO decisions (scene_id, decision_order, character_id, dialogue)
+INSERT INTO decisions (id,scene_id, decision_order, character_id, dialogue)
 VALUES
-(0, 1, 1, '¡Hola! Que tal'),
-(0, 2, 1, 'Soy David'),
-(0, 3, 1, '¿Que hacemos hoy?');
+(1,1, 1, 1, '¡Hola! Que tal'),
+(2,1, 2, 1, 'Soy David'),
+(3,1, 3, 1, '¿Que hacemos hoy?');
 
 INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state)
 VALUES
-(0, 'Bien, gracias. ¿Y tú?', 0, 0, 2, NULL),
-(1,'Yo soy Bella', 0, 0, 3, NULL),
-(2,'Salgamos a explorar la ciudad.', 10, 5, NULL, NULL),
-(2,'Mejor quedémonos en casa.', -5, -10, NULL, NULL);
+(1, 'Bien, gracias. ¿Y tú?', 0, 0, 2, NULL),
+(2,'Yo soy Bella', 0, 0, 3, NULL),
+(3,'Salgamos a explorar la ciudad.', 10, 5, NULL, NULL),
+(3,'Mejor quedémonos en casa.', -5, -10, NULL, NULL);
 
 INSERT INTO player_decision_state (player_id, game_id, decision_id, completed)
 VALUES
-(1, 1, 0, 0),
 (1, 1, 1, 0),
-(1, 1, 2, 0);
+(1, 1, 2, 0),
+(1, 1, 3, 0);

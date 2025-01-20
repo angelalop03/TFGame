@@ -155,4 +155,28 @@ public class GameManager {
 
         return false;
     }
+
+    public static void updatePoints(int gameId, int pointsMDelta, int pointsRDelta) {
+        String query = "UPDATE games SET points_m = points_m + ?, points_r = points_r + ? WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, pointsMDelta);
+            stmt.setInt(2, pointsRDelta);
+            stmt.setInt(3, gameId);
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Puntos actualizados exitosamente para el juego con ID: " + gameId);
+            } else {
+                System.err.println("Error al actualizar puntos para el juego con ID: " + gameId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

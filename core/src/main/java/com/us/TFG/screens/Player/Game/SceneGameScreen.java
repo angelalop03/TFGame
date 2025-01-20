@@ -138,7 +138,7 @@ public class SceneGameScreen implements Screen {
             optionButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    //handleOptionSelection(option);
+                    handleOptionSelection(option);
                 }
             });
             optionsTable.add(optionButton).pad(10).fillX().row();
@@ -146,20 +146,20 @@ public class SceneGameScreen implements Screen {
     }
 
 
-//    private void handleOptionSelection(Option option) {
-//        // Actualizar puntos en el juego
-//        GameManager.updatePoints(gameId, option.getPointsM(), option.getPointsR());
-//
-//        if (option.getNextDecisionId() != null) {
-//            // Cargar la siguiente decisión
-//            currentDecision = DecisionManager.getDecisionById(option.getNextDecisionId());
-//            dialogueLabel.setText(currentDecision.getDialogue());
-//            showOptions();
-//        } else {
-//            // Pasar a la siguiente escena o capítulo
-//            //goToNextSceneOrChapter();
-//        }
-//    }
+    private void handleOptionSelection(Option option) {
+        // Actualizar puntos en el juego
+        GameManager.updatePoints(gameId, option.getPointsM(), option.getPointsR());
+
+        if (option.getNextDecisionId() != null) {
+            // Cargar la siguiente decisión
+            currentDecision = DecisionManager.getDecisionById(option.getNextDecisionId());
+            dialogueLabel.setText(currentDecision.getDialogue());
+            showOptions();
+        } else {
+            // Pasar a la siguiente escena o capítulo
+            //goToNextSceneOrChapter();
+        }
+    }
 
 
 

@@ -24,7 +24,8 @@ public class Decision {
     private String dialogue;
 
     // Constructor principal
-    public Decision(int sceneId, int decisionOrder, int characterId, String dialogue) {
+    public Decision(int id,int sceneId, int decisionOrder, int characterId, String dialogue) {
+        this.id=id;
         this.sceneId = sceneId;
         this.decisionOrder = decisionOrder;
         this.characterId = characterId;

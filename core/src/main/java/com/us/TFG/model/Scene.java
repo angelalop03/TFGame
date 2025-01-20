@@ -22,7 +22,8 @@ public class Scene {
 
 
     // Constructor principal
-    public Scene(int chapterId, String backgroundImage, int sceneOrder) {
+    public Scene(int id, int chapterId, String backgroundImage, int sceneOrder) {
+        this.id = id;
         this.chapterId = chapterId;
         this.backgroundImage = backgroundImage;
         this.sceneOrder = sceneOrder;
