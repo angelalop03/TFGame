@@ -71,20 +71,31 @@ VALUES
     (1, 7,1, false, false),
     (1, 8,1, false, false),
     (1, 9,1, false, false),
-     (1, 10,1, false, true),
+    (1, 10,1, false, true),
     (1, 1,2, false, true),
     (1, 2,2, false, true);
 
--- Escenas base, sustituir por las de verdad
-INSERT INTO scenes (id, name, description, image_url, chapter_id)
+INSERT INTO scenes (chapter_id, background_image, scene_order)
 VALUES
-(1, 'La Llegada al Pueblo', 'El héroe llega a un pueblo tranquilo, pero algo extraño sucede.', 'TFG-A.png', 1),
-(2, 'La Casa Misteriosa', 'Una casa abandonada en el bosque esconde secretos.', 'TFG-A.png', 1),
-(5, 'La Sombra del Pasado', 'El protagonista enfrenta recuerdos oscuros.', 'TFG-A.png', 2);
+(1, 'Living_Room.jpg', 1),
+(1, 'Living_Room.jpg', 2),
+(1, 'Living_Room.jpg', 3),
+(1, 'Living_Room.jpg', 4);
 
--- Opciones base
-INSERT INTO options (id, text, points_impact, relationship_impact, next_scene_id, scene_id)
+INSERT INTO characters (name, image_path)
 VALUES
-(1, 'Entrar a la casa', 5, 0, 2, 1),
-(2, 'Volver al pueblo', -3, 0, 1, 1);
+('David', 'David.png');
 
+
+INSERT INTO decisions (scene_id, decision_order, character_id, dialogue)
+VALUES
+(1, 1, 1, '¿Qué camino deberíamos tomar?'),
+(1, 2, 1, '¿Estás seguro de que es seguro?'),
+(1, 3, 1, 'El castillo parece tranquilo. ¿Entramos?');
+
+INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state)
+VALUES
+(1, 'Bien, gracias. ¿Y tú?', 0, 0, 2, NULL),
+(2,'Estoy pensando en algo emocionante.', 0, 0, 3, NULL),
+(3,'Salgamos a explorar la ciudad.', 10, 5, NULL, 'STABLE'),
+(3,'Mejor quedémonos en casa.', -5, -10, NULL, 'LOW_TENSION');
