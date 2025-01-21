@@ -13,6 +13,38 @@ import java.util.List;
 
 public class GameManager {
 
+    public static Game getGameById(int gameId) {
+        String query = "SELECT * FROM games WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        Game game = null;
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, gameId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    game = new Game(rs.getString("name"), rs.getInt("player_id"));
+                    game.setId(rs.getInt("id"));
+                    game.setStartDate(rs.getDate("start_date"));
+                    game.setState(GameState.valueOf(rs.getString("state")));
+                    game.setPointsM(rs.getInt("points_m"));
+                    game.setPointsR(rs.getInt("points_r"));
+                    game.setCurrentChapterId(rs.getInt("current_chapter_id"));
+                    game.setCurrentSceneId(rs.getInt("current_scene_id"));
+                    game.setCurrentDecisionId(rs.getInt("current_decision_id"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return game;
+    }
+
     public static Game createGame(String name, int playerId) {
         // Crear el objeto Game
         Game game = new Game(name, playerId);
@@ -21,8 +53,8 @@ public class GameManager {
         game.setPointsM(0);
         game.setPointsR(0);
         game.setCurrentChapterId(1); // Desbloquear el primer capítulo
-        game.setCurrentSceneId(0); // Inicialmente, ninguna escena
-        game.setCurrentDecisionId(0); // Inicialmente, ninguna decisión
+        game.setCurrentSceneId(1); // Primera escena
+        game.setCurrentDecisionId(1); // Primera Decision
 
         String query = "INSERT INTO games (name, current_chapter_id, current_scene_id, current_decision_id, player_id, start_date, state, points_m, points_r) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -179,4 +211,75 @@ public class GameManager {
             e.printStackTrace();
         }
     }
+
+    public static void updateCurrentDecision(int gameId, int decisionId) {
+        String query = "UPDATE games SET current_decision_id = ? WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, decisionId);
+            stmt.setInt(2, gameId);
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Decisión actual actualizada para el juego con ID: " + gameId);
+            } else {
+                System.err.println("Error al actualizar la decisión actual para el juego con ID: " + gameId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateCurrentScene(int gameId, int sceneId) {
+        String query = "UPDATE games SET current_scene_id = ? WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, sceneId);
+            stmt.setInt(2, gameId);
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Decisión actual actualizada para el juego con ID: " + gameId);
+            } else {
+                System.err.println("Error al actualizar la decisión actual para el juego con ID: " + gameId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void markChapterAsPlayed(int gameId, int chapterId) {
+        String query = "UPDATE player_chapter_state SET played = true WHERE game_id = ? AND chapter_id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, gameId);
+            stmt.setInt(2, chapterId);
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("El capítulo con ID " + chapterId + " ha sido marcado como jugado para el juego con ID " + gameId);
+            } else {
+                System.err.println("No se pudo marcar el capítulo como jugado. Verifique que el estado del capítulo existe en la base de datos.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

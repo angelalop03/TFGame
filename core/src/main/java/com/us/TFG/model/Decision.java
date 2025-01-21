@@ -17,7 +17,7 @@ public class Decision {
     @Column(name = "decision_order", type = "INTEGER", notNull = true) // Orden de la decisión en la escena
     private int decisionOrder;
 
-    @Column(name = "character_id", type = "INTEGER", notNull = true) // Relación con personajes
+    @Column(name = "character_id", type = "INTEGER") // Relación con personajes
     private int characterId;
 
     @Column(name = "dialogue", type = "TEXT") // Texto del diálogo del personaje

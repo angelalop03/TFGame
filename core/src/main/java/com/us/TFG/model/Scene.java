@@ -17,7 +17,7 @@ public class Scene {
     @Column(name = "background_image", type = "TEXT") // Imagen de fondo de la escena
     private String backgroundImage;
 
-    @Column(name = "scene_order", type = "INTEGER", notNull = true) // Orden de la escena dentro del capítulo
+    @Column(name = "scene_order", type = "INTEGER") // Orden de la escena dentro del capítulo
     private int sceneOrder;
 
 

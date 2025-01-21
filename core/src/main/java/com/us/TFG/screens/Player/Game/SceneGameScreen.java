@@ -15,12 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.manager.*;
-import com.us.TFG.model.Decision;
-import com.us.TFG.model.Option;
-import com.us.TFG.model.Scene;
+import com.us.TFG.model.*;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Render;
-import com.us.TFG.model.CharacterGame;
+
 import java.util.List;
 
 
@@ -46,12 +44,16 @@ public class SceneGameScreen implements Screen {
         this.gameId = gameId;
         this.chapterId = chapterId;
         this.username = username;
-        this.currentScene = SceneManager.getFirstSceneOfChapter(gameId, chapterId); // Obtener la primera escena
-        if (currentScene != null) {
-            this.currentDecision = DecisionManager.getFirstDecisionBySceneId(currentScene.getId());
-            if (currentDecision !=null){
-                this.currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
+        Game game = GameManager.getGameById(gameId);
+        if (game != null) {
+            this.currentScene = SceneManager.getSceneById(game.getCurrentSceneId());
+            if (currentScene != null) {
+                this.currentDecision = DecisionManager.getDecisionById(game.getCurrentDecisionId());
 
+                if (currentDecision != null) {
+                    this.currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
+
+                }
             }
         }
     }
@@ -94,12 +96,7 @@ public class SceneGameScreen implements Screen {
             stage.addActor(characterImage);
         }
 
-        // Configurar bocadillo de diálogo
-        Texture speechBubbleTexture = new Texture(Gdx.files.internal("assets/photos/Scenes/Speech_Bubble.png"));
-        speechBubble = new Image(new TextureRegionDrawable(speechBubbleTexture));
-        speechBubble.setSize(300, 200); // Ajustar tamaño del bocadillo
-        speechBubble.setPosition(500, Gdx.graphics.getHeight() - 230); // Ajustar posición del bocadillo
-        stage.addActor(speechBubble);
+
 
 
 
@@ -133,6 +130,41 @@ public class SceneGameScreen implements Screen {
         stage.addActor(settingsButton);
 
 
+
+    }
+
+    @Override
+    public void render(float delta) {
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+        font.dispose();
 
     }
 
@@ -213,11 +245,62 @@ public class SceneGameScreen implements Screen {
         if (option.getNextDecisionId() != null) {
             // Cargar la siguiente decisión
             currentDecision = DecisionManager.getDecisionById(option.getNextDecisionId());
+            GameManager.updateCurrentDecision(gameId, currentDecision.getId());
+            currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
+            updateCharacterImage();
             dialogueLabel.setText(currentDecision.getDialogue());
             showOptions();
+
+
         } else {
-            // Pasar a la siguiente escena o capítulo
-            //goToNextSceneOrChapter();
+            // Comprobar si todas las decisiones de la escena están completas
+            boolean allDecisionsComplete = PlayerDecisionStateManager.areAllDecisionsComplete(PlayerManager.getPlayerData(username).getId(), gameId, currentScene.getId());
+
+            if (allDecisionsComplete) {
+                goToNextSceneOrChapter();
+                System.out.println("GotoNextSceneOrChapter");
+            } else {
+                dialogueLabel.setText("Completa todas las decisiones para avanzar.");
+            }
+        }
+    }
+
+    private void goToNextSceneOrChapter() {
+        Scene nextScene = SceneManager.getNextSceneInChapter(currentScene.getId(), chapterId);
+
+        if (nextScene != null) {
+            // Avanzar a la siguiente escena
+            currentScene = nextScene;
+            currentDecision = DecisionManager.getFirstDecisionBySceneId(currentScene.getId());
+            currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
+
+            GameManager.updateCurrentScene(gameId, currentScene.getId());
+            GameManager.updateCurrentDecision(gameId, currentDecision.getId());
+
+            dialogueLabel.setText(currentDecision.getDialogue());
+            updateCharacterImage();
+            showOptions();
+        } else {
+            // No hay más escenas en este capítulo
+            System.out.println("No hay más escenas en este capítulo.");
+            GameManager.markChapterAsPlayed(gameId, chapterId);
+            //ChapterManager.unlockNextChapter(gameId, chapterId);
+            Render.app.setScreen(new ChapterCatalogScreen(username, gameId));
+        }
+    }
+
+
+    private void updateCharacterImage() {
+        if (characterImage != null) {
+            stage.getActors().removeValue(characterImage, true);
+        }
+
+        if (currentCharacter != null) {
+            Texture characterTexture = new Texture(Gdx.files.internal("assets/photos/Characters/" + currentCharacter.getImagePath()));
+            characterImage = new Image(new TextureRegionDrawable(characterTexture));
+            characterImage.setSize(320, 600); // Ajustar tamaño del personaje
+            characterImage.setPosition(180, 80); // Ajustar posición del personaje
+            stage.addActor(characterImage);
         }
     }
 
@@ -225,41 +308,6 @@ public class SceneGameScreen implements Screen {
 
 
 
-
-    @Override
-    public void render(float delta) {
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
-
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
-        font.dispose();
-
-    }
 
     private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
         Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);

@@ -24,10 +24,9 @@ VALUES
 -- "Game base" en la tabla games
 INSERT INTO games (name, current_chapter_id, current_scene_id, current_decision_id, player_id, start_date, state, points_m, points_r)
 VALUES
-('Partida1', 1, 1, 0, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
-('Partida2', 1, 1, 0, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
-('Partida3', 1, 1, 0, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
-('Partida4', 2, 5, 3, 2, '1736965255031', 'PAUSED', 50, 25);
+('Partida1', 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida2', 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida3', 1, 1, 1, 2, '1736965255031', 'IN_PROGRESS', 0, 0);
 
 
 -- Capítulos base
@@ -68,19 +67,22 @@ VALUES
     (1, 4,1, false, true),
     (1, 5,1, false, true),
     (1, 6,1, false, true),
-    (1, 7,1, false, false),
-    (1, 8,1, false, false),
-    (1, 9,1, false, false),
-    (1, 10,1, false, true),
+    (1,10,1, false, true),
     (1, 1,2, false, true),
-    (1, 2,2, false, true);
+    (1, 1,3, false, true);
+
 
 INSERT INTO scenes (id,chapter_id, background_image, scene_order)
 VALUES
 (1,1, 'Living_Room.jpg', 1),
 (2,1, 'Living_Room.jpg', 2),
 (3,1, 'Living_Room.jpg', 3),
-(4,1, 'Living_Room.jpg', 4);
+(4,1, 'Living_Room.jpg', 4),
+(5,2, 'Living_Room.jpg', 1),
+(6,2, 'Living_Room.jpg', 2),
+(7,2, 'Living_Room.jpg', 3),
+(8,2, 'Living_Room.jpg', 4);
+
 
 INSERT INTO characters (name, image_path)
 VALUES
@@ -89,19 +91,22 @@ VALUES
 
 INSERT INTO decisions (id,scene_id, decision_order, character_id, dialogue)
 VALUES
-(1,1, 1, 1, '¡Hola! Que tal'),
-(2,1, 2, 1, 'Soy David'),
-(3,1, 3, 1, '¿Que hacemos hoy?');
+(1,1, 1, 1, '¡Hola! Que tal(Escena 1)'),
+(2,1, 2, 1, 'Soy David(Escena 1)'),
+(3,1, 3, 1, '¿Que hacemos hoy?(Escena 1)'),
+(4,2, 1, 1, 'Escena 2'),
+(5,3, 1, 1, 'Escena 3'),
+(6,4, 1, NULL, 'Escena 4');
 
 INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state)
 VALUES
 (1, 'Bien, gracias. ¿Y tú?', 0, 0, 2, NULL),
 (2,'Yo soy Bella', 0, 0, 3, NULL),
-(3,'Salgamos a explorar la ciudad.', 10, 5, NULL, NULL),
-(3,'Mejor quedémonos en casa.', -5, -10, NULL, NULL);
+(3,'Salgamos a explorar la ciudad.(Pasa a la escena2)', 10, 5, NULL, NULL),
+(3,'Mejor quedémonos en casa.(Pasa a la escena2)', -5, -10, NULL, NULL),
+(4,'Pasa a la decision 5 (Escena 3)', 0, 0, NULL, NULL),
+(5,'Pasa a la decision 6 (Escena 4)', 0, 0, NULL, NULL),
+(6,'Has terminado el capitulo 1!', 0, 0, NULL, NULL);
 
-INSERT INTO player_decision_state (player_id, game_id, decision_id, completed)
-VALUES
-(1, 1, 1, 0),
-(1, 1, 2, 0),
-(1, 1, 3, 0);
+--INSERT INTO player_decision_state (player_id, game_id, decision_id, completed)
+--VALUES
