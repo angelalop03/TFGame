@@ -18,6 +18,7 @@ import com.us.TFG.manager.*;
 import com.us.TFG.model.Decision;
 import com.us.TFG.model.Option;
 import com.us.TFG.model.Scene;
+import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Render;
 import com.us.TFG.model.CharacterGame;
 import java.util.List;
@@ -88,8 +89,8 @@ public class SceneGameScreen implements Screen {
         if (currentCharacter != null) {
             Texture characterTexture = new Texture(Gdx.files.internal("assets/photos/Characters/" + currentCharacter.getImagePath()));
             characterImage = new Image(new TextureRegionDrawable(characterTexture));
-            characterImage.setSize(400, 600); // Ajustar tamaño del personaje
-            characterImage.setPosition(150, 80); // Ajustar posición del personaje
+            characterImage.setSize(320, 600); // Ajustar tamaño del personaje
+            characterImage.setPosition(180, 80); // Ajustar posición del personaje
             stage.addActor(characterImage);
         }
 
@@ -118,9 +119,66 @@ public class SceneGameScreen implements Screen {
 
         showOptions();
 
+        // Configurar botón de ajustes
+        Texture settingsTexture = new Texture(Gdx.files.internal("assets/photos/Settings.png"));
+        ImageButton settingsButton = new ImageButton(new TextureRegionDrawable(settingsTexture));
+        settingsButton.setSize(64, 64);
+        settingsButton.setPosition(Gdx.graphics.getWidth() - 74, Gdx.graphics.getHeight() - 74);
+        settingsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showSettingsDialog();
+            }
+        });
+        stage.addActor(settingsButton);
+
 
 
     }
+
+    private void showSettingsDialog() {
+        // Crear estilo del diálogo
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 600, Color.PINK, 0.8f)));
+
+        Dialog logoutDialog = new Dialog("", dialogStyle);
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
+
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = font;
+        buttonStyle.fontColor = Color.WHITE;
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 60, Color.GRAY, 0.7f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 60, Color.LIGHT_GRAY, 0.7f)));
+
+        // Botón de confirmar
+        TextButton confirmButton = new TextButton("Salir", buttonStyle);
+        confirmButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new PlayerMenuScreen(username));
+            }
+        });
+
+        // Botón de cancelar
+        TextButton cancelButton = new TextButton("Cerrar", buttonStyle);
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                logoutDialog.hide();
+            }
+        });
+        logoutDialog.getContentTable().row();
+        logoutDialog.getContentTable().add(confirmButton).padBottom(10).row();
+        logoutDialog.getContentTable().add(cancelButton).padBottom(10).row();
+
+        logoutDialog.show(stage);
+    }
+
 
     private void showOptions() {
         optionsTable.clear();
@@ -149,6 +207,8 @@ public class SceneGameScreen implements Screen {
     private void handleOptionSelection(Option option) {
         // Actualizar puntos en el juego
         GameManager.updatePoints(gameId, option.getPointsM(), option.getPointsR());
+        //Actualice el PlayerSceneState
+        PlayerDecisionStateManager.updateDecisionState(PlayerManager.getPlayerData(username).getId(),gameId, currentDecision.getId(), true);
 
         if (option.getNextDecisionId() != null) {
             // Cargar la siguiente decisión
