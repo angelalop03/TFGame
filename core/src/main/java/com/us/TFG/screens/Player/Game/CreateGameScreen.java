@@ -18,6 +18,7 @@ import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.GameManager;
 import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.model.Game;
+import com.us.TFG.model.Scene;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
@@ -138,7 +139,7 @@ public class CreateGameScreen implements Screen {
                                 e.printStackTrace();
                             }
                             //Que te lleve al catalogo de capitulos
-                            Render.app.setScreen(new ChapterCatalogScreen(username,game.getId()));
+                            Render.app.setScreen(new SceneGameScreen(game.getId(),1,username));
                         });
                     }else{
                         feedbackLabel.setText("Ya existe una partida con ese nombre" + gameName);

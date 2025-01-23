@@ -71,5 +71,35 @@ public class SceneManager {
     }
 
 
+    public static Scene getFirstSceneOfChapter(int gameId, int chapterId) {
+        String query = "SELECT * FROM scenes WHERE chapter_id = ? ORDER BY scene_order ASC LIMIT 1";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        Scene firstScene = null;
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, chapterId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    firstScene = new Scene(
+                        rs.getInt("id"),
+                        rs.getInt("chapter_id"),
+                        rs.getString("background_image"),
+                        rs.getInt("scene_order")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return firstScene;
+    }
+
 
 }
