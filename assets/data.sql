@@ -1,16 +1,13 @@
 INSERT INTO users (username, password, authority) VALUES ('Admin1', '$2a$10$CJNLaQiaItzVV2v5ZmQH3.nDYohoZEg5MrUgFdlKjI1IeKxE./WRG', 1);
-
 INSERT INTO users (username, password, authority) VALUES ('Admin2', '$2a$10$CJNLaQiaItzVV2v5ZmQH3.nDYohoZEg5MrUgFdlKjI1IeKxE./WRG', 1);
 
 
 INSERT INTO users (username, password, authority) VALUES ('Player1', '$2a$10$UhRcQWnxgZ1cZF5H76yE7eJGEcF1WDpqWI8RpKYnL.kbmKHZNf0EW', 2);
-
 INSERT INTO users (username, password, authority) VALUES ('Player2', '$2a$10$UhRcQWnxgZ1cZF5H76yE7eJGEcF1WDpqWI8RpKYnL.kbmKHZNf0EW', 2);
 
 
 INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id)
 VALUES ('Feyre', 'Archeron', 'player1@example.com', 'default_image.png', 0, 0, 3);
-
 INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id)
 VALUES ('Nesta', 'Archeron', 'player2@example.com', 'Perfil_2.png', 0, 0, 4);
 
@@ -24,3 +21,92 @@ VALUES
 
 
 
+-- "Game base" en la tabla games
+INSERT INTO games (name, current_chapter_id, current_scene_id, current_decision_id, player_id, start_date, state, points_m, points_r)
+VALUES
+('Partida1', 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida2', 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida3', 1, 1, 1, 2, '1736965255031', 'IN_PROGRESS', 0, 0);
+
+
+-- Capítulos base
+INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state)
+VALUES
+    ('Capitulo', '1', 'Chapter1.png', NULL),
+    ('Capitulo', '2', 'Default_Chapter.png', NULL),
+    ('Capitulo', '3', 'Default_Chapter.png', NULL),
+    ('Capitulo', '4', 'Default_Chapter.png', NULL),
+    ('Capitulo', '5', 'Default_Chapter.png', NULL),
+    ('Capitulo', '6.1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Capitulo', '6.2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Capitulo', '6.3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Capitulo', '6.4', 'Default_Chapter.png', 'CRITICAL'),
+    ('Capitulo', '7.1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Capitulo', '7.2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Capitulo', '7.3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Capitulo', '7.4', 'Default_Chapter.png', 'CRITICAL'),
+    ('Capitulo', '8.1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Capitulo', '8.2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Capitulo', '8.3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Capitulo', '8.4', 'Default_Chapter.png', 'CRITICAL'),
+    ('Capitulo', '9.1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Capitulo', '9.2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Capitulo ','9.3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Capitulo', '9.4', 'Default_Chapter.png', 'CRITICAL'),
+    ('Final', '1', 'Default_Chapter.png', 'CONFIDENCE'),
+    ('Final', '2', 'Default_Chapter.png', 'LOW_TENSION'),
+    ('Final', '3', 'Default_Chapter.png', 'HIGH_TENSION'),
+    ('Final ','4', 'Default_Chapter.png', 'CRITICAL');
+
+
+INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked)
+VALUES
+    (1, 1,1, false, true),
+    (1, 2,1, false, true),
+    (1, 3,1, false, true),
+    (1, 4,1, false, true),
+    (1, 5,1, false, true),
+    (1, 6,1, false, true),
+    (1,10,1, false, true),
+    (1, 1,2, false, true),
+    (1, 1,3, false, true);
+
+
+INSERT INTO scenes (id,chapter_id, background_image, scene_order)
+VALUES
+(1,1, 'Living_Room.jpg', 1),
+(2,1, 'Living_Room.jpg', 2),
+(3,1, 'Living_Room.jpg', 3),
+(4,1, 'Living_Room.jpg', 4),
+(5,2, 'Living_Room.jpg', 1),
+(6,2, 'Living_Room.jpg', 2),
+(7,2, 'Living_Room.jpg', 3),
+(8,2, 'Living_Room.jpg', 4);
+
+
+INSERT INTO characters (name, image_path)
+VALUES
+('David', 'David.png');
+
+
+INSERT INTO decisions (id,scene_id, decision_order, character_id, dialogue)
+VALUES
+(1,1, 1, 1, '¡Hola! Que tal(Escena 1)'),
+(2,1, 2, 1, 'Soy David(Escena 1)'),
+(3,1, 3, 1, '¿Que hacemos hoy?(Escena 1)'),
+(4,2, 1, 1, 'Escena 2'),
+(5,3, 1, 1, 'Escena 3'),
+(6,4, 1, NULL, 'Escena 4');
+
+INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state)
+VALUES
+(1, 'Bien, gracias. ¿Y tú?', 0, 0, 2, NULL),
+(2,'Yo soy Bella', 0, 0, 3, NULL),
+(3,'Salgamos a explorar la ciudad.(Pasa a la escena2)', 10, 5, NULL, NULL),
+(3,'Mejor quedémonos en casa.(Pasa a la escena2)', -5, -10, NULL, NULL),
+(4,'Pasa a la decision 5 (Escena 3)', 0, 0, NULL, NULL),
+(5,'Pasa a la decision 6 (Escena 4)', 0, 0, NULL, NULL),
+(6,'Has terminado el capitulo 1!', 0, 0, NULL, NULL);
+
+--INSERT INTO player_decision_state (player_id, game_id, decision_id, completed)
+--VALUES

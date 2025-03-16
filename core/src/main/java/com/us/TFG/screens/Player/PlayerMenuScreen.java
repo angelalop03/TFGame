@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
+import com.us.TFG.screens.Player.Game.ChargeGameScreen;
+import com.us.TFG.screens.Player.Game.CreateGameScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
@@ -94,8 +96,23 @@ public class PlayerMenuScreen implements Screen {
         newsForumButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 180);
         instructionsButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 100);
 
+        //Boton para Crear Partida
+        newGameButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new CreateGameScreen(username));
+            }
+        });
 
-        //Boton para pantalla de cambio de contraseña
+        //Boton para Cargar Partida
+        loadGameButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new ChargeGameScreen(username));
+            }
+        });
+
+        //Boton para Foro
         newsForumButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -149,7 +166,6 @@ public class PlayerMenuScreen implements Screen {
     public void dispose() {
         stage.dispose();
         font.dispose();
-        //musicManager.dispose();
     }
 
     // Boton trasnparente
