@@ -100,7 +100,7 @@ public class PlayerManager {
 
 
     public static PlayerData getPlayerData(String username) {
-        String query = "SELECT p.id, p.firstname, p.lastname, p.email, p.image, p.pointsM, p.pointsR " +
+        String query = "SELECT p.id, p.firstname, p.lastname, p.email, p.image " +
             "FROM players p JOIN users u ON p.user_id = u.id " +
             "WHERE u.username = ?";
         Connection connection = MyTfgGame.databaseManager.getConnection();
@@ -120,9 +120,7 @@ public class PlayerManager {
                     resultSet.getString("firstname"),
                     resultSet.getString("lastname"),
                     resultSet.getString("email"),
-                    resultSet.getString("image"),
-                    resultSet.getInt("pointsM"),
-                    resultSet.getInt("pointsR")
+                    resultSet.getString("image")
                 );
             }
             resultSet.close();
@@ -134,7 +132,7 @@ public class PlayerManager {
     }
 
     public static List<PlayerData> getAllPlayers() {
-        String query = "SELECT id, firstname, lastname, email, image, pointsM, pointsR FROM players";
+        String query = "SELECT id, firstname, lastname, email, image FROM players";
         Connection connection = MyTfgGame.databaseManager.getConnection();
         List<PlayerData> players = new ArrayList<>();
 
@@ -152,9 +150,7 @@ public class PlayerManager {
                     rs.getString("firstname"),
                     rs.getString("lastname"),
                     rs.getString("email"),
-                    rs.getString("image"),
-                    rs.getInt("pointsM"),
-                    rs.getInt("pointsR")
+                    rs.getString("image")
                 ));
             }
 
@@ -175,17 +171,13 @@ public class PlayerManager {
         private final String lastname;
         private final String email;
         private final String image;
-        private final int pointsM;
-        private final int pointsR;
 
-        public PlayerData(int id, String firstname, String lastname, String email, String image, int pointsM, int pointsR) {
+        public PlayerData(int id, String firstname, String lastname, String email, String image) {
             this.id = id;
             this.firstname = firstname;
             this.lastname = lastname;
             this.email = email;
             this.image = image;
-            this.pointsM = pointsM;
-            this.pointsR = pointsR;
         }
 
         public int getId() { // Nuevo getter para id
@@ -206,14 +198,6 @@ public class PlayerManager {
 
         public String getImage() {
             return image;
-        }
-
-        public int getPointsM() {
-            return pointsM;
-        }
-
-        public int getPointsR() {
-            return pointsR;
         }
     }
 
