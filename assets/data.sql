@@ -61,7 +61,7 @@ VALUES
     ('Final', '2', 'Default_Chapter.png', 'LOW_TENSION',1),
     ('Final', '3', 'Default_Chapter.png', 'HIGH_TENSION',1),
     ('Final ','4', 'Default_Chapter.png', 'CRITICAL',1),
-    ('Introducción', '0', 'Chapter1.png', NULL,1),
+    ('Introducción', '0', 'Chapter1.png', NULL,2),
     ('Capitulo', '1', 'Chapter1.png', NULL,2);
 
 
@@ -87,7 +87,9 @@ VALUES
 (5,2, 'Living_Room.jpg', 1),
 (6,2, 'Living_Room.jpg', 2),
 (7,2, 'Living_Room.jpg', 3),
-(8,2, 'Living_Room.jpg', 4);
+(8,2, 'Living_Room.jpg', 4),
+(9,27, 'Living_Room.jpg', 1);
+
 
 
 INSERT INTO characters (name, image_path)
@@ -102,7 +104,9 @@ VALUES
 (3,1, 3, 1, '¿Que hacemos hoy?(Escena 1)'),
 (4,2, 1, 1, 'Escena 2'),
 (5,3, 1, 1, 'Escena 3'),
-(6,4, 1, NULL, 'Escena 4');
+(6,4, 1, NULL, 'Escena 4'),
+(7,9, 1, NULL, 'Historia2');
+
 
 INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state)
 VALUES
@@ -112,7 +116,9 @@ VALUES
 (3,'Mejor quedémonos en casa.(Pasa a la escena2)', -5, -10, NULL, NULL),
 (4,'Pasa a la decision 5 (Escena 3)', 0, 0, NULL, NULL),
 (5,'Pasa a la decision 6 (Escena 4)', 0, 0, NULL, NULL),
-(6,'Has terminado el capitulo 1!', 0, 0, NULL, NULL);
+(6,'Has terminado el capitulo 1!', 0, 0, NULL, NULL),
+(7,'Capitulo 1 Historia2', 0, 0, NULL, NULL);
+
 
 --INSERT INTO player_decision_state (player_id, game_id, decision_id, completed)
 --VALUES
