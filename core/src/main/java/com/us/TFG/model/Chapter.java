@@ -21,12 +21,16 @@ public class Chapter {
     @Column(name = "required_relationship_state", type = "TEXT")
     private String requiredRelationshipState; // Estado de relación necesario para desbloquear el capítulo
 
+    @Column(name = "history_id", type = "INTEGER", notNull = true)
+    private Integer historyId; // Historia a la que pertenece el capítulo
+
     // Constructor principal
-    public Chapter(String name, String chapterNumber, String imagePath, String requiredRelationshipState) {
+    public Chapter(String name, String chapterNumber, String imagePath, String requiredRelationshipState,Integer historyId ) {
         this.name = name;
         this.chapterNumber = chapterNumber;
         this.imagePath = imagePath;
         this.requiredRelationshipState = requiredRelationshipState;
+        this.historyId = historyId;
     }
 
     // Constructor vacío
@@ -72,6 +76,13 @@ public class Chapter {
     public void setRequiredRelationshipState(String requiredRelationshipState) {
         this.requiredRelationshipState = requiredRelationshipState;
     }
+    public Integer getHistory() {
+        return historyId;
+    }
+
+    public void setHistory(Integer historyId) {
+        this.historyId = historyId;
+    }
 
     @Override
     public String toString() {
@@ -81,6 +92,7 @@ public class Chapter {
             ", chapterNumber='" + chapterNumber + '\'' +
             ", imagePath='" + imagePath + '\'' +
             ", requiredRelationshipState='" + requiredRelationshipState + '\'' +
+            ", historyId=" + (historyId != null ? historyId: "null") +
             '}';
     }
 }

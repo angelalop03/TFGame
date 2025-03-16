@@ -19,44 +19,50 @@ VALUES
 (1, 'News Title 1', 'Detailed content of the first news item.', 'News1.png');
 
 
+INSERT INTO historys (id, title, published,image_path,description) VALUES
+(1, 'Bella y David', true,'Default_History.png','Descripcion1'),
+(2, 'History 2', false,'Default_History.png','Descripcion2');
 
 
 -- "Game base" en la tabla games
-INSERT INTO games (name, current_chapter_id, current_scene_id, current_decision_id, player_id, start_date, state, points_m, points_r)
+INSERT INTO games (name,history_id, current_chapter_id, current_scene_id, current_decision_id, player_id, start_date, state, points_m, points_r)
 VALUES
-('Partida1', 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
-('Partida2', 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
-('Partida3', 1, 1, 1, 2, '1736965255031', 'IN_PROGRESS', 0, 0);
+('Partida1',1, 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida2',1, 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida3',2, 1, 1, 1, 2, '1736965255031', 'IN_PROGRESS', 0, 0);
 
 
 -- Capítulos base
-INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state)
+INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state,history_id)
 VALUES
-    ('Capitulo', '1', 'Chapter1.png', NULL),
-    ('Capitulo', '2', 'Default_Chapter.png', NULL),
-    ('Capitulo', '3', 'Default_Chapter.png', NULL),
-    ('Capitulo', '4', 'Default_Chapter.png', NULL),
-    ('Capitulo', '5', 'Default_Chapter.png', NULL),
-    ('Capitulo', '6.1', 'Default_Chapter.png', 'CONFIDENCE'),
-    ('Capitulo', '6.2', 'Default_Chapter.png', 'LOW_TENSION'),
-    ('Capitulo', '6.3', 'Default_Chapter.png', 'HIGH_TENSION'),
-    ('Capitulo', '6.4', 'Default_Chapter.png', 'CRITICAL'),
-    ('Capitulo', '7.1', 'Default_Chapter.png', 'CONFIDENCE'),
-    ('Capitulo', '7.2', 'Default_Chapter.png', 'LOW_TENSION'),
-    ('Capitulo', '7.3', 'Default_Chapter.png', 'HIGH_TENSION'),
-    ('Capitulo', '7.4', 'Default_Chapter.png', 'CRITICAL'),
-    ('Capitulo', '8.1', 'Default_Chapter.png', 'CONFIDENCE'),
-    ('Capitulo', '8.2', 'Default_Chapter.png', 'LOW_TENSION'),
-    ('Capitulo', '8.3', 'Default_Chapter.png', 'HIGH_TENSION'),
-    ('Capitulo', '8.4', 'Default_Chapter.png', 'CRITICAL'),
-    ('Capitulo', '9.1', 'Default_Chapter.png', 'CONFIDENCE'),
-    ('Capitulo', '9.2', 'Default_Chapter.png', 'LOW_TENSION'),
-    ('Capitulo ','9.3', 'Default_Chapter.png', 'HIGH_TENSION'),
-    ('Capitulo', '9.4', 'Default_Chapter.png', 'CRITICAL'),
-    ('Final', '1', 'Default_Chapter.png', 'CONFIDENCE'),
-    ('Final', '2', 'Default_Chapter.png', 'LOW_TENSION'),
-    ('Final', '3', 'Default_Chapter.png', 'HIGH_TENSION'),
-    ('Final ','4', 'Default_Chapter.png', 'CRITICAL');
+    ('Introducción', '0', 'Chapter1.png', NULL,1),
+    ('Capitulo', '1', 'Chapter1.png', NULL,1),
+    ('Capitulo', '2', 'Default_Chapter.png', NULL,1),
+    ('Capitulo', '3', 'Default_Chapter.png', NULL,1),
+    ('Capitulo', '4', 'Default_Chapter.png', NULL,1),
+    ('Capitulo', '5', 'Default_Chapter.png', NULL,1),
+    ('Capitulo', '6.1', 'Default_Chapter.png', 'CONFIDENCE',1),
+    ('Capitulo', '6.2', 'Default_Chapter.png', 'LOW_TENSION',1),
+    ('Capitulo', '6.3', 'Default_Chapter.png', 'HIGH_TENSION',1),
+    ('Capitulo', '6.4', 'Default_Chapter.png', 'CRITICAL',1),
+    ('Capitulo', '7.1', 'Default_Chapter.png', 'CONFIDENCE',1),
+    ('Capitulo', '7.2', 'Default_Chapter.png', 'LOW_TENSION',1),
+    ('Capitulo', '7.3', 'Default_Chapter.png', 'HIGH_TENSION',1),
+    ('Capitulo', '7.4', 'Default_Chapter.png', 'CRITICAL',1),
+    ('Capitulo', '8.1', 'Default_Chapter.png', 'CONFIDENCE',1),
+    ('Capitulo', '8.2', 'Default_Chapter.png', 'LOW_TENSION',1),
+    ('Capitulo', '8.3', 'Default_Chapter.png', 'HIGH_TENSION',1),
+    ('Capitulo', '8.4', 'Default_Chapter.png', 'CRITICAL',1),
+    ('Capitulo', '9.1', 'Default_Chapter.png', 'CONFIDENCE',1),
+    ('Capitulo', '9.2', 'Default_Chapter.png', 'LOW_TENSION',1),
+    ('Capitulo ','9.3', 'Default_Chapter.png', 'HIGH_TENSION',1),
+    ('Capitulo', '9.4', 'Default_Chapter.png', 'CRITICAL',1),
+    ('Final', '1', 'Default_Chapter.png', 'CONFIDENCE',1),
+    ('Final', '2', 'Default_Chapter.png', 'LOW_TENSION',1),
+    ('Final', '3', 'Default_Chapter.png', 'HIGH_TENSION',1),
+    ('Final ','4', 'Default_Chapter.png', 'CRITICAL',1),
+    ('Introducción', '0', 'Chapter1.png', NULL,1),
+    ('Capitulo', '1', 'Chapter1.png', NULL,2);
 
 
 INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked)

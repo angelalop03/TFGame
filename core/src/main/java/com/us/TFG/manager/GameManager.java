@@ -27,7 +27,11 @@ public class GameManager {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    game = new Game(rs.getString("name"), rs.getInt("player_id"));
+                    game = new Game(
+                        rs.getString("name"),
+                        rs.getInt("player_id"),
+                        rs.getInt("history_id")
+                    );
                     game.setId(rs.getInt("id"));
                     game.setStartDate(rs.getDate("start_date"));
                     game.setState(GameState.valueOf(rs.getString("state")));
@@ -45,9 +49,9 @@ public class GameManager {
         return game;
     }
 
-    public static Game createGame(String name, int playerId) {
+    public static Game createGame(String name, int playerId, int historyId) {
         // Crear el objeto Game
-        Game game = new Game(name, playerId);
+        Game game = new Game(name, playerId, historyId);
         game.setStartDate(new Date());
         game.setState(GameState.IN_PROGRESS);
         game.setPointsM(0);
@@ -56,8 +60,8 @@ public class GameManager {
         game.setCurrentSceneId(1); // Primera escena
         game.setCurrentDecisionId(1); // Primera Decision
 
-        String query = "INSERT INTO games (name, current_chapter_id, current_scene_id, current_decision_id, player_id, start_date, state, points_m, points_r) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO games (name,history_id, current_chapter_id, current_scene_id, current_decision_id, player_id, start_date, state, points_m, points_r) " +
+            "VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
@@ -67,14 +71,15 @@ public class GameManager {
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, game.getName());
-            stmt.setInt(2, game.getCurrentChapterId());
-            stmt.setInt(3, game.getCurrentSceneId());
-            stmt.setInt(4, game.getCurrentDecisionId());
-            stmt.setInt(5, game.getPlayerId());
-            stmt.setDate(6, new java.sql.Date(game.getStartDate().getTime()));
-            stmt.setString(7, game.getState().toString());
-            stmt.setInt(8, game.getPointsM());
-            stmt.setInt(9, game.getPointsR());
+            stmt.setInt(2, game.getHistoryId());
+            stmt.setInt(3, game.getCurrentChapterId());
+            stmt.setInt(4, game.getCurrentSceneId());
+            stmt.setInt(5, game.getCurrentDecisionId());
+            stmt.setInt(6, game.getPlayerId());
+            stmt.setDate(7, new java.sql.Date(game.getStartDate().getTime()));
+            stmt.setString(8, game.getState().toString());
+            stmt.setInt(9, game.getPointsM());
+            stmt.setInt(10, game.getPointsR());
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -84,7 +89,7 @@ public class GameManager {
                         System.out.println("Juego creado y guardado en la base de datos: " + game);
 
                         // Desbloquear el primer capítulo
-                        unlockFirstChapter(playerId, game);
+                        //unlockFirstChapter(playerId, game);
                     } else {
                         throw new SQLException("No se pudo obtener el ID del juego insertado.");
                     }
@@ -99,38 +104,38 @@ public class GameManager {
         return game;
     }
 
-    private static void unlockFirstChapter(int playerId, Game game) {
-        String query = "INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked) " +
-            "VALUES (?, ?, ?, ?, ?)";
-
-        Connection connection = MyTfgGame.databaseManager.getConnection();
-
-        if (connection == null) {
-            throw new RuntimeException("No se pudo conectar a la base de datos.");
-        }
-
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, playerId);
-            stmt.setInt(2, 1); // ID del primer capítulo
-            stmt.setInt(3, game.getId());
-            stmt.setBoolean(4, false); // No jugado aún
-            stmt.setBoolean(5, true); // Desbloqueado
-
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Primer capítulo desbloqueado para el jugador con ID: " + playerId +" "+ game.getId());
-            } else {
-                System.err.println("Error al desbloquear el primer capítulo.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+//    private static void unlockFirstChapter(int playerId, Game game) {
+//        String query = "INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked) " +
+//            "VALUES (?, ?, ?, ?, ?)";
+//
+//        Connection connection = MyTfgGame.databaseManager.getConnection();
+//
+//        if (connection == null) {
+//            throw new RuntimeException("No se pudo conectar a la base de datos.");
+//        }
+//
+//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+//            stmt.setInt(1, playerId);
+//            stmt.setInt(2, 1); // ID del primer capítulo
+//            stmt.setInt(3, game.getId());
+//            stmt.setBoolean(4, false); // No jugado aún
+//            stmt.setBoolean(5, true); // Desbloqueado
+//
+//            int rowsAffected = stmt.executeUpdate();
+//            if (rowsAffected > 0) {
+//                System.out.println("Primer capítulo desbloqueado para el jugador con ID: " + playerId +" "+ game.getId());
+//            } else {
+//                System.err.println("Error al desbloquear el primer capítulo.");
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public static List<Game> getGamesForPlayer(int playerId) {
         List<Game> games = new ArrayList<>();
 
-        String query = "SELECT id, name, player_id, start_date, state, points_m, points_r, current_chapter_id, current_scene_id, current_decision_id " +
+        String query = "SELECT id, name,history_id, player_id, start_date, state, points_m, points_r, current_chapter_id, current_scene_id, current_decision_id " +
             "FROM games " +
             "WHERE player_id = ?";
 
@@ -145,7 +150,11 @@ public class GameManager {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Game game = new Game(rs.getString("name"), rs.getInt("player_id"));
+                    Game game = new Game(
+                        rs.getString("name"),
+                        rs.getInt("player_id"),
+                        rs.getInt("history_id")
+                    );
                     game.setId(rs.getInt("id"));
                     game.setStartDate(rs.getDate("start_date"));
                     game.setState(GameState.valueOf(rs.getString("state")));
