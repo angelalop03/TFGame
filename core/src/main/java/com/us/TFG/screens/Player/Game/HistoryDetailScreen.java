@@ -79,7 +79,7 @@ public class HistoryDetailScreen implements Screen {
         backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new PlayerMenuScreen(username));
+                Render.app.setScreen(new CreateGameScreen(username));
             }
         });
 
