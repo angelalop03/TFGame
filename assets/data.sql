@@ -57,10 +57,10 @@ VALUES
     ('Capitulo', '9.2', 'Default_Chapter.png', 'LOW_TENSION',1),
     ('Capitulo ','9.3', 'Default_Chapter.png', 'HIGH_TENSION',1),
     ('Capitulo', '9.4', 'Default_Chapter.png', 'CRITICAL',1),
-    ('Final', '1', 'Default_Chapter.png', 'CONFIDENCE',1),
-    ('Final', '2', 'Default_Chapter.png', 'LOW_TENSION',1),
-    ('Final', '3', 'Default_Chapter.png', 'HIGH_TENSION',1),
-    ('Final ','4', 'Default_Chapter.png', 'CRITICAL',1),
+    ('Final', '10.1', 'Default_Chapter.png', 'CONFIDENCE',1),
+    ('Final', '10.2', 'Default_Chapter.png', 'LOW_TENSION',1),
+    ('Final', '10.3', 'Default_Chapter.png', 'HIGH_TENSION',1),
+    ('Final ','10.4', 'Default_Chapter.png', 'CRITICAL',1),
     ('Introducción', '0', 'Chapter1.png', NULL,2),
     ('Capitulo', '1', 'Chapter1.png', NULL,2);
 
@@ -112,8 +112,8 @@ INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, re
 VALUES
 (1, 'Bien, gracias. ¿Y tú?', 0, 0, 2, NULL),
 (2,'Yo soy Bella', 0, 0, 3, NULL),
-(3,'Salgamos a explorar la ciudad.(Pasa a la escena2)', 10, 5, NULL, NULL),
-(3,'Mejor quedémonos en casa.(Pasa a la escena2)', -5, -10, NULL, NULL),
+(3,'Salgamos a explorar la ciudad.(Pasa a la escena2)', 0, 0, NULL, NULL),
+(3,'Mejor quedémonos en casa.(Pasa a la escena2)', 0, 0, NULL, NULL),
 (4,'Pasa a la decision 5 (Escena 3)', 0, 0, NULL, NULL),
 (5,'Pasa a la decision 6 (Escena 4)', 0, 0, NULL, NULL),
 (6,'Has terminado el capitulo 1!', 0, 0, NULL, NULL),

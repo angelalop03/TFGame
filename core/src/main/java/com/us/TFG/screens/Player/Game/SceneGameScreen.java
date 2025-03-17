@@ -284,7 +284,7 @@ public class SceneGameScreen implements Screen {
             // No hay más escenas en este capítulo
             System.out.println("No hay más escenas en este capítulo.");
             ChapterManager.markChapterAsPlayed(gameId, chapterId);
-            //ChapterManager.unlockNextChapter(gameId, chapterId);
+            ChapterManager.unlockNextChapter(gameId);
             Render.app.setScreen(new ChapterCatalogScreen(username, gameId));
         }
     }
