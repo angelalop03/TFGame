@@ -162,7 +162,7 @@ public class ChapterManager {
             "LEFT JOIN player_chapter_state pcs ON c.id = pcs.chapter_id AND pcs.player_id = ? AND pcs.game_id = ? " +
             "WHERE c.history_id = ? " + // Filtrar por la historia actual del juego
             "AND (pcs.unlocked IS NULL OR pcs.unlocked = false) " + // Capítulos aún no desbloqueados
-            "AND (c.required_relationship_state IS NULL OR c.required_relationship_state <= ?) " + // Relación válida o NULL
+            "AND (c.required_relationship_state IS NULL OR c.required_relationship_state = ?) " + // Relación válida o NULL
             "ORDER BY c.chapter_number ASC LIMIT 1";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
@@ -175,23 +175,24 @@ public class ChapterManager {
             stmt.setInt(1, playerId);
             stmt.setInt(2, gameId);
             stmt.setInt(3, historyId);
-            stmt.setString(4, playerRelationshipState.name()); // Convertir el enum a String
+            stmt.setString(4, playerRelationshipState.toString()); // Convertir el enum a String
 
             System.out.println("Ejecutando consulta para desbloquear capítulo...");
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                int nextChapterId = rs.getInt("id");
-                String chapterName = rs.getString("name");
-                String chapterNumber = rs.getString("chapter_number");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int nextChapterId = rs.getInt("id");
+                    String chapterName = rs.getString("name");
+                    String chapterNumber = rs.getString("chapter_number");
 
-                System.out.println("Capítulo encontrado: " + chapterName + " (" + chapterNumber + ")");
+                    System.out.println("Capítulo encontrado: " + chapterName + " (" + chapterNumber + ")");
 
-                // Desbloquear el capítulo
-                PlayerChapterStateManager.unlockChapterForPlayer(playerId, gameId, nextChapterId);
-                return true;
-            } else {
-                System.out.println("No se encontraron capítulos disponibles para desbloquear.");
+                    // Desbloquear el capítulo
+                    PlayerChapterStateManager.unlockChapterForPlayer(playerId, gameId, nextChapterId);
+                    return true;
+                } else {
+                    System.out.println("No se encontraron capítulos disponibles para desbloquear.");
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
