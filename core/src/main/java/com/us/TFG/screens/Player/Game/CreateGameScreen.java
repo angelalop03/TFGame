@@ -15,14 +15,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.manager.GameManager;
+import com.us.TFG.manager.HistoryManager;
 import com.us.TFG.manager.PlayerManager;
-import com.us.TFG.model.Game;
+import com.us.TFG.model.History;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
 import com.us.TFG.utils.TopBar;
+
+import java.util.List;
 
 public class CreateGameScreen implements Screen {
 
@@ -32,9 +34,10 @@ public class CreateGameScreen implements Screen {
     private Imagen fondo;
     private BitmapFont font;
     private TopBar topBar;
-    private TextField gameNameField;
-    private Label feedbackLabel;
     private String username;
+    private List<History> histories;
+    private int currentIndex;
+    private ScrollPane scrollPane;
 
     public CreateGameScreen(String username) {
         this.username = username;
@@ -66,6 +69,11 @@ public class CreateGameScreen implements Screen {
         // Crear y agregar la barra superior
         topBar = new TopBar(username, stage, font);
 
+        // Cargar las partidas del jugador
+        int playerId = PlayerManager.getPlayerData(username).getId(); // Asume que tienes un método para obtener el ID del jugador
+        histories = HistoryManager.getHistories();
+        currentIndex = 0;
+
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
         ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
@@ -78,13 +86,13 @@ public class CreateGameScreen implements Screen {
             }
         });
 
-        // Crear el contenedor principal centrado con el recuadro grisáceo
+        // Crear el contenedor principal
         Table mainTable = new Table();
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
 
-        Pixmap pixmap = new Pixmap(700, 500, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(1.0f, 0.41f, 0.71f, 0.6f));
+        Pixmap pixmap = new Pixmap(1000, 500, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(1.0f, 0.41f, 0.71f, 0.8f));
         pixmap.fill();
         TextureRegionDrawable background = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
@@ -92,76 +100,87 @@ public class CreateGameScreen implements Screen {
         Table contentTable = new Table();
         contentTable.setBackground(background);
 
-        // Estilos
-        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font;
-        textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(1000, 40, Color.GRAY, 0.8f)));
-
+        // Título
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
         labelStyle.fontColor = Color.WHITE;
+        Label titleLabel = new Label("Historias", labelStyle);
+        contentTable.add(titleLabel).colspan(3).padBottom(20);
+        contentTable.row();
 
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        buttonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.DARK_GRAY, 0.4f)));
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.font = font;
+        if (histories.isEmpty()) {
+            Label noGamesLabel = new Label("No hay historias disponibles", labelStyle);
+            contentTable.add(noGamesLabel).colspan(3).padTop(50);
+        } else if (histories.size() == 1) {
+            History history = histories.get(0);
+            Table cardTable = new Table(skin);
+            Label gameNameLabel = new Label(history.getTitle(), labelStyle);
+            cardTable.add(gameNameLabel).center().pad(10);
 
-        // Campo para el nombre del juego
-        gameNameField = new TextField("", textFieldStyle);
-
-        // Etiqueta para mostrar mensajes de feedback
-        feedbackLabel = new Label("", labelStyle);
-        feedbackLabel.setWrap(true);
-
-        // Botón para guardar el juego
-        TextButton saveButton = new TextButton("Crear Juego", buttonStyle);
-        saveButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                String gameName = gameNameField.getText().trim();
-                if (gameName.isEmpty()) {
-                    feedbackLabel.setText("Por favor, introduce un nombre para el juego.");
-                    feedbackLabel.setColor(Color.RED);
-                } else {
-                    if (!GameManager.doesGameExist(gameName,PlayerManager.getPlayerData(username).getId())) {
-                        Game game =GameManager.createGame(gameName, PlayerManager.getPlayerData(username).getId());
-                        feedbackLabel.setText("Juego creado con éxito.");
-                        feedbackLabel.setColor(Color.GREEN);
-
-                        Gdx.app.postRunnable(() -> {
-                            try {
-                                Thread.sleep(3000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            //Que te lleve al catalogo de capitulos
-                            Render.app.setScreen(new ChapterCatalogScreen(username,game.getId()));
-                        });
-                    }else{
-                        feedbackLabel.setText("Ya existe una partida con ese nombre" + gameName);
-                        feedbackLabel.setColor(Color.RED);
-
-                    }
-
-
+            cardTable.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Render.app.setScreen(new ChapterCatalogScreen(username, history.getId()));
                 }
+            });
+
+            contentTable.add(cardTable).width(300).height(200).padTop(50).colspan(3);
+        } else {
+            // Flecha izquierda
+            Texture leftArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+            ImageButton leftArrowButton = new ImageButton(new TextureRegionDrawable(leftArrowTexture));
+            leftArrowButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                        scrollPane.setScrollX(scrollPane.getScrollX() - 320);
+                    }
+                }
+            });
+
+            // Flecha derecha
+            Texture rightArrowTexture = new Texture(Gdx.files.internal("assets/photos/flechaD.png"));
+            ImageButton rightArrowButton = new ImageButton(new TextureRegionDrawable(rightArrowTexture));
+            rightArrowButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (currentIndex < histories.size() - 1) {
+                        currentIndex++;
+                        scrollPane.setScrollX(scrollPane.getScrollX() + 320);
+                    }
+                }
+            });
+
+            // Crear carrusel de tarjetas
+            ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
+            Table carouselTable = new Table();
+
+            for (History history : histories) {
+                Table cardTable = new Table(skin);
+                cardTable.setBackground(new TextureRegionDrawable(new Texture("assets/photos/Histories/" + history.getImagePath())));
+                Label gameNameLabel = new Label(history.getTitle(), labelStyle);
+                cardTable.add(gameNameLabel).center().pad(10);
+
+                cardTable.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        Render.app.setScreen(new HistoryDetailScreen(username, history));
+                    }
+                });
+
+                carouselTable.add(cardTable).width(300).height(200).pad(20);
             }
-        });
 
-        // Agregar elementos al contentTable
-        contentTable.add(new Label("Crear Partida", labelStyle)).colspan(2).padBottom(30).center();
-        contentTable.row();
-        contentTable.add(new Label("Nombre:", labelStyle)).left().padBottom(10);
-        contentTable.add(gameNameField).width(600).padBottom(15).center();
-        contentTable.row();
-        contentTable.add(saveButton).colspan(2).padTop(20).center();
-        contentTable.row();
-        contentTable.add(feedbackLabel).colspan(2).width(600).padTop(10).center();
+            scrollPane = new ScrollPane(carouselTable, scrollStyle);
+            scrollPane.setScrollingDisabled(false, true);
 
-        // Agregar contentTable al mainTable
+            contentTable.add(leftArrowButton).width(100).height(100);
+            contentTable.add(scrollPane).expandX().fillX().pad(20);
+            contentTable.add(rightArrowButton).width(100).height(100);
+        }
+
+        // Añadir los elementos a la escena
         mainTable.add(contentTable).center();
         stage.addActor(backArrowButton);
     }
@@ -194,12 +213,5 @@ public class CreateGameScreen implements Screen {
     public void dispose() {
         stage.dispose();
         font.dispose();
-    }
-
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(color.r, color.g, color.b, transparency));
-        pixmap.fill();
-        return pixmap;
     }
 }

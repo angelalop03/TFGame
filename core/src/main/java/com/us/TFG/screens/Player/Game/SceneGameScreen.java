@@ -245,7 +245,7 @@ public class SceneGameScreen implements Screen {
         if (option.getNextDecisionId() != null) {
             // Cargar la siguiente decisión
             currentDecision = DecisionManager.getDecisionById(option.getNextDecisionId());
-            GameManager.updateCurrentDecision(gameId, currentDecision.getId());
+            DecisionManager.updateCurrentDecision(gameId, currentDecision.getId());
             currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
             updateCharacterImage();
             dialogueLabel.setText(currentDecision.getDialogue());
@@ -274,8 +274,8 @@ public class SceneGameScreen implements Screen {
             currentDecision = DecisionManager.getFirstDecisionBySceneId(currentScene.getId());
             currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
 
-            GameManager.updateCurrentScene(gameId, currentScene.getId());
-            GameManager.updateCurrentDecision(gameId, currentDecision.getId());
+            SceneManager.updateCurrentScene(gameId, currentScene.getId());
+            DecisionManager.updateCurrentDecision(gameId, currentDecision.getId());
 
             dialogueLabel.setText(currentDecision.getDialogue());
             updateCharacterImage();
@@ -283,8 +283,8 @@ public class SceneGameScreen implements Screen {
         } else {
             // No hay más escenas en este capítulo
             System.out.println("No hay más escenas en este capítulo.");
-            GameManager.markChapterAsPlayed(gameId, chapterId);
-            //ChapterManager.unlockNextChapter(gameId, chapterId);
+            ChapterManager.markChapterAsPlayed(gameId, chapterId);
+            ChapterManager.unlockNextChapter(gameId);
             Render.app.setScreen(new ChapterCatalogScreen(username, gameId));
         }
     }
