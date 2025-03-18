@@ -57,8 +57,6 @@ public class PlayerPerfilScreen implements Screen {
             this.lastname = playerData.getLastname();
             this.email = playerData.getEmail();
             this.image = playerData.getImage();
-            this.pointsM = playerData.getPointsM();
-            this.pointsR = playerData.getPointsR();
         } else {
             // Manejar caso en el que no se encuentren datos del jugador
             System.err.println("No se encontraron datos para el jugador: " + username);

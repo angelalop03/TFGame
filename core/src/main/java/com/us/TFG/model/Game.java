@@ -17,6 +17,9 @@ public class Game {
     @Column(name = "name", type = "TEXT", notNull = true)
     private String name;  // Nombre del juego
 
+    @Column(name = "history_id", type = "INTEGER", notNull = true)
+    private Integer historyId; // ID de la historia elegida para la partida
+
     @Column(name = "current_chapter_id", type = "INTEGER", notNull = true, defaultValue = "0")
     private int currentChapterId;
 
@@ -42,9 +45,10 @@ public class Game {
     private int pointsR; // Puntos de relación
 
     // Constructor principal
-    public Game(String name, int playerId) {
+    public Game(String name, int playerId,Integer historyId) {
         this.name = name;
         this.playerId = playerId;
+        this.historyId = historyId;
         this.startDate = new Date();
         this.state = GameState.IN_PROGRESS;
         this.pointsM = 0;
@@ -99,6 +103,13 @@ public class Game {
         this.name = name;
     }
 
+    public Integer getHistoryId() {
+        return historyId;
+    }
+
+    public void setHistoryId(Integer historyId) {
+        this.historyId = historyId;
+    }
     public int getCurrentChapterId() {
         return currentChapterId;
     }
@@ -168,6 +179,7 @@ public class Game {
         return "Game{" +
             "id=" + id +
             ", name='" + name + '\'' +
+            ", historyId=" + historyId +
             ", currentChapterId=" + currentChapterId +
             ", currentSceneId=" + currentSceneId +
             ", currentDecisionId=" + currentDecisionId +

@@ -33,7 +33,8 @@ public class DatabaseManager {
                 Option.class,
                 Decision.class,
                 CharacterGame.class,
-                PlayerDecisionState.class
+                PlayerDecisionState.class,
+                History.class
             );
 
             // Resetear todas las tablas al iniciar el juego
