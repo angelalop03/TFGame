@@ -272,10 +272,14 @@ public class SceneGameScreen implements Screen {
             // Avanzar a la siguiente escena
             currentScene = nextScene;
             currentDecision = DecisionManager.getFirstDecisionBySceneId(currentScene.getId());
-            currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
+            if (currentDecision !=null) {
+                currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
+                DecisionManager.updateCurrentDecision(gameId, currentDecision.getId());
+                updateCharacterImage();
+                dialogueLabel.setText(currentDecision.getDialogue());
 
+            }
             SceneManager.updateCurrentScene(gameId, currentScene.getId());
-            DecisionManager.updateCurrentDecision(gameId, currentDecision.getId());
 
             dialogueLabel.setText(currentDecision.getDialogue());
             updateCharacterImage();
@@ -284,8 +288,27 @@ public class SceneGameScreen implements Screen {
             // No hay más escenas en este capítulo
             System.out.println("No hay más escenas en este capítulo.");
             ChapterManager.markChapterAsPlayed(gameId, chapterId);
-            ChapterManager.unlockNextChapter(gameId);
-            Render.app.setScreen(new ChapterCatalogScreen(username, gameId));
+
+            // Desbloquear el próximo capítulo basado en chapter_number
+            int nextChapterId = ChapterManager.unlockNextChapter(gameId, chapterId);
+
+            if (nextChapterId > 0) {
+                Scene firstScene = SceneManager.getFirstSceneOfChapter(gameId, nextChapterId);
+                if (firstScene !=null) {
+                    currentScene = firstScene;
+                    currentDecision = DecisionManager.getFirstDecisionBySceneId(firstScene.getId());
+                    currentCharacter = (currentDecision != null) ? CharacterManager.getCharacterById(currentDecision.getCharacterId()) : null;
+                    chapterId = nextChapterId;
+
+                    // Actualizar juego en la base de datos
+                    ChapterManager.updateCurrentChapter(gameId, nextChapterId);
+                    SceneManager.updateCurrentScene(gameId, currentScene.getId());
+                    DecisionManager.updateCurrentDecision(gameId, (currentDecision != null) ? currentDecision.getId() : 0);
+                }
+                Render.app.setScreen(new ChapterCatalogScreen(username, gameId));
+            } else{
+                System.out.println("El next chapter id no se pilla bien");
+            }
         }
     }
 

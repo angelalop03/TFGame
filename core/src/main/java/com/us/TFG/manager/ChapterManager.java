@@ -140,30 +140,13 @@ public class ChapterManager {
         }
     }
 
-    public static boolean unlockNextChapter(int gameId) {
-        // Obtener la información del juego
-        Game game = GameManager.getGameById(gameId);
-        if (game == null) {
-            System.err.println("No se encontró el juego con ID: " + gameId);
-            return false;
-        }
+    public static int unlockNextChapter(int gameId, int currentChapterId) {
+        String nextChaptersQuery = "SELECT id, chapter_number, required_relationship_state FROM chapters " +
+            "WHERE history_id = (SELECT history_id FROM games WHERE id = ?) " +
+            "AND chapter_number > (SELECT chapter_number FROM chapters WHERE id = ?) " +
+            "ORDER BY CAST(chapter_number AS DECIMAL) ASC";
 
-        int playerId = game.getPlayerId();
-        int historyId = game.getHistoryId();
-        RelationshipState playerRelationshipState = game.getRelationshipState();
-
-        System.out.println("Buscando capítulos para: ");
-        System.out.println("Game ID: " + gameId + ", Player ID: " + playerId + ", History ID: " + historyId);
-        System.out.println("Puntos" + game.getPointsR() );
-        System.out.println("Estado de relación del jugador: " + playerRelationshipState);
-
-        // Buscar el siguiente capítulo disponible
-        String query = "SELECT c.id, c.name, c.chapter_number, c.required_relationship_state FROM chapters c " +
-            "LEFT JOIN player_chapter_state pcs ON c.id = pcs.chapter_id AND pcs.player_id = ? AND pcs.game_id = ? " +
-            "WHERE c.history_id = ? " + // Filtrar por la historia actual del juego
-            "AND (pcs.unlocked IS NULL OR pcs.unlocked = false) " + // Capítulos aún no desbloqueados
-            "AND (c.required_relationship_state IS NULL OR c.required_relationship_state = ?) " + // Relación válida o NULL
-            "ORDER BY c.chapter_number ASC LIMIT 1";
+        String insertUnlockQuery = "INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked) VALUES (?, ?, ?, false, true)";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
@@ -171,34 +154,54 @@ public class ChapterManager {
             throw new RuntimeException("No se pudo conectar a la base de datos.");
         }
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, playerId);
-            stmt.setInt(2, gameId);
-            stmt.setInt(3, historyId);
-            stmt.setString(4, playerRelationshipState.toString()); // Convertir el enum a String
+        int nextChapterId = -1;
 
-            System.out.println("Ejecutando consulta para desbloquear capítulo...");
+        try {
+            // Obtener todos los capítulos posteriores al actual de la misma historia
+            PreparedStatement nextChaptersStmt = connection.prepareStatement(nextChaptersQuery);
+            nextChaptersStmt.setInt(1, gameId);
+            nextChaptersStmt.setInt(2, currentChapterId);
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    int nextChapterId = rs.getInt("id");
-                    String chapterName = rs.getString("name");
-                    String chapterNumber = rs.getString("chapter_number");
+            ResultSet rs = nextChaptersStmt.executeQuery();
+            Game currentGame = GameManager.getGameById(gameId);
+            RelationshipState currentRelationshipState = currentGame.getRelationshipState();
 
-                    System.out.println("Capítulo encontrado: " + chapterName + " (" + chapterNumber + ")");
+            while (rs.next()) {
+                int candidateChapterId = rs.getInt("id");
+                String requiredRelationshipState = rs.getString("required_relationship_state");
 
-                    // Desbloquear el capítulo
-                    PlayerChapterStateManager.unlockChapterForPlayer(playerId, gameId, nextChapterId);
-                    return true;
+                // Verificar si el estado de la relación cumple con el requisito del capítulo
+                if (requiredRelationshipState == null || currentRelationshipState.name().equals(requiredRelationshipState)) {
+                    // Insertar el desbloqueo del capítulo en player_chapter_state
+                    PreparedStatement insertUnlockStmt = connection.prepareStatement(insertUnlockQuery);
+                    insertUnlockStmt.setInt(1, currentGame.getPlayerId());
+                    insertUnlockStmt.setInt(2, candidateChapterId);
+                    insertUnlockStmt.setInt(3, gameId);
+
+                    int rowsInserted = insertUnlockStmt.executeUpdate();
+                    if (rowsInserted > 0) {
+                        System.out.println("Capítulo " + rs.getString("chapter_number") + " desbloqueado para el juego " + gameId);
+                    } else {
+                        System.err.println("El capítulo " + candidateChapterId + " ya estaba desbloqueado.");
+                    }
+                    insertUnlockStmt.close();
+
+                    nextChapterId = candidateChapterId;
+                    break; // Salir del bucle una vez se desbloquea el primer capítulo válido
                 } else {
-                    System.out.println("No se encontraron capítulos disponibles para desbloquear.");
+                    System.out.println("El estado de la relación actual (" + currentRelationshipState + ") no cumple con el requisito para desbloquear el capítulo " + candidateChapterId + " (" + requiredRelationshipState + ").");
                 }
             }
+
+            rs.close();
+            nextChaptersStmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return nextChapterId;
     }
+
+
 
 }
