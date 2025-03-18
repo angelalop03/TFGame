@@ -6,14 +6,13 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+
 
 public class UIStyle {
     private static BitmapFont font;
+    private static BitmapFont titleFont;
     private static Skin skin;
 
     static {
@@ -22,6 +21,9 @@ public class UIStyle {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 34;
         font = generator.generateFont(parameter);
+        FreeTypeFontGenerator.FreeTypeFontParameter titleParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        titleParameter.size = 40;
+        titleFont = generator.generateFont(titleParameter);
         generator.dispose();
 
         // Crear y configurar el Skin
@@ -36,15 +38,39 @@ public class UIStyle {
         return labelStyle;
     }
 
+    public static Label.LabelStyle getTitleLabelStyle() {
+        Label.LabelStyle titleLabelStyle = new Label.LabelStyle();
+        titleLabelStyle.font = titleFont;
+        titleFont.getData().setScale(1.2f);
+        titleLabelStyle.fontColor = Color.WHITE;
+        return titleLabelStyle;
+    }
+
     public static TextButton.TextButtonStyle getButtonStyle() {
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
         buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        buttonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.DARK_GRAY, 0.4f)));
+        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 80, Color.LIGHT_GRAY, 0.4f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 80, Color.GRAY, 0.4f)));
+        buttonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 80, Color.DARK_GRAY, 0.4f)));
         return buttonStyle;
     }
+    public static void showError(Label feedbackLabel, String message) {
+        feedbackLabel.setText(message);
+        feedbackLabel.setColor(Color.RED);
+    }
+
+
+
+    public static TextureRegionDrawable getBackgroundDrawable() {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(0.6f, 0.6f, 0.6f, 0.4f));
+        pixmap.fill();
+        TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(pixmap));
+        pixmap.dispose();
+        return backgroundDrawable;
+    }
+
     public static TextField.TextFieldStyle getTextFieldStyle() {
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = font;
@@ -68,4 +94,5 @@ public class UIStyle {
     public static Skin getSkin() {
         return skin;
     }
+
 }
