@@ -95,4 +95,14 @@ public class UIStyle {
         return skin;
     }
 
+    public static TextButton.TextButtonStyle getCustomButtonStyle(int width, int height, Color color) {
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = font;
+        style.fontColor = Color.WHITE;
+        style.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(width, height, color, 1.0f)));
+        style.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(width, height, Color.DARK_GRAY, 1.0f)));
+        style.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(width, height, Color.LIGHT_GRAY, 1.0f)));
+        return style;
+    }
+
 }

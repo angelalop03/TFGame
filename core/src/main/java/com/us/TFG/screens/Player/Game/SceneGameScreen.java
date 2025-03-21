@@ -18,6 +18,7 @@ import com.us.TFG.manager.*;
 import com.us.TFG.model.*;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Render;
+import com.us.TFG.utils.UIStyle;
 
 import java.util.List;
 
@@ -62,18 +63,8 @@ public class SceneGameScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        skin = new Skin();
 
-        // Generar la fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        parameter.color = Color.BLACK;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
-        // Añadir la fuente generada al skin
-        skin.add("Caveat", font);
+        font = UIStyle.getFont();
 
         if (currentScene == null) {
             System.err.println("No hay escenas disponibles para el capítulo: " + chapterId);
@@ -173,7 +164,7 @@ public class SceneGameScreen implements Screen {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 600, Color.PINK, 0.8f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(400, 600, Color.PINK, 0.8f)));
 
         Dialog logoutDialog = new Dialog("", dialogStyle);
 
@@ -184,8 +175,8 @@ public class SceneGameScreen implements Screen {
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
         buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 60, Color.GRAY, 0.7f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 60, Color.LIGHT_GRAY, 0.7f)));
+        buttonStyle.up = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(300, 60, Color.GRAY, 0.7f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(300, 60, Color.LIGHT_GRAY, 0.7f)));
 
         // Botón de confirmar
         TextButton confirmButton = new TextButton("Salir", buttonStyle);
@@ -216,9 +207,9 @@ public class SceneGameScreen implements Screen {
         optionsTable.clear();
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(1000, 30, Color.PURPLE, 0.8f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(1000, 30, Color.GRAY, 0.8f)));
-        buttonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(1000, 30, Color.DARK_GRAY, 0.8f)));
+        buttonStyle.up = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(1000, 30, Color.PURPLE, 0.8f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(1000, 30, Color.GRAY, 0.8f)));
+        buttonStyle.over = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(1000, 30, Color.DARK_GRAY, 0.8f)));
         buttonStyle.fontColor = Color.WHITE;
         buttonStyle.font = font;
         List<Option> options = OptionManager.getOptionsByDecisionId(currentDecision.getId());
@@ -332,11 +323,5 @@ public class SceneGameScreen implements Screen {
 
 
 
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(color.r, color.g, color.b, transparency));
-        pixmap.fill();
-        return pixmap;
-    }
 
 }

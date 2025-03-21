@@ -19,10 +19,7 @@ import com.us.TFG.manager.GameManager;
 import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.model.Game;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.*;
 
 import java.util.List;
 
@@ -45,28 +42,14 @@ public class ChargeGameScreen implements Screen {
 
     @Override
     public void show() {
-        // Cargar el fondo
         fondo = new Imagen(Resources.FONDODOORS);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin();
-
-        // Generar la fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
-        // Añadir la fuente generada al skin
-        skin.add("Caveat", font);
-
-        // Crear y agregar la barra superior
+        font = UIStyle.getFont();
         topBar = new TopBar(username, stage, font);
 
         // Cargar las partidas del jugador
@@ -100,22 +83,18 @@ public class ChargeGameScreen implements Screen {
         Table contentTable = new Table();
         contentTable.setBackground(background);
 
-        // Título
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-        Label titleLabel = new Label("Partidas", labelStyle);
+        Label titleLabel = new Label("Historias", UIStyle.getLabelStyle());
         contentTable.add(titleLabel).colspan(3).padBottom(20);
         contentTable.row();
 
         if (playerGames.isEmpty()) {
-            Label noGamesLabel = new Label("No tienes partidas disponibles", labelStyle);
+            Label noGamesLabel = new Label("No tienes partidas disponibles", UIStyle.getLabelStyle());
             contentTable.add(noGamesLabel).colspan(3).padTop(50);
         } else if (playerGames.size() == 1) {
             Game game = playerGames.get(0);
             Table cardTable = new Table(skin);
             cardTable.setBackground(new TextureRegionDrawable(new Texture("assets/photos/FondoPartidas.png")));
-            Label gameNameLabel = new Label(game.getName(), labelStyle);
+            Label gameNameLabel = new Label(game.getName(), UIStyle.getLabelStyle());
             cardTable.add(gameNameLabel).center().pad(10);
 
             cardTable.addListener(new ClickListener() {
@@ -160,7 +139,7 @@ public class ChargeGameScreen implements Screen {
             for (Game game : playerGames) {
                 Table cardTable = new Table(skin);
                 cardTable.setBackground(new TextureRegionDrawable(new Texture("assets/photos/FondoPartidas.png")));
-                Label gameNameLabel = new Label(game.getName(), labelStyle);
+                Label gameNameLabel = new Label(game.getName(), UIStyle.getLabelStyle());
                 cardTable.add(gameNameLabel).center().pad(10);
 
                 cardTable.addListener(new ClickListener() {

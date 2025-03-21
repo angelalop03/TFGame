@@ -58,16 +58,6 @@ public class PlayerPerfilScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
 
-        Pixmap pixmap = new Pixmap(700, 600, Pixmap.Format.RGBA8888);
-        pixmap.setColor(0.6f, 0.6f, 0.6f, 0.4f);
-        pixmap.fill();
-        TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(pixmap));
-        pixmap.dispose();
-
-        Image background = new Image(backgroundDrawable);
-        background.setPosition((Gdx.graphics.getWidth() - background.getWidth()) / 2, 65);
-        stage.addActor(background);
-
         Image playerImage = new Image(new Texture(Gdx.files.internal("assets/photos/players/" + image)));
         table.add(playerImage).size(200, 200).padBottom(20);
         table.row();
