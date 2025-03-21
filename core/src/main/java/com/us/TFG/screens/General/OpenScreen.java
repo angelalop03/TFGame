@@ -16,9 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
+import com.us.TFG.utils.*;
 
 public class OpenScreen implements Screen {
     private Stage stage;
@@ -30,34 +28,16 @@ public class OpenScreen implements Screen {
 
     @Override
     public void show() {
-//
-
-        //Cargar el fondo
-        fondo = new Imagen(Resources.MENU);
-        fondo.setSize(Config.WIDTH, Config.HEIGHT);
-        batch = Render.batch;
-
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        skin = new Skin();
+        skin = UIStyle.getSkin();
+        batch = Render.batch;
+        fondo = new Imagen(Resources.MENU);
+        fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // Generar fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-        skin.add("Caveat", font);
-
-        // Estilo de botón
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        buttonStyle.font = font;
 
         // Botón de inicio de sesión
-        TextButton loginButton = new TextButton("Iniciar Sesión", buttonStyle);
+        TextButton loginButton = new TextButton("Iniciar Sesión", UIStyle.getButtonStyle());
         loginButton.setSize(300, 75);
         loginButton.setPosition(Gdx.graphics.getWidth() / 2f - 150, 200);
         stage.addActor(loginButton);
@@ -72,7 +52,7 @@ public class OpenScreen implements Screen {
         });
 
         // Botón de registro
-        TextButton signUpButton = new TextButton("Registrarse", buttonStyle);
+        TextButton signUpButton = new TextButton("Registrarse", UIStyle.getButtonStyle());
         signUpButton.setSize(300, 75);
         signUpButton.setPosition(Gdx.graphics.getWidth() / 2f - 150, 100);
         stage.addActor(signUpButton);
@@ -121,14 +101,5 @@ public class OpenScreen implements Screen {
         font.dispose();
         //musicManager.dispose();
     }
-
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setBlending(Pixmap.Blending.SourceOver);
-        pixmap.setColor(new Color(color.r, color.g, color.b, transparency));
-        pixmap.fillRectangle(0, 20, width, height - 40);
-        return pixmap;
-    }
-
 
 }

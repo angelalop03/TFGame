@@ -25,6 +25,7 @@ import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
+import com.us.TFG.utils.UIStyle;
 
 public class LoginScreen implements Screen {
     private Stage stage;
@@ -44,35 +45,18 @@ public class LoginScreen implements Screen {
         // Cargar el fondo
         fondo = new Imagen(Resources.MENU);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
+        font = UIStyle.getFont();
         batch = Render.batch;
 
-        // Generar fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-        skin.add("Caveat", font);
-
-        // Configuración de estilo de botones y campos de texto
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        buttonStyle.font = font;
-
-        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font;
-        textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 60, Color.DARK_GRAY, 0.6f)));
 
         // Campos de entrada de usuario y contraseña
-        TextField usernameField = new TextField("", textFieldStyle);
+        TextField usernameField = new TextField("", UIStyle.getTextFieldStyle());
         usernameField.setMessageText("Nombre de usuario");
         usernameField.setPosition(Gdx.graphics.getWidth() / 2f - 150, 300);
         usernameField.setSize(300, 60);
         stage.addActor(usernameField);
 
-        TextField passwordField = new TextField("", textFieldStyle);
+        TextField passwordField = new TextField("",  UIStyle.getTextFieldStyle());
         passwordField.setMessageText("Contraseña");
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
@@ -90,7 +74,7 @@ public class LoginScreen implements Screen {
         stage.addActor(errorLabel);
 
         // Botón de inicio de sesión
-        TextButton loginButton = new TextButton("Iniciar Sesión", buttonStyle);
+        TextButton loginButton = new TextButton("Iniciar Sesión",  UIStyle.getButtonStyle());
         loginButton.setSize(300, 60);
         loginButton.setPosition(Gdx.graphics.getWidth() / 2f - 150, 120);
         loginButton.addListener(new ClickListener() {
@@ -115,7 +99,7 @@ public class LoginScreen implements Screen {
         stage.addActor(loginButton);
 
         // Botón de regresar
-        TextButton backButton = new TextButton("Volver", buttonStyle);
+        TextButton backButton = new TextButton("Volver", UIStyle.getButtonStyle());
         backButton.setSize(300, 60);
         backButton.setPosition(Gdx.graphics.getWidth() / 2f - 150, 40);
         backButton.addListener(new ClickListener() {
@@ -163,11 +147,4 @@ public class LoginScreen implements Screen {
         font.dispose();
     }
 
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setBlending(Pixmap.Blending.SourceOver);
-        pixmap.setColor(new Color(color.r, color.g, color.b, transparency));
-        pixmap.fillRectangle(0, 20, width, height - 20);
-        return pixmap;
-    }
 }

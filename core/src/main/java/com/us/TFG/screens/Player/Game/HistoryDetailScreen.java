@@ -20,10 +20,7 @@ import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.model.Game;
 import com.us.TFG.model.History;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.*;
 
 public class HistoryDetailScreen implements Screen {
     private Stage stage;
@@ -47,28 +44,15 @@ public class HistoryDetailScreen implements Screen {
 
     @Override
     public void show() {
-        // Cargar el fondo
         fondo = new Imagen(Resources.FONDODOORS);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin();
+        font = UIStyle.getFont();
 
-        // Generar la fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
-        // Añadir la fuente generada al skin
-        skin.add("Caveat", font);
-
-        // Crear y agregar la barra superior
         topBar = new TopBar(username, stage, font);
 
         // Crear la flecha de retroceso
@@ -97,34 +81,18 @@ public class HistoryDetailScreen implements Screen {
         Table contentTable = new Table();
         contentTable.setBackground(background);
 
-        // Estilos
-        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font;
-        textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(1000, 40, Color.GRAY, 0.8f)));
-
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        buttonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.DARK_GRAY, 0.4f)));
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.font = font;
 
 
         // Nombre de la historia
-        Label historyTitle = new Label(history.getTitle(), labelStyle);
+        Label historyTitle = new Label(history.getTitle(), UIStyle.getLabelStyle());
 
         // Descripción de la historia
-        Label historyDescription = new Label(history.getDescription(), labelStyle);
+        Label historyDescription = new Label(history.getDescription(), UIStyle.getLabelStyle());
         historyDescription.setWrap(true);
 
 
         // Campo para el nombre del juego con placeholder
-        gameNameField = new TextField(PLACEHOLDER_TEXT, textFieldStyle);
+        gameNameField = new TextField(PLACEHOLDER_TEXT, UIStyle.getTextFieldStyle());
         gameNameField.setMessageText(PLACEHOLDER_TEXT); // Placeholder
         gameNameField.addListener(new ClickListener() {
             @Override
@@ -136,11 +104,11 @@ public class HistoryDetailScreen implements Screen {
         });
 
         // Etiqueta para mostrar mensajes de feedback
-        feedbackLabel = new Label("", labelStyle);
+        feedbackLabel = new Label("", UIStyle.getLabelStyle());
         feedbackLabel.setWrap(true);
 
         // Botón para guardar el juego
-        TextButton saveButton = new TextButton("Crear Juego", buttonStyle);
+        TextButton saveButton = new TextButton("Crear Juego", UIStyle.getButtonStyle());
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -220,10 +188,4 @@ public class HistoryDetailScreen implements Screen {
         font.dispose();
     }
 
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(color.r, color.g, color.b, transparency));
-        pixmap.fill();
-        return pixmap;
-    }
 }

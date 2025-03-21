@@ -19,10 +19,7 @@ import com.us.TFG.manager.HistoryManager;
 import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.model.History;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.*;
 
 import java.util.List;
 
@@ -45,32 +42,17 @@ public class CreateGameScreen implements Screen {
 
     @Override
     public void show() {
-        // Cargar el fondo
         fondo = new Imagen(Resources.FONDODOORS);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin();
-
-        // Generar la fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
-        // Añadir la fuente generada al skin
-        skin.add("Caveat", font);
-
-        // Crear y agregar la barra superior
+        font = UIStyle.getFont();
         topBar = new TopBar(username, stage, font);
 
         // Cargar las partidas del jugador
-        int playerId = PlayerManager.getPlayerData(username).getId(); // Asume que tienes un método para obtener el ID del jugador
         histories = HistoryManager.getHistories();
         currentIndex = 0;
 

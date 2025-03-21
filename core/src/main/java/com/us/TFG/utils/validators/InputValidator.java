@@ -1,6 +1,33 @@
 package com.us.TFG.utils.validators;
 
 public class InputValidator {
+
+    public static String validateInputs(String username, String firstname, String lastname, String email) {
+        if (InputValidator.validateUsername(username) != null) return "Nombre de usuario no válido.";
+        if (InputValidator.validateFirstname(firstname) != null) return "Nombre no válido.";
+        if (InputValidator.validateLastname(lastname) != null) return "Apellido no válido.";
+        if (InputValidator.validateEmail(email) != null) return "Correo electrónico no válido.";
+        return null;
+    }
+
+    public static String validateInputs2(String username, String password, String firstname, String lastname, String email) {
+        String error;
+        error = InputValidator.validateUsername(username);
+        if (error != null) return error;
+
+        error = InputValidator.validatePassword(password);
+        if (error != null) return error;
+
+        error = InputValidator.validateFirstname(firstname);
+        if (error != null) return error;
+
+        error = InputValidator.validateLastname(lastname);
+        if (error != null) return error;
+
+        return InputValidator.validateEmail(email);
+    }
+
+
     public static String validateUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
             return "El nombre de usuario es obligatorio.";

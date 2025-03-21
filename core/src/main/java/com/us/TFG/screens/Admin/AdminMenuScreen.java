@@ -16,10 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.*;
 
 public class AdminMenuScreen implements Screen {
 
@@ -45,33 +42,15 @@ public class AdminMenuScreen implements Screen {
         // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
+        font = UIStyle.getFont();
+        topBar = new TopBar(username, stage, font);
         skin = new Skin();
-
-        // Generar la fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
         // Añadir la fuente generada al skin
         skin.add("Caveat", font);
 
-        // Crear estilo para los botones usando Pixmap
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        style.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        style.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.DARK_GRAY, 0.4f)));
-        style.fontColor = Color.WHITE;
-        style.font = font;
-
-        // Crear y agregar la barra superior
-        topBar = new TopBar(username, stage, font);
-
         // Crear los botones de texto
-        TextButton playerButton = new TextButton("Players", style);
-        TextButton foroButton = new TextButton("Foro", style);
+        TextButton playerButton = new TextButton("Players", UIStyle.getButtonStyle());
+        TextButton foroButton = new TextButton("Foro", UIStyle.getButtonStyle());
 
         // Ajustar el tamaño de los botones
         playerButton.setSize(300, 75);

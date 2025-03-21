@@ -20,10 +20,7 @@ import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.model.Chapter;
 import com.us.TFG.model.Scene;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.*;
 
 import java.util.List;
 
@@ -49,45 +46,24 @@ public class ChapterCatalogScreen implements Screen {
 
     @Override
     public void show() {
-        // Cargar el fondo
         fondo = new Imagen(Resources.FONDOBOOK);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin();
-
-        // Generar la fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
-        // Añadir la fuente generada al skin
-        skin.add("Caveat", font);
-
-        // Crear y agregar la barra superior
+        font = UIStyle.getFont();
         topBar = new TopBar(username, stage, font);
 
-
-        // Obtener los capítulos desbloqueados
         chapters = ChapterManager.getChaptersForPlayerandGame(PlayerManager.getPlayerData(username).getId(), gameId);
 
-        // Renderizar la primera página
         renderPage();
 
     }
 
     private void renderPage() {
         stage.clear();
-
-        // Fondo y top bar
-        topBar = new TopBar(username, stage, font);
-
 
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
@@ -120,17 +96,9 @@ public class ChapterCatalogScreen implements Screen {
         chapterTable.padTop(30).padLeft(150).padRight(150);
 
         // Estilos
-        TextButton.TextButtonStyle unlockedButtonStyle = new TextButton.TextButtonStyle();
-        unlockedButtonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 100, Color.PURPLE, 1.0f)));
-        unlockedButtonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 100, Color.DARK_GRAY, 1.0f)));
-        unlockedButtonStyle.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 100, Color.LIGHT_GRAY, 1.0f)));
-        unlockedButtonStyle.fontColor = Color.WHITE;
-        unlockedButtonStyle.font = font;
-
-        TextButton.TextButtonStyle lockedButtonStyle = new TextButton.TextButtonStyle();
-        lockedButtonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 100, Color.GRAY, 0.5f)));
+        TextButton.TextButtonStyle unlockedButtonStyle = UIStyle.getCustomButtonStyle(300, 150, Color.PURPLE);
+        TextButton.TextButtonStyle lockedButtonStyle = UIStyle.getCustomButtonStyle(300, 150, new Color(0.5f, 0.5f, 0.5f, 0.5f));
         lockedButtonStyle.fontColor = Color.DARK_GRAY;
-        lockedButtonStyle.font = font;
 
         // Renderizar capítulos
         int start = currentPage * CHAPTERS_PER_PAGE;
@@ -232,10 +200,4 @@ public class ChapterCatalogScreen implements Screen {
         font.dispose();
     }
 
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(color.r, color.g, color.b, transparency));
-        pixmap.fill();
-        return pixmap;
-    }
 }

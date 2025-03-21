@@ -18,10 +18,7 @@ import com.us.TFG.elements.Imagen;
 import com.us.TFG.model.Authorities;
 import com.us.TFG.screens.Admin.AdminMenuScreen;
 import com.us.TFG.screens.Admin.AdminPerfilScreen;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.*;
 import com.us.TFG.manager.UserManager;
 import com.us.TFG.utils.validators.InputValidator;
 
@@ -45,58 +42,30 @@ public class ChangePasswordScreen implements Screen {
 
     @Override
     public void show() {
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        skin = new Skin();
+        skin = UIStyle.getSkin();
 
-        //Cargar el fondo
         fondo = new Imagen(Resources.FONDON);
-        fondo.setSize(Config.WIDTH, Config.HEIGHT);
+        fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch = Render.batch;
 
-        // Generar la fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
+        topBar = new TopBar(currentUsername, stage, UIStyle.getFont());
 
-        // Añadir la fuente generada al skin
-        skin.add("Caveat", font);
-
-        // Crear y agregar la barra superior
-        topBar = new TopBar(currentUsername, stage, font);
-
-        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font;
-        textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 50, Color.DARK_GRAY, 0.5f)));
-
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 50, Color.GRAY, 0.5f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 50, Color.DARK_GRAY, 0.5f)));
-
-        newPasswordField = new TextField("", textFieldStyle);
+        newPasswordField = new TextField("", UIStyle.getTextFieldStyle());
         newPasswordField.setMessageText("Nueva Contraseña");
         newPasswordField.setPasswordMode(true);
         newPasswordField.setPasswordCharacter('*');
 
-        confirmPasswordField = new TextField("", textFieldStyle);
+        confirmPasswordField = new TextField("", UIStyle.getTextFieldStyle());
         confirmPasswordField.setMessageText("Confirmar Contraseña");
         confirmPasswordField.setPasswordMode(true);
         confirmPasswordField.setPasswordCharacter('*');
 
-        feedbackLabel = new Label("", labelStyle);
+        feedbackLabel = new Label("", UIStyle.getLabelStyle());
         feedbackLabel.setWrap(true);
 
-        TextButton saveButton = new TextButton("Cambiar Contraseña", buttonStyle);
+        TextButton saveButton = new TextButton("Cambiar Contraseña", UIStyle.getButtonStyle());
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -126,7 +95,7 @@ public class ChangePasswordScreen implements Screen {
             }
         });
 
-        TextButton backButton = new TextButton("Volver", buttonStyle);
+        TextButton backButton = new TextButton("Volver", UIStyle.getButtonStyle());
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -141,7 +110,7 @@ public class ChangePasswordScreen implements Screen {
 
         Table table = new Table();
         table.setFillParent(true);
-        table.add(new Label("Cambiar Contraseña", labelStyle)).colspan(2).padBottom(30);
+        table.add(new Label("Cambiar Contraseña", UIStyle.getLabelStyle())).colspan(2).padBottom(30);
         table.row();
         table.add(newPasswordField).width(400).padBottom(15);
         table.row();
@@ -197,10 +166,4 @@ public class ChangePasswordScreen implements Screen {
 
     }
 
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(color.r, color.g, color.b, transparency));
-        pixmap.fill();
-        return pixmap;
-    }
 }
