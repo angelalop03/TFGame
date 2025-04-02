@@ -135,10 +135,6 @@ public class AdminForumScreen implements Screen {
         pixmap.dispose();
         card.setBackground(background);
 
-        // Imagen de la noticia
-        Texture newsImageTexture = new Texture(Gdx.files.internal("assets/photos/News/" + news.getImage()));
-        Image newsImage = new Image(new TextureRegionDrawable(newsImageTexture));
-        card.add(newsImage).size(280, 150).row();
 
         // Procesar título para que sea más corto si es necesario
         String title = news.getName();

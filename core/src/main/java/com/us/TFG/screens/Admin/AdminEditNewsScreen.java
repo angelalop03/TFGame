@@ -103,16 +103,7 @@ public class AdminEditNewsScreen implements Screen {
         feedbackLabel = new Label("", labelStyle);
         feedbackLabel.setWrap(true);
 
-        // Botón para seleccionar imagen
-        TextButton selectImageButton = new TextButton("Seleccionar Archivo", buttonStyle);
 
-        selectImageButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // Acción para seleccionar la imagen
-                // Implementar la lógica de selección de archivo
-            }
-        });
 
         // Botón para guardar los cambios
         TextButton saveButton = new TextButton("Guardar", buttonStyle);
@@ -122,7 +113,7 @@ public class AdminEditNewsScreen implements Screen {
                 // Guardar cambios
                 String newTitle = titleField.getText().trim();
                 String newText = contentField.getText().trim();
-                boolean success = NewsManager.updateNews(news.getId(), newTitle, newText, news.getImage());
+                boolean success = NewsManager.updateNews(news.getId(), newTitle, newText);
 
                 // Mostrar feedback
                 if (success) {
@@ -141,9 +132,6 @@ public class AdminEditNewsScreen implements Screen {
         table.row();
         table.add(new Label("Título", labelStyle)).left().padBottom(10);
         table.add(titleField).width(600).padBottom(15).center();
-        table.row();
-        table.add(new Label("Imagen", labelStyle)).left().padBottom(10);
-        table.add(selectImageButton).width(300).padBottom(15).left();
         table.row();
         table.add(new Label("Contenido", labelStyle)).left().padBottom(10);
         table.add(contentField).width(600).height(300).padBottom(15).center(); // Amplía para texto largo

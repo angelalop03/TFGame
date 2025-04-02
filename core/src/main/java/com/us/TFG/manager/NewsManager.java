@@ -67,8 +67,8 @@ public class NewsManager {
         return false; // Retorna false si ocurrió un error
     }
 
-    public static boolean updateNews(int newsId, String newTitle, String newText, String newImage) {
-        String query = "UPDATE news SET name = ?, text = ?, image = ? WHERE id = ?";
+    public static boolean updateNews(int newsId, String newTitle, String newText) {
+        String query = "UPDATE news SET name = ?, text = ? WHERE id = ?";
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
         if (connection == null) {
@@ -79,8 +79,7 @@ public class NewsManager {
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, newTitle);
             stmt.setString(2, newText);
-            stmt.setString(3, newImage);
-            stmt.setInt(4, newsId);
+            stmt.setInt(3, newsId);
 
             int rowsAffected = stmt.executeUpdate();
             stmt.close();
@@ -95,8 +94,8 @@ public class NewsManager {
 
 
     // Método para crear una nueva noticia
-    public static boolean createNews(String title, String text, String image) {
-        String query = "INSERT INTO news (name, text, image) VALUES (?, ?, ?)";
+    public static boolean createNews(String title, String text) {
+        String query = "INSERT INTO news (name, text) VALUES (?, ?)";
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
         if (connection == null) {
@@ -107,7 +106,6 @@ public class NewsManager {
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, title);
             stmt.setString(2, text);
-            stmt.setString(3, image);
 
             int rowsAffected = stmt.executeUpdate();
             stmt.close();

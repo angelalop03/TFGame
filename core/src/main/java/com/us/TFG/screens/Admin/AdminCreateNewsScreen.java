@@ -110,9 +110,8 @@ public class AdminCreateNewsScreen implements Screen {
                 // Guardar la noticia
                 String newTitle = titleField.getText().trim();
                 String newText = contentField.getText().trim();
-                String newImage = "News1.png"; // Ruta fija como ejemplo
 
-                boolean success = NewsManager.createNews(newTitle, newText, newImage);
+                boolean success = NewsManager.createNews(newTitle, newText);
 
                 // Mostrar feedback
                 if (success) {

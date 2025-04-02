@@ -16,10 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.NewsManager;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.*;
 
 public class AdminNewsDetailScreen implements Screen {
 
@@ -28,7 +25,6 @@ public class AdminNewsDetailScreen implements Screen {
     private Imagen fondo;
     private BitmapFont font;
     private BitmapFont titleFont;
-
     private NewsManager.NewsData news;
     private Skin skin;
     private TopBar topBar;
@@ -49,20 +45,10 @@ public class AdminNewsDetailScreen implements Screen {
         // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
+        font = UIStyle.getFont();
+        topBar = new TopBar(username, stage, font);
         skin = new Skin();
-
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-
-        FreeTypeFontGenerator.FreeTypeFontParameter titleParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        titleParameter.size = 48;
-        titleFont = generator.generateFont(titleParameter);
-
-        generator.dispose();
-
+        // Añadir la fuente generada al skin
         skin.add("Caveat", font);
 
         // Crear la barra superior
@@ -93,7 +79,7 @@ public class AdminNewsDetailScreen implements Screen {
 
         // Botones "Editar" y "Eliminar"
         Table buttonTable = new Table();
-        TextButton.TextButtonStyle buttonStyle = createButtonStyle();
+        TextButton.TextButtonStyle buttonStyle = UIStyle.getButtonStyle();
 
         TextButton editButton = new TextButton("Editar", buttonStyle);
         TextButton deleteButton = new TextButton("Eliminar", buttonStyle);
@@ -118,15 +104,9 @@ public class AdminNewsDetailScreen implements Screen {
         buttonTable.add(deleteButton).pad(10).width(200).height(50);
         contentTable.add(buttonTable).padTop(20).center().row();
 
-        // Mostrar imagen
-        Texture newsImageTexture = new Texture(Gdx.files.internal("assets/photos/News/" + news.getImage()));
-        Image newsImage = new Image(new TextureRegionDrawable(newsImageTexture));
-        float maxImageWidth = 800;
-        float aspectRatio = (float) newsImageTexture.getHeight() / newsImageTexture.getWidth();
-        contentTable.add(newsImage).center().size(maxImageWidth, maxImageWidth * aspectRatio).padTop(5).row();
 
         // Mostrar título
-        Label newsTitleLabel = new Label(news.getName(), new Label.LabelStyle(titleFont, Color.DARK_GRAY));
+        Label newsTitleLabel = new Label(news.getName(), new Label.LabelStyle(UIStyle.getFont(), Color.DARK_GRAY));
         newsTitleLabel.setWrap(true);
         newsTitleLabel.setAlignment(1);
         contentTable.add(newsTitleLabel).width(Gdx.graphics.getWidth() * 0.9f).center().pad(10).row();
@@ -153,19 +133,15 @@ public class AdminNewsDetailScreen implements Screen {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 300, Color.RED, 1f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(400, 300, Color.RED, 1f)));
 
         Dialog deleteDialog = new Dialog("", dialogStyle);
 
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
 
-        deleteDialog.text(new Label("¿Estás seguro de eliminar esta noticia?", labelStyle)).pad(10);
+        deleteDialog.text(new Label("¿Estás seguro de eliminar esta noticia?", UIStyle.getLabelStyle())).pad(10);
 
-        TextButton.TextButtonStyle buttonStyle = createButtonStyle();
 
-        TextButton confirmButton = new TextButton("Confirmar", buttonStyle);
+        TextButton confirmButton = new TextButton("Confirmar", UIStyle.getButtonStyle());
         confirmButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -174,12 +150,12 @@ public class AdminNewsDetailScreen implements Screen {
                     deleteDialog.remove();
                     Render.app.setScreen(new AdminForumScreen(username));
                 } else {
-                    deleteDialog.text(new Label("Error al eliminar la noticia.", labelStyle)).pad(10);
+                    deleteDialog.text(new Label("Error al eliminar la noticia.", UIStyle.getLabelStyle())).pad(10);
                 }
             }
         });
 
-        TextButton cancelButton = new TextButton("Cancelar", buttonStyle);
+        TextButton cancelButton = new TextButton("Cancelar", UIStyle.getButtonStyle());
         cancelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -194,26 +170,7 @@ public class AdminNewsDetailScreen implements Screen {
         deleteDialog.show(stage);
     }
 
-    private TextButton.TextButtonStyle createButtonStyle() {
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        Pixmap buttonPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        buttonPixmap.setColor(Color.DARK_GRAY);
-        buttonPixmap.fill();
-        buttonStyle.up = new TextureRegionDrawable(new Texture(buttonPixmap));
-        buttonPixmap.dispose();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.WHITE;
-        return buttonStyle;
-    }
 
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setBlending(Pixmap.Blending.SourceOver);
-        Color transparentColor = new Color(color.r, color.g, color.b, transparency);
-        pixmap.setColor(transparentColor);
-        pixmap.fill();
-        return pixmap;
-    }
 
     @Override
     public void render(float delta) {
