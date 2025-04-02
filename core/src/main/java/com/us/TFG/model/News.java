@@ -15,14 +15,11 @@ public class News {
     @Column(name = "text", type = "TEXT", notNull = true)
     private String text;  // Contenido de la noticia
 
-    @Column(name = "image", type = "TEXT")
-    private String image;  // URL de la imagen asociada a la noticia
 
 
     public News(String name, String text, String image) {
         this.name = name;
         this.text = text;
-        this.image = image;
     }
 
     // Getters y Setters
@@ -50,13 +47,6 @@ public class News {
         this.text = text;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
 
 
 }

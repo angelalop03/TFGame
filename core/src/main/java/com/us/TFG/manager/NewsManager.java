@@ -13,7 +13,7 @@ public class NewsManager {
 
     // Método para obtener todas las noticias de la base de datos
     public static List<NewsData> getAllNews() {
-        String query = "SELECT id, name, text, image FROM news";
+        String query = "SELECT id, name, text FROM news";
         Connection connection = MyTfgGame.databaseManager.getConnection();
         List<NewsData> newsList = new ArrayList<>();
 
@@ -29,8 +29,7 @@ public class NewsManager {
                 newsList.add(new NewsData(
                     rs.getInt("id"),
                     rs.getString("name"),
-                    rs.getString("text"),
-                    rs.getString("image")
+                    rs.getString("text")
                 ));
             }
 
@@ -48,13 +47,11 @@ public class NewsManager {
         private final int id;
         private final String name;
         private final String text;
-        private final String image;
 
-        public NewsData(int id, String name, String text, String image) {
+        public NewsData(int id, String name, String text) {
             this.id = id;
             this.name = name;
             this.text = text;
-            this.image = image;
         }
 
         public int getId() {
@@ -69,8 +66,5 @@ public class NewsManager {
             return text;
         }
 
-        public String getImage() {
-            return image;
-        }
     }
 }

@@ -58,9 +58,6 @@ public class NewsDetailScreen implements Screen {
         contentTable.top();
         contentTable.setBackground(UIStyle.getBackgroundDrawable());
 
-        // Mostrar imagen de la noticia
-        Image newsImage = new Image(new Texture("assets/photos/News/" + news.getImage()));
-        contentTable.add(newsImage).center().size(800, 450).padTop(5).row();
 
         // Mostrar título de la noticia
         Label newsTitleLabel = new Label(news.getName(), UIStyle.getTitleLabelStyle());
