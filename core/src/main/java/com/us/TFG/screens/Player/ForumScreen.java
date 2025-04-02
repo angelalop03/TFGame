@@ -52,9 +52,6 @@ public class ForumScreen implements Screen {
             Table newsContainer = new Table();
             newsContainer.setBackground(UIStyle.getBackgroundDrawable());
 
-            Image newsImage = new Image(new Texture("assets/photos/News/" + news.getImage()));
-            newsContainer.add(newsImage).center().size(800, 450).padTop(5).row();
-
             Label newsTitleLabel = new Label(news.getName(), UIStyle.getTitleLabelStyle());
             newsTitleLabel.setWrap(true);
             newsTitleLabel.setAlignment(1);
