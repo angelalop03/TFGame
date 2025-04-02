@@ -19,10 +19,7 @@ import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.manager.UserManager;
 import com.us.TFG.screens.Player.PlayerPerfilScreen;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.*;
 import com.us.TFG.utils.validators.InputValidator;
 
 import java.util.List;
@@ -49,27 +46,15 @@ public class AdminViewPlayersScreen implements Screen {
         fondo = new Imagen(Resources.FONDON);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
+        font = UIStyle.getFont();
 
         // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
         skin = new Skin();
-
-        // Generar la fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
         // Añadir la fuente generada al skin
         skin.add("Caveat", font);
-
-        // Crear estilo para las etiquetas
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
 
         // Crear y agregar la barra superior
         topBar = new TopBar(adminUsername, stage, font);
@@ -88,7 +73,7 @@ public class AdminViewPlayersScreen implements Screen {
 
 
         // Crear la tabla de jugadores
-        Table playersTable = createPlayersTable(labelStyle);
+        Table playersTable = createPlayersTable(UIStyle.getLabelStyle());
 
         // Crear el ScrollPane para los jugadores
         ScrollPane scrollPane = new ScrollPane(playersTable);
@@ -105,12 +90,6 @@ public class AdminViewPlayersScreen implements Screen {
         Table table = new Table();
         table.top(); // Alineación inicial de la tabla
 
-        // Estilo para los botones
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.DARK_GRAY, 0.7f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.GRAY, 0.7f)));
 
         // Obtener la lista de jugadores desde PlayerManager
         List<PlayerManager.PlayerData> players = PlayerManager.getAllPlayers();
@@ -119,7 +98,7 @@ public class AdminViewPlayersScreen implements Screen {
             table.add(new Label(player.getEmail(), labelStyle)).width(300).pad(10).center();
 
             // Botón de Editar
-            TextButton editButton = new TextButton("Editar", buttonStyle);
+            TextButton editButton = new TextButton("Editar", UIStyle.getButtonStyle());
             editButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -132,7 +111,7 @@ public class AdminViewPlayersScreen implements Screen {
             // Botón de Historial
             Table actionTable = new Table();
 
-            TextButton historyButton = new TextButton("Historial", buttonStyle);
+            TextButton historyButton = new TextButton("Historial", UIStyle.getButtonStyle());
             historyButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -141,7 +120,7 @@ public class AdminViewPlayersScreen implements Screen {
             });
             actionTable.add(historyButton).width(110).padRight(10);
 
-            TextButton deleteButton = new TextButton("Eliminar", buttonStyle);
+            TextButton deleteButton = new TextButton("Eliminar", UIStyle.getButtonStyle());
             deleteButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -155,13 +134,6 @@ public class AdminViewPlayersScreen implements Screen {
         }
 
         return table;
-    }
-
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(color.r, color.g, color.b, transparency));
-        pixmap.fill();
-        return pixmap;
     }
 
     @Override
@@ -200,22 +172,16 @@ public class AdminViewPlayersScreen implements Screen {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 300, Color.VIOLET, 1.0f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(400, 300, Color.VIOLET, 1.0f)));
 
         // Crear el diálogo
         Dialog editDialog = new Dialog("", dialogStyle);
 
-        // Crear estilos para los campos de texto
-        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font;
-        textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 50, Color.GRAY, 0.8f)));
-
         // Crear campos de texto con valores iniciales
-        TextField usernameField = new TextField(PlayerManager.getUsername(player.getId()), textFieldStyle);
-        TextField firstnameField = new TextField(player.getFirstname(), textFieldStyle);
-        TextField lastnameField = new TextField(player.getLastname(), textFieldStyle);
-        TextField emailField = new TextField(player.getEmail(), textFieldStyle);
+        TextField usernameField = new TextField(PlayerManager.getUsername(player.getId()), UIStyle.getTextFieldStyle());
+        TextField firstnameField = new TextField(player.getFirstname(), UIStyle.getTextFieldStyle());
+        TextField lastnameField = new TextField(player.getLastname(), UIStyle.getTextFieldStyle());
+        TextField emailField = new TextField(player.getEmail(), UIStyle.getTextFieldStyle());
 
         // Añadir campos al diálogo
         editDialog.getContentTable().add(new Label("Usuario:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
@@ -227,25 +193,13 @@ public class AdminViewPlayersScreen implements Screen {
         editDialog.getContentTable().add(new Label("Correo:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
         editDialog.getContentTable().add(emailField).width(300).pad(5).row();
 
-        //Estilo para las etiquetas
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-
         // Etiqueta para mostrar mensajes de feedback
-        Label feedbackLabel = new Label("", labelStyle);
+        Label feedbackLabel = new Label("", UIStyle.getLabelStyle());
         feedbackLabel.setWrap(false);
         feedbackLabel.setAlignment(Align.center); // Centra el texto horizontalmente
 
-        // Estilo para los botones
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.DARK_GRAY, 0.7f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.GRAY, 0.7f)));
-
         // Botón Cambiar Contraseña
-        TextButton changePasswordButton = new TextButton("Cambiar Contraseña", buttonStyle);
+        TextButton changePasswordButton = new TextButton("Cambiar Contraseña", UIStyle.getButtonStyle());
         changePasswordButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -258,7 +212,7 @@ public class AdminViewPlayersScreen implements Screen {
         editDialog.getContentTable().add(changePasswordButton).colspan(2).center().pad(10).row();
 
         //Boton Guardar
-        TextButton saveButton = new TextButton("Guardar", buttonStyle);
+        TextButton saveButton = new TextButton("Guardar", UIStyle.getButtonStyle());
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -295,7 +249,7 @@ public class AdminViewPlayersScreen implements Screen {
         editDialog.getButtonTable().add(saveButton).pad(10);
 
         // Botón de Cancelar
-        TextButton cancelButton = new TextButton("Cerrar", buttonStyle);
+        TextButton cancelButton = new TextButton("Cerrar", UIStyle.getButtonStyle());
         cancelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -316,31 +270,20 @@ public class AdminViewPlayersScreen implements Screen {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(500, 300, Color.PINK, 1.0f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(500, 300, Color.PINK, 1.0f)));
 
         Dialog passwordDialog = new Dialog("", dialogStyle);
 
-        //Estilo para las etiquetas
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-
         // Etiqueta para mostrar mensajes de feedback
-        Label feedbackLabel = new Label("", labelStyle);
+        Label feedbackLabel = new Label("", UIStyle.getLabelStyle());
         feedbackLabel.setWrap(false);
         feedbackLabel.setAlignment(Align.center);
 
-
-        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font;
-        textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 50, Color.LIGHT_GRAY, 0.8f)));
-
-        TextField newPasswordField = new TextField("", textFieldStyle);
+        TextField newPasswordField = new TextField("", UIStyle.getTextFieldStyle());
         newPasswordField.setPasswordMode(true);
         newPasswordField.setPasswordCharacter('*');
 
-        TextField confirmPasswordField = new TextField("", textFieldStyle);
+        TextField confirmPasswordField = new TextField("", UIStyle.getTextFieldStyle());
         confirmPasswordField.setPasswordMode(true);
         confirmPasswordField.setPasswordCharacter('*');
 
@@ -350,14 +293,8 @@ public class AdminViewPlayersScreen implements Screen {
         passwordDialog.getContentTable().add(new Label("Confirmar Contraseña:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
         passwordDialog.getContentTable().add(confirmPasswordField).width(300).pad(5).row();
 
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.DARK_GRAY, 0.7f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.GRAY, 0.7f)));
-
         //Boton guardar
-        TextButton saveButton = new TextButton("Guardar", buttonStyle);
+        TextButton saveButton = new TextButton("Guardar", UIStyle.getButtonStyle());
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -388,7 +325,7 @@ public class AdminViewPlayersScreen implements Screen {
             }
         });
 
-        TextButton cancelButton = new TextButton("Cerrar", buttonStyle);
+        TextButton cancelButton = new TextButton("Cerrar", UIStyle.getButtonStyle());
         cancelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -412,27 +349,16 @@ public class AdminViewPlayersScreen implements Screen {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 300, Color.RED, 1f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(400, 300, Color.RED, 1f)));
 
         Dialog deleteDialog = new Dialog("", dialogStyle);
 
-        // Estilo para las etiquetas
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
 
         // Crear contenido del diálogo
-        deleteDialog.text(new Label("¿Estás seguro de eliminar este perfil?", labelStyle)).pad(10);
-
-        // Estilo para los botones
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.DARK_GRAY, 0.7f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 50, Color.GRAY, 0.7f)));
+        deleteDialog.text(new Label("¿Estás seguro de eliminar este perfil?", UIStyle.getLabelStyle())).pad(10);
 
         // Botón de Confirmar
-        TextButton confirmButton = new TextButton("Confirmar", buttonStyle);
+        TextButton confirmButton = new TextButton("Confirmar", UIStyle.getButtonStyle());
         confirmButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -441,13 +367,13 @@ public class AdminViewPlayersScreen implements Screen {
                     deleteDialog.remove();
                     Render.app.setScreen(new AdminViewPlayersScreen(adminUsername)); // Actualizar la pantalla
                 } else {
-                    deleteDialog.text(new Label("Error al eliminar el perfil.", labelStyle)).pad(10);
+                    deleteDialog.text(new Label("Error al eliminar el perfil.", UIStyle.getLabelStyle())).pad(10);
                 }
             }
         });
 
         // Botón de Cancelar
-        TextButton cancelButton = new TextButton("Cancelar", buttonStyle);
+        TextButton cancelButton = new TextButton("Cancelar",  UIStyle.getButtonStyle());
         cancelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

@@ -18,10 +18,7 @@ import com.us.TFG.elements.Imagen;
 import com.us.TFG.screens.General.LoginScreen;
 import com.us.TFG.screens.General.OpenScreen;
 import com.us.TFG.screens.Player.ChangePasswordScreen;
-import com.us.TFG.utils.Config;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
+import com.us.TFG.utils.*;
 
 public class AdminPerfilScreen implements Screen {
     private String username;
@@ -42,33 +39,15 @@ public class AdminPerfilScreen implements Screen {
         fondo = new Imagen(Resources.FONDON);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         b = Render.batch;
-
         // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
+        font = UIStyle.getFont();
+        topBar = new TopBar(username, stage, font);
         skin = new Skin();
-
-        // Generar la fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
         // Añadir la fuente generada al skin
         skin.add("Caveat", font);
 
-        // Crear estilo para los botones usando Pixmap
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.LIGHT_GRAY, 0.4f)));
-        style.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.GRAY, 0.4f)));
-        style.over = new TextureRegionDrawable(new Texture(createRoundedPixmap(350, 100, Color.DARK_GRAY, 0.4f)));
-        style.fontColor = Color.WHITE;
-        style.font = font;
-
-        // Crear y agregar la barra superior
-        topBar = new TopBar(username, stage, font);
 
         // Crear el cuadro gris translúcido
         Pixmap pixmap = new Pixmap(700, 200, Pixmap.Format.RGBA8888);
@@ -85,17 +64,12 @@ public class AdminPerfilScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
 
-        // Mostrar el nombre de usuario
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-
-        Label usernameLabel = new Label("Usuario: " + username, labelStyle);
+        Label usernameLabel = new Label("Usuario: " + username, UIStyle.getLabelStyle());
         table.add(usernameLabel).padBottom(10);
         table.row();
 
         // Botón para editar perfil
-        TextButton changepasswordButton = new TextButton("Cambiar Contraseña", style);
+        TextButton changepasswordButton = new TextButton("Cambiar Contraseña", UIStyle.getButtonStyle());
         changepasswordButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -108,7 +82,7 @@ public class AdminPerfilScreen implements Screen {
         table.row();
 
         // Botón para cerrar sesión
-        TextButton logOutButton = new TextButton("Cerrar Sesión", style);
+        TextButton logOutButton = new TextButton("Cerrar Sesión", UIStyle.getButtonStyle());
         logOutButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -153,26 +127,13 @@ public class AdminPerfilScreen implements Screen {
         font.dispose();
     }
 
-    // Método para crear Pixmap redondeado
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setBlending(Pixmap.Blending.SourceOver);
-
-        // Establecer el color con la transparencia
-        Color transparentColor = new Color(color.r, color.g, color.b, transparency);
-        pixmap.setColor(transparentColor);
-
-        pixmap.fillRectangle(0, 20, width, height - 2 * 20);  // Centro vertical
-
-        return pixmap;
-    }
 
     private void showLogoutDialog() {
         // Crear estilo del diálogo
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(500, 300, Color.PINK, 1f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(500, 300, Color.PINK, 1f)));
 
         Dialog logoutDialog = new Dialog("", dialogStyle);
 
@@ -183,8 +144,8 @@ public class AdminPerfilScreen implements Screen {
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
         buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 80, Color.GRAY, 0.7f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(150, 80, Color.LIGHT_GRAY, 0.7f)));
+        buttonStyle.up = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(150, 80, Color.GRAY, 0.7f)));
+        buttonStyle.down = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(150, 80, Color.LIGHT_GRAY, 0.7f)));
 
         // Etiqueta de confirmación
         Label confirmLabel = new Label("¿Estás seguro de que deseas cerrar sesión?", labelStyle);

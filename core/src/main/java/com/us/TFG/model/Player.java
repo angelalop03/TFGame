@@ -22,22 +22,14 @@ public class Player {
     @Column(name = "image", type = "TEXT", notNull = true, defaultValue = "'default_profile.png'")
     private String image;
 
-    @Column(name = "pointsM", type = "INTEGER")
-    private int pointsM;  // Puntos mentales
-
-    @Column(name = "pointsR", type = "INTEGER")
-    private int pointsR;  // Puntos relacionales
-
     @Column(name = "user_id", type = "INTEGER", notNull = true)  // Relación con el User (clave foránea)
     private int userId;
 
-    public Player(String firstname, String lastname, String email, String image, int userId, int pointsR) {
+    public Player(String firstname, String lastname, String email, String image, int userId) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.image = image;
-        this.pointsM = 0;
-        this.pointsR = 0;
         this.userId = userId;
     }
 
@@ -80,22 +72,6 @@ public class Player {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public int getPointsM() {
-        return pointsM;
-    }
-
-    public void setPointsM(int pointsM) {
-        this.pointsM = pointsM;
-    }
-
-    public int getPointsR() {
-        return pointsR;
-    }
-
-    public void setPointsR(int pointsR) {
-        this.pointsR = pointsR;
     }
 
     public int getUserId() {

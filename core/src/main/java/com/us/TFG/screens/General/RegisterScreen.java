@@ -20,6 +20,7 @@ import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.Config;
 import com.us.TFG.utils.Render;
 import com.us.TFG.utils.Resources;
+import com.us.TFG.utils.UIStyle;
 import com.us.TFG.utils.validators.InputValidator;
 
 public class RegisterScreen implements Screen {
@@ -34,59 +35,31 @@ public class RegisterScreen implements Screen {
 
     @Override
     public void show() {
-        // Cargar el fondo
         fondo = new Imagen(Resources.MENU);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        skin = new Skin();
 
-        // Generar fuente
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 34;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-        skin.add("Caveat", font);
-
-        // Configuración de estilo para los campos de texto
-        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font;
-        textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 40, Color.DARK_GRAY, 0.5f)));
-
-        // Configuración de estilo para las etiquetas
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-        skin.add("default", labelStyle);
-
-        // Configuración de estilo para los botones
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 40, Color.GRAY, 0.5f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 40, Color.DARK_GRAY, 0.5f)));
+        font = UIStyle.getFont();
 
         // Crear campos de entrada
-        usernameField = new TextField("", textFieldStyle);
+        usernameField = new TextField("", UIStyle.getTextFieldStyle());
         usernameField.setMessageText("Nombre de usuario");
-        passwordField = new TextField("", textFieldStyle);
+        passwordField = new TextField("", UIStyle.getTextFieldStyle());
         passwordField.setMessageText("Contraseña");
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
-        firstnameField = new TextField("", textFieldStyle);
+        firstnameField = new TextField("", UIStyle.getTextFieldStyle());
         firstnameField.setMessageText("Nombre");
-        lastnameField = new TextField("", textFieldStyle);
+        lastnameField = new TextField("", UIStyle.getTextFieldStyle());
         lastnameField.setMessageText("Apellido");
-        emailField = new TextField("", textFieldStyle);
+        emailField = new TextField("", UIStyle.getTextFieldStyle());
         emailField.setMessageText("Correo electrónico");
 
         // Botón de registro
-        TextButton registerButton = new TextButton("Registrar", buttonStyle);
+        TextButton registerButton = new TextButton("Registrar", UIStyle.getButtonStyle());
         registerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -96,25 +69,25 @@ public class RegisterScreen implements Screen {
                 String lastname = lastnameField.getText().trim();
                 String email = emailField.getText().trim();
 
-                String validationMessage = validateInputs(username, password, firstname, lastname, email);
+                String validationMessage = InputValidator.validateInputs2(username, password, firstname, lastname, email);
                 if (validationMessage != null) {
-                    showError(validationMessage);
+                    UIStyle.showError(feedbackLabel,validationMessage);
                     return;
                 }
 
                 if (UserManager.registerUser(username, password, firstname, lastname, email)) {
                     Render.app.setScreen(new PlayerMenuScreen(username));
                 } else if (UserManager.usernameExists(username)){
-                    showError("Nombre de usuario no disponible ");
+                    UIStyle.showError(feedbackLabel,"Nombre de usuario no disponible ");
                 }
                 else {
-                    showError("Error al crear usuario");
+                    UIStyle.showError(feedbackLabel,"Error al crear usuario");
                 }
             }
         });
 
         // Botón de regresar
-        TextButton backButton = new TextButton("Volver", buttonStyle);
+        TextButton backButton = new TextButton("Volver", UIStyle.getButtonStyle());
         backButton.setSize(300, 40);
         backButton.setPosition(Gdx.graphics.getWidth() / 2f - 150, 60);
         backButton.addListener(new ClickListener() {
@@ -126,12 +99,12 @@ public class RegisterScreen implements Screen {
         stage.addActor(backButton);
 
         // Etiqueta de feedback para mostrar mensajes
-        feedbackLabel = new Label("", labelStyle);
+        feedbackLabel = new Label("", UIStyle.getLabelStyle());
 
         // Organizar los elementos en una tabla
         Table table = new Table();
         table.setFillParent(true);
-        table.add(new Label("Registrar Nuevo Usuario", labelStyle)).colspan(2).padBottom(30);
+        table.add(new Label("Registrar Nuevo Usuario", UIStyle.getLabelStyle())).colspan(2).padBottom(30);
         table.row();
         table.add(usernameField).width(400).padBottom(15);
         table.row();
@@ -179,33 +152,8 @@ public class RegisterScreen implements Screen {
 
 
 
-    private Pixmap createRoundedPixmap(int width, int height, Color color, float transparency) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(color.r, color.g, color.b, transparency));
-        pixmap.fill();
-        return pixmap;
-    }
-
-    private String validateInputs(String username, String password, String firstname, String lastname, String email) {
-        String error;
-        error = InputValidator.validateUsername(username);
-        if (error != null) return error;
-
-        error = InputValidator.validatePassword(password);
-        if (error != null) return error;
-
-        error = InputValidator.validateFirstname(firstname);
-        if (error != null) return error;
-
-        error = InputValidator.validateLastname(lastname);
-        if (error != null) return error;
-
-        return InputValidator.validateEmail(email);
-    }
 
 
-    private void showError(String message) {
-        feedbackLabel.setText(message);
-        feedbackLabel.setVisible(true);
-    }
+
+
 }

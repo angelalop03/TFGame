@@ -30,7 +30,7 @@ public class UserManager {
 
         String userSql = "INSERT INTO users (username, password, authority" +
             ") VALUES (?, ?, ?)";
-        String playerSql = "INSERT INTO players (firstname, lastname, email, image, pointsM, pointsR, user_id) VALUES (?, ?, ?, 'default_image.png', 0, 0, ?)";
+        String playerSql = "INSERT INTO players (firstname, lastname, email, image, user_id) VALUES (?, ?, ?, 'default_image.png', ?)";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
         try {
