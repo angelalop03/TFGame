@@ -66,6 +66,13 @@ public class AdminMenuScreen implements Screen {
                 Render.app.setScreen(new AdminViewPlayersScreen(username));
             }
         });
+
+        foroButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminForumScreen(username));
+            }
+        });
         // Añadir los botones al stage
         stage.addActor(playerButton);
         stage.addActor(foroButton);
