@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -42,6 +43,9 @@ public class SceneGameScreen implements Screen {
     private Table optionsTable;
     private Skin skin;
     private Texture bgTexture, characterTexture;
+    private ProgressBar psychologicalBar, relationshipBar;
+    private int previousPsychologicalPoints =-1;
+    private int previousRelationshipPoints=-1;
 
 
     public SceneGameScreen(int gameId, int chapterId, String username) {
@@ -49,8 +53,7 @@ public class SceneGameScreen implements Screen {
         this.chapterId = chapterId;
         this.username = username;
         this.assetManager = new AssetManager();
-
-
+        setupBars();
 
     }
     private void loadGameData(int gameId) {
@@ -99,6 +102,52 @@ public class SceneGameScreen implements Screen {
             }
         }
     }
+    private void setupBars() {
+        stage = new Stage(new ScreenViewport());
+
+        int maxPoints = 100;
+        int psychologicalPoints = GameManager.getGameById(gameId).getPointsM();
+        int relationshipPoints = GameManager.getGameById(gameId).getPointsR();
+
+        psychologicalBar = createBar(psychologicalPoints, maxPoints);
+        relationshipBar = createBar(relationshipPoints, maxPoints);
+
+        psychologicalBar.setPosition(Gdx.graphics.getWidth() - 70, Gdx.graphics.getHeight() - 400);
+        relationshipBar.setPosition(Gdx.graphics.getWidth() - 120, Gdx.graphics.getHeight() - 400);
+
+        stage.addActor(psychologicalBar);
+        stage.addActor(relationshipBar);
+
+        Gdx.input.setInputProcessor(stage);  // Necesario para que el Stage reciba eventos de input
+    }
+
+    private ProgressBar createBar(int value, int max) {
+        ProgressBar.ProgressBarStyle style = new ProgressBar.ProgressBarStyle();
+        Pixmap pixmap = new Pixmap(20, 200, Pixmap.Format.RGBA8888);
+
+        // Fondo de la barra (gris oscuro)
+        pixmap.setColor(Color.LIGHT_GRAY);
+        pixmap.fill();
+        style.background = new TextureRegionDrawable(new Texture(pixmap));
+
+        pixmap.dispose();
+        pixmap = new Pixmap(20, 200, Pixmap.Format.RGBA8888);
+
+        // Parte de progreso de la barra (rosado)
+        Color pink = new Color(1f, 0.4f, 0.7f, 1f);
+        pixmap.setColor(pink);
+        pixmap.fill();
+        style.knobBefore = new TextureRegionDrawable(new Texture(pixmap)); // La parte llenada
+
+        pixmap.dispose();
+
+        ProgressBar bar = new ProgressBar(0, max, 1, true, style); // Orientación vertical
+        bar.setValue(value);
+        bar.setSize(20, 200); // Establece el tamaño real de la barra
+        bar.setAnimateDuration(0.5f); // Permitir animación suave
+
+        return bar;
+    }
 
     @Override
     public void show() {
@@ -146,33 +195,19 @@ public class SceneGameScreen implements Screen {
             stage.addActor(optionsTable);
 
             showOptions();
+            // Añadir las barras al escenario
+            stage.addActor(psychologicalBar);
+            stage.addActor(relationshipBar);
         }
     }
 
-
-
-    private void displayErrorMessage(String message) {
-        Label errorLabel = new Label(message, new Label.LabelStyle(UIStyle.getFont(), Color.RED));
-        errorLabel.setAlignment(Align.center);
-        errorLabel.setPosition(Gdx.graphics.getWidth() / 2f - 300, Gdx.graphics.getHeight() / 2f);
-        errorLabel.setWidth(600);
-        errorLabel.setWrap(true);
-        stage.addActor(errorLabel);
-
-        TextButton continueButton = new TextButton("Continuar", UIStyle.getButtonStyle());
-        continueButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 100);
-        continueButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new ChapterCatalogScreen(username,gameId)); // Volver al menú principal
-            }
-        });
-        stage.addActor(continueButton);
-    }
-
-
     @Override
     public void render(float delta) {
+        updateBars();
+
+        Gdx.gl.glClearColor(0.36f, 0.27f, 0.49f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
@@ -204,6 +239,38 @@ public class SceneGameScreen implements Screen {
         stage.dispose();
         font.dispose();
 
+    }
+    private void updateBars() {
+        int currentPsychologicalPoints = GameManager.getGameById(gameId).getPointsM();
+        int currentRelationshipPoints = GameManager.getGameById(gameId).getPointsR();
+
+        if (currentPsychologicalPoints != previousPsychologicalPoints) {
+            psychologicalBar.setValue(currentPsychologicalPoints);
+            previousPsychologicalPoints = currentPsychologicalPoints;
+        }
+
+        if (currentRelationshipPoints != previousRelationshipPoints) {
+            relationshipBar.setValue(currentRelationshipPoints);
+            previousRelationshipPoints = currentRelationshipPoints;
+        }
+    }
+    private void displayErrorMessage(String message) {
+        Label errorLabel = new Label(message, new Label.LabelStyle(UIStyle.getFont(), Color.RED));
+        errorLabel.setAlignment(Align.center);
+        errorLabel.setPosition(Gdx.graphics.getWidth() / 2f - 300, Gdx.graphics.getHeight() / 2f);
+        errorLabel.setWidth(600);
+        errorLabel.setWrap(true);
+        stage.addActor(errorLabel);
+
+        TextButton continueButton = new TextButton("Continuar", UIStyle.getButtonStyle());
+        continueButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 100);
+        continueButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new ChapterCatalogScreen(username,gameId)); // Volver al menú principal
+            }
+        });
+        stage.addActor(continueButton);
     }
 
     private void showSettingsDialog() {
@@ -371,6 +438,8 @@ public class SceneGameScreen implements Screen {
             stage.addActor(characterImage);
         }
     }
+
+
 
 
 
