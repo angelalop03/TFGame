@@ -177,7 +177,7 @@ public class SceneGameScreen implements Screen {
             if (currentCharacter != null && assetManager.isLoaded("assets/photos/Characters/" + currentCharacter.getImagePath())) {
                 characterTexture = assetManager.get("assets/photos/Characters/" + currentCharacter.getImagePath(), Texture.class);
                 characterImage = new Image(new TextureRegionDrawable(characterTexture));
-                characterImage.setSize(320, 600);
+                characterImage.setSize(390, 600);
                 characterImage.setPosition(180, 0);
                 stage.addActor(characterImage);
             } else {
@@ -526,19 +526,10 @@ public class SceneGameScreen implements Screen {
             characterTexture = assetManager.get(characterPath, Texture.class);
 
             characterImage = new Image(new TextureRegionDrawable(characterTexture));
-            characterImage.setSize(320, 600);
+            characterImage.setSize(395, 600);
             characterImage.setPosition(180, 0);
             stage.addActor(characterImage);
         }
     }
-
-
-
-
-
-
-
-
-
 
 }
