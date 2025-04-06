@@ -35,6 +35,7 @@ VALUES
 -- Capítulos base
 INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state,history_id)
 VALUES
+    ('Tutorial', '0', 'Chapter1.png', NULL,NULL),
     ('Introducción', '0', 'Chapter1.png', NULL,1),
     ('Capitulo', '1', 'Chapter1.png', NULL,1),
     ('Capitulo', '2', 'Default_Chapter.png', NULL,1),
@@ -67,45 +68,48 @@ VALUES
 
 INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked)
 VALUES
-    (1, 1,1, false, true),
     (1, 2,1, false, true),
     (1, 3,1, false, true),
     (1, 4,1, false, true),
     (1, 5,1, false, true),
     (1, 6,1, false, true),
-    (1,10,1, false, true),
-    (1, 1,2, false, true),
-    (1, 1,3, false, true);
+    (1, 7,1, false, true),
+    (1,11,1, false, true),
+    (1, 2,2, false, true),
+    (1, 2,3, false, true);
 
 
 INSERT INTO scenes (id,chapter_id, background_image, scene_order)
 VALUES
 (1,1, 'Living_Room.jpg', 1),
-(2,1, 'Living_Room.jpg', 2),
-(3,1, 'Living_Room.jpg', 3),
-(4,1, 'Living_Room.jpg', 4),
-(5,2, 'Living_Room.jpg', 1),
-(6,2, 'Living_Room.jpg', 2),
-(7,2, 'Living_Room.jpg', 3),
-(8,2, 'Living_Room.jpg', 4),
-(9,27, 'Living_Room.jpg', 1);
+(2,2, 'Living_Room.jpg', 1),
+(3,2, 'Living_Room.jpg', 2),
+(4,2, 'Living_Room.jpg', 3),
+(5,2, 'Living_Room.jpg', 4),
+(6,3, 'Living_Room.jpg', 1),
+(7,3, 'Living_Room.jpg', 2),
+(8,3, 'Living_Room.jpg', 3),
+(9,3, 'Living_Room.jpg', 4),
+(10,28, 'Living_Room.jpg', 1);
 
 
 
 INSERT INTO characters (name, image_path)
 VALUES
-('David', 'David.png');
+('David', 'David.png'),
+('Angela', 'Angela.png');
 
 
 INSERT INTO decisions (id,scene_id, decision_order, character_id, dialogue)
 VALUES
-(1,1, 1, 1, '¡Hola! Que tal(Escena 1)'),
-(2,1, 2, 1, 'Soy David(Escena 1)'),
-(3,1, 3, 1, '¿Que hacemos hoy?(Escena 1)'),
-(4,2, 1, 1, 'Escena 2'),
-(5,3, 1, 1, 'Escena 3'),
-(6,4, 1, NULL, 'Escena 4'),
-(7,9, 1, NULL, 'Historia2');
+(1,1, 1, 2, '¡Hola! ¿Que tal?'),
+(2,2, 1, 1, '¡Hola! Que tal(Escena 1)'),
+(3,2, 2, 1, 'Soy David(Escena 1)'),
+(4,2, 3, 1, '¿Que hacemos hoy?(Escena 1)'),
+(5,3, 1, 1, 'Escena 2'),
+(6,4, 1, 1, 'Escena 3'),
+(7,5, 1, NULL, 'Escena 4'),
+(8,10, 1, NULL, 'Historia2');
 
 
 INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state)
