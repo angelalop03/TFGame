@@ -114,14 +114,14 @@ VALUES
 
 INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state)
 VALUES
-(1, 'Bien, gracias. ¿Y tú?', 0, 0, 2, NULL),
-(2,'Yo soy Bella', 0, 0, 3, NULL),
-(3,'Salgamos a explorar la ciudad.(Pasa a la escena2)', 0, 0, NULL, NULL),
-(3,'Mejor quedémonos en casa.(Pasa a la escena2)', 0, 0, NULL, NULL),
-(4,'Pasa a la decision 5 (Escena 3)', 0, 0, NULL, NULL),
-(5,'Pasa a la decision 6 (Escena 4)', 0, 0, NULL, NULL),
-(6,'Has terminado el capitulo 1!', 0, 0, NULL, NULL),
-(7,'Capitulo 1 Historia2', 0, 0, NULL, NULL);
+(2, 'Bien, gracias. ¿Y tú?', 0, 0, 3, NULL),
+(3,'Yo soy Bella', 0, 0, 4, NULL),
+(4,'Salgamos a explorar la ciudad.(Pasa a la escena2)', 0, 0, NULL, NULL),
+(4,'Mejor quedémonos en casa.(Pasa a la escena2)', 0, 0, NULL, NULL),
+(5,'Pasa a la decision 5 (Escena 3)', 0, 0, NULL, NULL),
+(6,'Pasa a la decision 6 (Escena 4)', 0, 0, NULL, NULL),
+(7,'Has terminado el capitulo 1!', 0, 0, NULL, NULL),
+(8,'Capitulo 1 Historia2', 0, 0, NULL, NULL);
 
 
 --INSERT INTO player_decision_state (player_id, game_id, decision_id, completed)

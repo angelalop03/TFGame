@@ -53,6 +53,34 @@ public class ChapterManager {
         return unlockedChapters;
     }
 
+    // Dentro de tu clase ChapterManager
+
+    public static boolean isChapterPlayed(int gameId, int chapterId) {
+        String query = "SELECT played FROM player_chapter_state WHERE game_id = ? AND chapter_id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, gameId);
+            stmt.setInt(2, chapterId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean("played");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // Si no se encuentra el registro, se considera que no se ha jugado
+    }
+
+
     public static int findFirstChapter(int historyId) {
         String query = "SELECT id FROM chapters WHERE history_id = ? ORDER BY chapter_number ASC LIMIT 1";
 
