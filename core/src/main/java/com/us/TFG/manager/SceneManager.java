@@ -116,7 +116,7 @@ public class SceneManager {
     }
 
 
-    public static Scene getFirstSceneOfChapter(int gameId, int chapterId) {
+    public static Scene getFirstSceneOfChapter( int chapterId) {
         String query = "SELECT * FROM scenes WHERE chapter_id = ? ORDER BY scene_order ASC LIMIT 1";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();

@@ -395,7 +395,7 @@ public class SceneGameScreen implements Screen {
             int nextChapterId = ChapterManager.unlockNextChapter(gameId, chapterId);
 
             if (nextChapterId > 0) {
-                Scene firstScene = SceneManager.getFirstSceneOfChapter(gameId, nextChapterId);
+                Scene firstScene = SceneManager.getFirstSceneOfChapter(nextChapterId);
                 if (firstScene != null) {
                     currentScene = firstScene;
                     currentDecision = DecisionManager.getFirstDecisionBySceneId(firstScene.getId());
