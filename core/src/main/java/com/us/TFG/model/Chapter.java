@@ -21,7 +21,7 @@ public class Chapter {
     @Column(name = "required_relationship_state", type = "TEXT")
     private String requiredRelationshipState; // Estado de relación necesario para desbloquear el capítulo
 
-    @Column(name = "history_id", type = "INTEGER", notNull = true)
+    @Column(name = "history_id", type = "INTEGER")
     private Integer historyId; // Historia a la que pertenece el capítulo
 
     // Constructor principal
