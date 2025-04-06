@@ -13,6 +13,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.screens.Player.Game.ChargeGameScreen;
 import com.us.TFG.screens.Player.Game.CreateGameScreen;
+import com.us.TFG.screens.Player.Game.SceneGameScreen;
+import com.us.TFG.screens.Player.TutorialGameScreen;
 import com.us.TFG.utils.*;
 
 public class PlayerMenuScreen implements Screen {
@@ -45,7 +47,7 @@ public class PlayerMenuScreen implements Screen {
         TextButton loadGameButton = new TextButton("Cargar Partida", UIStyle.getButtonStyle());
         TextButton historialButton = new TextButton("Historial", UIStyle.getButtonStyle());
         TextButton newsForumButton = new TextButton("Foro de Noticias", UIStyle.getButtonStyle());
-        TextButton instructionsButton = new TextButton("Instrucciones", UIStyle.getButtonStyle());
+        TextButton instructionsButton = new TextButton("Tutorial", UIStyle.getButtonStyle());
 
         newGameButton.setSize(300, 75);
         loadGameButton.setSize(300, 75);
@@ -77,6 +79,13 @@ public class PlayerMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Render.app.setScreen(new ForumScreen(username));
+            }
+        });
+
+        instructionsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new TutorialGameScreen(1));
             }
         });
 
