@@ -356,14 +356,10 @@ public class SceneGameScreen implements Screen {
 
         } else {
             // Comprobar si todas las decisiones de la escena están completas
-            boolean allDecisionsComplete = PlayerDecisionStateManager.areAllDecisionsComplete(PlayerManager.getPlayerData(username).getId(), gameId, currentScene.getId());
 
-            if (allDecisionsComplete) {
                 goToNextSceneOrChapter();
                 System.out.println("GotoNextSceneOrChapter");
-            } else {
-                dialogueLabel.setText("Completa todas las decisiones para avanzar.");
-            }
+
         }
     }
 
