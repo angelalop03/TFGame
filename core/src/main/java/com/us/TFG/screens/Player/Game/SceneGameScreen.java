@@ -50,7 +50,8 @@ public class SceneGameScreen implements Screen {
         this.username = username;
         this.assetManager = new AssetManager();
 
-        loadGameData(gameId);
+
+
     }
     private void loadGameData(int gameId) {
         Game game = GameManager.getGameById(gameId);
@@ -103,48 +104,52 @@ public class SceneGameScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
-        if (currentDecision == null) {
-            handleMissingDecisionError();
-            return;
-        }
-
-        if (currentScene != null && assetManager.isLoaded("assets/photos/Scenes/" + currentScene.getBackgroundImage())) {
-            bgTexture = assetManager.get("assets/photos/Scenes/" + currentScene.getBackgroundImage(), Texture.class);
-            background = new Image(new TextureRegionDrawable(bgTexture));
-            background.setFillParent(true);
-            stage.addActor(background);
+        // Check if the chapter has already been played
+        if (ChapterManager.isChapterPlayed(gameId, chapterId)) {
+            stage = new Stage(new ScreenViewport());
+            Gdx.input.setInputProcessor(stage);
+            displayErrorMessage("Ya has jugado este capítulo.");
         } else {
-            displayErrorMessage("Error al cargar la textura de fondo.");
+            loadGameData(gameId);
+            if (currentDecision == null) {
+                displayErrorMessage("No se puede jugar este capítulo");
+                return;
+            }
+
+            if (currentScene != null && assetManager.isLoaded("assets/photos/Scenes/" + currentScene.getBackgroundImage())) {
+                bgTexture = assetManager.get("assets/photos/Scenes/" + currentScene.getBackgroundImage(), Texture.class);
+                background = new Image(new TextureRegionDrawable(bgTexture));
+                background.setFillParent(true);
+                stage.addActor(background);
+            } else {
+                displayErrorMessage("Error al cargar la textura de fondo.");
+            }
+
+            if (currentCharacter != null && assetManager.isLoaded("assets/photos/Characters/" + currentCharacter.getImagePath())) {
+                characterTexture = assetManager.get("assets/photos/Characters/" + currentCharacter.getImagePath(), Texture.class);
+                characterImage = new Image(new TextureRegionDrawable(characterTexture));
+                characterImage.setSize(320, 600);
+                characterImage.setPosition(180, 80);
+                stage.addActor(characterImage);
+            } else {
+                displayErrorMessage("Error al cargar la textura del personaje.");
+            }
+
+            dialogueLabel = new Label(currentDecision.getDialogue(), new Label.LabelStyle(UIStyle.getFont(), Color.WHITE));
+            dialogueLabel.setWrap(true);
+            dialogueLabel.setPosition(50, Gdx.graphics.getHeight() - 150);
+            stage.addActor(dialogueLabel);
+
+            optionsTable = new Table();
+            optionsTable.setFillParent(true);
+            optionsTable.bottom().pad(20);
+            stage.addActor(optionsTable);
+
+            showOptions();
         }
-
-        if (currentCharacter != null && assetManager.isLoaded("assets/photos/Characters/" + currentCharacter.getImagePath())) {
-            characterTexture = assetManager.get("assets/photos/Characters/" + currentCharacter.getImagePath(), Texture.class);
-            characterImage = new Image(new TextureRegionDrawable(characterTexture));
-            characterImage.setSize(320, 600);
-            characterImage.setPosition(180, 80);
-            stage.addActor(characterImage);
-        } else {
-            displayErrorMessage("Error al cargar la textura del personaje.");
-        }
-
-        dialogueLabel = new Label(currentDecision.getDialogue(), new Label.LabelStyle(UIStyle.getFont(), Color.WHITE));
-        dialogueLabel.setWrap(true);
-        dialogueLabel.setPosition(50, Gdx.graphics.getHeight() - 150);
-        stage.addActor(dialogueLabel);
-
-        optionsTable = new Table();
-        optionsTable.setFillParent(true);
-        optionsTable.bottom().pad(20);
-        stage.addActor(optionsTable);
-
-        showOptions();
     }
 
-    private void handleMissingDecisionError() {
-        System.err.println("Error: No se ha encontrado una decisión válida para esta escena.");
-        displayErrorMessage("No se puede ejecutar este capitulo ");
-    }
+
 
     private void displayErrorMessage(String message) {
         Label errorLabel = new Label(message, new Label.LabelStyle(UIStyle.getFont(), Color.RED));
@@ -159,7 +164,7 @@ public class SceneGameScreen implements Screen {
         continueButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new PlayerMenuScreen(username)); // Volver al menú principal
+                Render.app.setScreen(new ChapterCatalogScreen(username,gameId)); // Volver al menú principal
             }
         });
         stage.addActor(continueButton);
