@@ -38,7 +38,6 @@ public class SceneGameScreen implements Screen {
     private BitmapFont font;
     private Image background;
     private Image characterImage;
-    private Image speechBubble;
     private Label dialogueLabel;
     private Table optionsTable;
     private Skin skin;
@@ -46,6 +45,7 @@ public class SceneGameScreen implements Screen {
     private ProgressBar psychologicalBar, relationshipBar;
     private int previousPsychologicalPoints =-1;
     private int previousRelationshipPoints=-1;
+    private Image dialogueBackground;
 
 
     public SceneGameScreen(int gameId, int chapterId, String username) {
@@ -178,16 +178,50 @@ public class SceneGameScreen implements Screen {
                 characterTexture = assetManager.get("assets/photos/Characters/" + currentCharacter.getImagePath(), Texture.class);
                 characterImage = new Image(new TextureRegionDrawable(characterTexture));
                 characterImage.setSize(320, 600);
-                characterImage.setPosition(180, 80);
+                characterImage.setPosition(180, 0);
                 stage.addActor(characterImage);
             } else {
                 displayErrorMessage("Error al cargar la textura del personaje.");
             }
 
-            dialogueLabel = new Label(currentDecision.getDialogue(), new Label.LabelStyle(UIStyle.getFont(), Color.WHITE));
+            // Crear el fondo blanco con bordes redondeados para los diálogos
+            int cornerRadius = 20;  // Radio de las esquinas redondeadas
+            int backgroundWidth = 500;
+            int backgroundHeight = 200;
+
+            Pixmap pixmap = new Pixmap(backgroundWidth, backgroundHeight, Pixmap.Format.RGBA8888);
+            pixmap.setBlending(Pixmap.Blending.SourceOver);
+            pixmap.setColor(Color.CLEAR);
+            pixmap.fill();
+
+            pixmap.setColor(Color.WHITE);
+
+            pixmap.fillRectangle(cornerRadius, 0, backgroundWidth - 2 * cornerRadius, backgroundHeight);
+            pixmap.fillRectangle(0, cornerRadius, backgroundWidth, backgroundHeight - 2 * cornerRadius);
+            pixmap.fillCircle(cornerRadius, cornerRadius, cornerRadius);
+            pixmap.fillCircle(backgroundWidth - cornerRadius - 1, cornerRadius, cornerRadius);
+            pixmap.fillCircle(cornerRadius, backgroundHeight - cornerRadius - 1, cornerRadius);
+            pixmap.fillCircle(backgroundWidth - cornerRadius - 1, backgroundHeight - cornerRadius - 1, cornerRadius);
+
+            Texture backgroundTexture = new Texture(pixmap);
+            pixmap.dispose();
+
+            dialogueBackground = new Image(new TextureRegionDrawable(backgroundTexture));
+            stage.addActor(dialogueBackground);
+
+            dialogueLabel = new Label(currentDecision.getDialogue(), new Label.LabelStyle(UIStyle.getFont(), Color.GRAY));
             dialogueLabel.setWrap(true);
-            dialogueLabel.setPosition(50, Gdx.graphics.getHeight() - 150);
+            dialogueLabel.setAlignment(Align.topLeft);
+            dialogueLabel.setWidth(backgroundWidth - 40);  // Restar padding para que el texto no quede pegado a los bordes
+            dialogueLabel.setPosition(Gdx.graphics.getWidth() - 650, Gdx.graphics.getHeight() - 250); // Cambia la posición según necesites
+
+            dialogueBackground.setPosition(dialogueLabel.getX() - 20, dialogueLabel.getY() - 20);
+            dialogueBackground.setSize(backgroundWidth, backgroundHeight);
+
+            stage.addActor(dialogueBackground);
             stage.addActor(dialogueLabel);
+
+
 
             optionsTable = new Table();
             optionsTable.setFillParent(true);
@@ -207,7 +241,18 @@ public class SceneGameScreen implements Screen {
 
         Gdx.gl.glClearColor(0.36f, 0.27f, 0.49f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (dialogueLabel != null && dialogueBackground != null) {
 
+            float padding = 20f; // Margen alrededor del texto
+            float padding2 = 15f; // Margen alrededor del texto
+
+            dialogueLabel.layout(); // Calcular el tamaño del texto
+            float labelWidth = dialogueLabel.getWidth();
+            float labelHeight = dialogueLabel.getPrefHeight();
+
+            dialogueBackground.setSize(labelWidth , labelHeight + padding * 2);
+            dialogueBackground.setPosition(dialogueLabel.getX() - padding*2, dialogueLabel.getY()  - labelHeight+padding );
+        }
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
@@ -325,17 +370,68 @@ public class SceneGameScreen implements Screen {
         buttonStyle.font = UIStyle.getFont();
         buttonStyle.fontColor = Color.WHITE;
 
+        int optionWidth = 600;
+        int optionHeight = 80;
+
+        // Cantidad de opciones disponibles
+        int numberOfOptions = options.size();
+
+        // Ajustar la posición vertical en función del número de opciones
+        int baseTopPadding = 200;   // Punto más bajo de inicio para opciones múltiples
+        int maxTopPadding = 650;    // Punto más alto de inicio para una única opción
+
+        // Calcular padding dinámico según la cantidad de opciones
+        int topPadding = maxTopPadding - (numberOfOptions - 1) * 100; // Espaciado progresivo
+
+        // Limitar el padding superior para que no se salga de la pantalla
+        topPadding = Math.max(baseTopPadding, topPadding);
+
+        // Configurar la tabla de opciones para que esté a la derecha de la pantalla
+        optionsTable.setFillParent(true);
+        optionsTable.top().right().padTop(topPadding).padRight(20);
+
         for (Option option : options) {
+
+            // Crear un Pixmap con fondo rosado transparente sin bordes redondeados
+            Pixmap pixmap = new Pixmap(optionWidth, optionHeight, Pixmap.Format.RGBA8888);
+            pixmap.setBlending(Pixmap.Blending.SourceOver);
+
+            // Color rosado con transparencia (ej: 80% de opacidad)
+            pixmap.setColor(new Color(1f, 0.4f, 0.7f, 0.8f));
+            pixmap.fillRectangle(0, 0, optionWidth, optionHeight);
+
+            Texture optionTexture = new Texture(pixmap);
+            pixmap.dispose();
+
+            Image optionBackground = new Image(new TextureRegionDrawable(optionTexture));
+
+            // Crear un contenedor para el fondo y el botón
+            Table optionContainer = new Table();
+            optionContainer.add(optionBackground).size(optionWidth, optionHeight);
+
+            // Crear el botón de opción
             TextButton optionButton = new TextButton(option.getText(), buttonStyle);
+            optionButton.getLabel().setWrap(true);
+            optionButton.pad(10);
+
             optionButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     handleOptionSelection(option);
                 }
             });
-            optionsTable.add(optionButton).pad(10).fillX().row();
+
+            // Añadir el botón encima del fondo
+            optionContainer.add(optionButton).padLeft(-optionWidth).width(optionWidth - 20).height(optionHeight - 20);
+
+            // Añadir la opción a la tabla de opciones alineadas a la derecha
+            optionsTable.add(optionContainer).pad(10).row();
         }
     }
+
+
+
+
 
 
     private void handleOptionSelection(Option option) {
@@ -431,7 +527,7 @@ public class SceneGameScreen implements Screen {
 
             characterImage = new Image(new TextureRegionDrawable(characterTexture));
             characterImage.setSize(320, 600);
-            characterImage.setPosition(180, 80);
+            characterImage.setPosition(180, 0);
             stage.addActor(characterImage);
         }
     }
