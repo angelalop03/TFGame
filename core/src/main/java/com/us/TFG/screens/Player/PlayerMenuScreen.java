@@ -85,7 +85,7 @@ public class PlayerMenuScreen implements Screen {
         instructionsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new TutorialGameScreen(1));
+                Render.app.setScreen(new TutorialGameScreen(username));
             }
         });
 
