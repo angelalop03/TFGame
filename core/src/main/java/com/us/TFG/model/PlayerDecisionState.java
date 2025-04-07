@@ -18,14 +18,18 @@ public class PlayerDecisionState {
     @Column(name = "decision_id", type = "INTEGER", notNull = true) // Relación con la decisión
     private int decisionId;
 
+    @Column(name = "option_id", type = "INTEGER", notNull = true) // Relación con la opción de decisión
+    private int optionId;
+
     @Column(name = "completed", type = "BOOLEAN", notNull = true, defaultValue = "false") // Si la decisión fue completada
     private boolean completed;
 
     // Constructor principal
-    public PlayerDecisionState(int playerId, int gameId, int decisionId, boolean completed) {
+    public PlayerDecisionState(int playerId, int gameId, int decisionId, int optionId, boolean completed) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.decisionId = decisionId;
+        this.optionId = optionId;
         this.completed = completed;
     }
 
@@ -64,6 +68,13 @@ public class PlayerDecisionState {
     public void setDecisionId(int decisionId) {
         this.decisionId = decisionId;
     }
+    public int getOptionId() {
+        return optionId;
+    }
+
+    public void setOptionId(int optionId) {
+        this.optionId = optionId;
+    }
 
     public boolean isCompleted() {
         return completed;
@@ -80,6 +91,7 @@ public class PlayerDecisionState {
             ", playerId=" + playerId +
             ", gameId=" + gameId +
             ", decisionId=" + decisionId +
+            ", optionId=" + optionId +
             ", completed=" + completed +
             '}';
     }
