@@ -173,6 +173,6 @@ VALUES
 (24,'Has terminado el capitulo 1!', 0, 0, NULL, NULL),
 
 --CAPITULO1 H2
-(8,'Capitulo 1 Historia2', 0, 0, NULL, NULL);
+(25,'Capitulo 1 Historia2', 0, 0, NULL, NULL);
 
 
