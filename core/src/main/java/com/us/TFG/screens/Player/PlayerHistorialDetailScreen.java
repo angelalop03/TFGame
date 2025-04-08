@@ -2,21 +2,19 @@ package com.us.TFG.screens.Player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.manager.PlayerDecisionStateManager;
-import com.us.TFG.manager.PlayerManager;
-import com.us.TFG.model.PlayerDecisionState;
+import com.us.TFG.manager.*;
+import com.us.TFG.model.*;
 import com.us.TFG.utils.*;
 
 import java.util.List;
@@ -29,6 +27,9 @@ public class PlayerHistorialDetailScreen implements Screen {
     private TopBar topBar;
     private Stage stage;
     private SpriteBatch batch;
+    private static final int DECISIONS_PER_PAGE = 3;
+    private int currentPage = 0;
+    private List<PlayerDecisionState> decisions;
 
     public PlayerHistorialDetailScreen(String username, int gameId) {
         this.username = username;
@@ -47,7 +48,18 @@ public class PlayerHistorialDetailScreen implements Screen {
         font = UIStyle.getFont();
         topBar = new TopBar(username, stage, font);
 
-        // Crear la flecha de retroceso
+        int playerId = PlayerManager.getPlayerData(username).getId();
+        decisions = PlayerDecisionStateManager.getPositivePointDecisions(playerId, gameId);
+
+        renderPage();
+    }
+
+    private void renderPage() {
+        stage.clear();
+
+        // TopBar y flecha de retroceso
+        topBar = new TopBar(username, stage, font);
+
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
         ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
@@ -58,25 +70,63 @@ public class PlayerHistorialDetailScreen implements Screen {
                 Render.app.setScreen(new PlayerHistorialScreen(username));
             }
         });
-        int playerId = PlayerManager.getPlayerData(username).getId();
-        List<PlayerDecisionState> decisions = PlayerDecisionStateManager.getPositivePointDecisions(playerId, gameId);
+        stage.addActor(backArrowButton);
 
-        Table table = new Table();
-        table.setFillParent(true);
-        table.top().padTop(150);
+        Table decisionTable = new Table();
+        decisionTable.setFillParent(true);
+        decisionTable.top().padTop(150);
 
-        if (decisions.isEmpty()) {
-            Label noDataLabel = new Label("No hay datos disponibles", new Label.LabelStyle(font, com.badlogic.gdx.graphics.Color.RED));
-            table.add(noDataLabel).pad(10).row();
+        if (decisions == null || decisions.isEmpty()) {
+            Label noDataLabel = new Label("No hay decisiones disponibles", new Label.LabelStyle(font, Color.RED));
+            decisionTable.add(noDataLabel).pad(10).row();
         } else {
-            for (PlayerDecisionState decision : decisions) {
-                Label decisionLabel = new Label(decision.toString(), new Label.LabelStyle(font, com.badlogic.gdx.graphics.Color.WHITE));
-                table.add(decisionLabel).pad(10).row();
+            int start = currentPage * DECISIONS_PER_PAGE;
+            int end = Math.min(start + DECISIONS_PER_PAGE, decisions.size());
+
+            for (int i = start; i < end; i++) {
+                PlayerDecisionState decisionState = decisions.get(i);
+
+                try {
+                    // Obtener toda la cadena de datos
+                    Option option = OptionManager.getOptionById(decisionState.getOptionId());
+                    Decision decision = DecisionManager.getDecisionById(option.getDecisionId());
+                    Scene scene = SceneManager.getSceneById(decision.getSceneId());
+                    Chapter chapter = ChapterManager.getChapterById(scene.getChapterId());
+
+                    String chapterTitle = chapter.getName();
+                    String optionText = option.getText();
+
+                    String info = "Capítulo: " + chapterTitle + "\n" +
+                        "Opción elegida: " + optionText;
+
+                    Label label = new Label(info, new Label.LabelStyle(font, Color.WHITE));
+                    label.setWrap(true);
+                    decisionTable.add(label).width(900).pad(10).row();
+
+                } catch (Exception e) {
+                    Label errorLabel = new Label("Error al obtener información de la decisión.", new Label.LabelStyle(font, Color.RED));
+                    decisionTable.add(errorLabel).pad(10).row();
+                    e.printStackTrace();
+                }
+            }
+
+            // Detectar clic para cambiar de página si hay más de una
+            if (decisions.size() > DECISIONS_PER_PAGE) {
+                stage.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        if ((currentPage + 1) * DECISIONS_PER_PAGE < decisions.size()) {
+                            currentPage++;
+                        } else {
+                            currentPage = 0;
+                        }
+                        renderPage();
+                    }
+                });
             }
         }
 
-        stage.addActor(table);
-        stage.addActor(backArrowButton);
+        stage.addActor(decisionTable);
     }
 
     @Override
@@ -89,20 +139,11 @@ public class PlayerHistorialDetailScreen implements Screen {
         stage.draw();
     }
 
-    @Override
-    public void resize(int width, int height) {
+    @Override public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
     }
-
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
-
-    @Override
-    public void dispose() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
+    @Override public void dispose() {}
 }
