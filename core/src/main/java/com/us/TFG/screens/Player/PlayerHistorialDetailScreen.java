@@ -101,7 +101,7 @@ public class PlayerHistorialDetailScreen implements Screen {
 
                     Label label = new Label(info, new Label.LabelStyle(font, Color.WHITE));
                     label.setWrap(true);
-                    decisionTable.add(label).width(900).pad(10).row();
+                    decisionTable.add(label).width(700).pad(10).padLeft(200).row();
 
                 } catch (Exception e) {
                     Label errorLabel = new Label("Error al obtener información de la decisión.", new Label.LabelStyle(font, Color.RED));
