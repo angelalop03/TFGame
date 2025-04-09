@@ -15,8 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
+import com.us.TFG.manager.ChapterManager;
 import com.us.TFG.manager.GameManager;
 import com.us.TFG.manager.PlayerManager;
+import com.us.TFG.model.Chapter;
 import com.us.TFG.model.Game;
 import com.us.TFG.model.History;
 import com.us.TFG.screens.Player.PlayerMenuScreen;
@@ -129,7 +131,8 @@ public class HistoryDetailScreen implements Screen {
                                 e.printStackTrace();
                             }
                             //Que te lleve al catalogo de capitulos
-                            Render.app.setScreen(new ChapterCatalogScreen(username,game.getId()));
+                            Chapter introChapter = ChapterManager.getIntroChapterForHistory(history.getId());
+                            Render.app.setScreen(new SceneGameScreen(game.getId(),introChapter.getId(),username));
                         });
                     }else{
                         feedbackLabel.setText("Ya existe una partida con ese nombre" + gameName);
