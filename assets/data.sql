@@ -86,19 +86,16 @@ VALUES
 (2,1, 'Park.png', 2),
 (3,1, 'Living_Room.jpg', 3),
 (4,1, 'RoomAngela.png', 4),
---CAP1
+--INTRO H1
 (5,2, 'Living_Room.jpg', 1),
-(6,2, 'Living_Room.jpg', 2),
-(7,2, 'Living_Room.jpg', 3),
-(8,2, 'Living_Room.jpg', 4),
 
---CAP2
-(9,3, 'Living_Room.jpg', 5),
-(10,3, 'Living_Room.jpg', 6),
-(11,3, 'Living_Room.jpg', 1),
-(12,3, 'Living_Room.jpg', 2),
---CAP1 H2
-(13,28, 'Living_Room.jpg', 1);
+--CAP1
+(6,3, 'Living_Room.jpg', 5),
+(7,3, 'Living_Room.jpg', 6),
+(8,3, 'Living_Room.jpg', 1),
+(9,3, 'Living_Room.jpg', 2),
+--INTRO H2
+(10,28, 'Living_Room.jpg', 1);
 
 
 
@@ -130,16 +127,17 @@ VALUES
 (17,4, 2, 2, 'Y recuerda, no hay respuestas perfectas. Lo importante es que reflexiones y aprendas del proceso.'),
 (18,4, 3, 2, 'Pues, ¡A jugar!'),
 
---CAPITULO1
-(19,5, 1, 1, '¡Hola! Que tal(Escena 1)'),
-(20,5, 2, 1, 'Soy David(Escena 1)'),
-(21,5, 3, 1, '¿Que hacemos hoy?'),
-(22,6, 1, 1, 'Escena 2'),
-(23,7, 1, 1, 'Escena 3'),
-(24,8, 1, NULL, 'Escena 4'),
+--INTRO H1
+(19,5, 1, 2, '¡Bienvenido a Bella’s Heart, una experiencia narrativa inmersiva que te invita a explorar las complejidades de una relación y las decisiones que afectan profundamente la dinámica entre dos personas!'),
+(20,5, 2, 2, 'En esta historia, encarnarás a Bella, una joven que ha decidido dar un gran paso al mudarse con su pareja, David'),
+(21,5, 3, 2, ' Tu misión será tomar decisiones en momentos clave de la vida de Bella'),
+(22,5, 4, 2, 'Cada decisión tendrá consecuencias, algunas inmediatas y otras a largo plazo'),
+(23,5, 5, 2, 'Eres la voz interna de Bella, su guía y conciencia. A medida que avanzas por los capítulos, serás quien la ayude a interpretar sus emociones, analizar los comportamientos de David y decidir el mejor camino para ella. '),
+(24,5, 6, 2, 'Esta no es solo una historia de amor; es una exploración de los límites, la confianza y la búsqueda del bienestar personal. Toma decisiones con sabiduría, y recuerda: cada elección cuenta.'),
+(25,5, 7, 2, '¿Empezamos?');
 
---CAPITULO 1 H2
-(25,13, 1, NULL, 'Historia2');
+--INTRO H2
+--(26,13, 1, NULL, 'Historia2');
 
 
 INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state)
@@ -163,17 +161,18 @@ VALUES
 (16, 'PULSA AQUI',0,0,17,NULL),
 (17, 'PULSA AQUI',0,0,18,NULL),
 (18, '¡Sí!',0,0,NULL,NULL),
---CAPITULO1
-(19, 'Bien, gracias. ¿Y tú?', 0, 0, 20, NULL),
-(20,'Yo soy Bella', 0, 0, 21, NULL),
-(21,'Salgamos a explorar la ciudad.(Pasa a la escena2)', 5, 0, NULL, NULL),
-(21,'Mejor quedémonos en casa.(Pasa a la escena2)', 0, 5, NULL, NULL),
-(22,'Pasa a la decision 5 (Escena 3)', 0, 0, NULL, NULL),
-(23,'Pasa a la decision 6 (Escena 4)', 0, 0, NULL, NULL),
-(24,'Has terminado el capitulo 1!', 0, 0, NULL, NULL),
+--INTRO H1
+(19,'Continuar', 0, 0, 20, NULL),
+(20,'Continuar', 0, 0, 21, NULL),
+(21,'Continuar', 0, 0, 22, NULL),
+(22,'Continuar', 0, 0, 23, NULL),
+(23,'Continuar', 0, 0, 24, NULL),
+(24,'Continuar', 0, 0, 25, NULL),
+(25,'¡Si! Vamos allá', 0, 0, NULL, NULL),
+(25,'No, ¿Puedes repetir?', 0, 0, 19, NULL);
 
---CAPITULO1 H2
-(25,'Capitulo 1 Historia2', 0, 0, NULL, NULL);
+--INTRO H2
+--(25,'Capitulo 1 Historia2', 0, 0, NULL, NULL);
 
 INSERT INTO player_decision_state (id, player_id, game_id, decision_id, option_id, completed)
 VALUES

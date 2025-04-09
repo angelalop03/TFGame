@@ -250,7 +250,7 @@ public class SceneGameScreen implements Screen {
             float labelWidth = dialogueLabel.getWidth();
             float labelHeight = dialogueLabel.getPrefHeight();
 
-            dialogueBackground.setSize(labelWidth , labelHeight + padding * 2);
+            dialogueBackground.setSize(labelWidth+ padding*2 , labelHeight + padding * 2);
             dialogueBackground.setPosition(dialogueLabel.getX() - padding*2, dialogueLabel.getY()  - labelHeight+padding );
         }
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
