@@ -75,6 +75,13 @@ public class PlayerMenuScreen implements Screen {
             }
         });
 
+        historialButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new PlayerHistorialScreen(username));
+            }
+        });
+
         newsForumButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

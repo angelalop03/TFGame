@@ -27,8 +27,8 @@ INSERT INTO historys (id, title, published,image_path,description) VALUES
 -- "Game base" en la tabla games
 INSERT INTO games (name,history_id, current_chapter_id, current_scene_id, current_decision_id, player_id, start_date, state, points_m, points_r)
 VALUES
-('Partida1',1, 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
-('Partida2',1, 1, 1, 1, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida1',1, 2, 5, 19, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Partida2',1, 2, 5, 19, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
 ('Partida3',2, 1, 1, 1, 2, '1736965255031', 'IN_PROGRESS', 0, 0);
 
 
@@ -166,8 +166,8 @@ VALUES
 --CAPITULO1
 (19, 'Bien, gracias. ¿Y tú?', 0, 0, 20, NULL),
 (20,'Yo soy Bella', 0, 0, 21, NULL),
-(21,'Salgamos a explorar la ciudad.(Pasa a la escena2)', 0, 0, NULL, NULL),
-(21,'Mejor quedémonos en casa.(Pasa a la escena2)', 0, 0, NULL, NULL),
+(21,'Salgamos a explorar la ciudad.(Pasa a la escena2)', 5, 0, NULL, NULL),
+(21,'Mejor quedémonos en casa.(Pasa a la escena2)', 0, 5, NULL, NULL),
 (22,'Pasa a la decision 5 (Escena 3)', 0, 0, NULL, NULL),
 (23,'Pasa a la decision 6 (Escena 4)', 0, 0, NULL, NULL),
 (24,'Has terminado el capitulo 1!', 0, 0, NULL, NULL),
@@ -175,4 +175,11 @@ VALUES
 --CAPITULO1 H2
 (25,'Capitulo 1 Historia2', 0, 0, NULL, NULL);
 
-
+INSERT INTO player_decision_state (id, player_id, game_id, decision_id, option_id, completed)
+VALUES
+(1,1,1,19,20,1),
+(2,1,1,20,21,1),
+(3,1,1,21,22,1),
+(4,1,1,22,24,1),
+(5,1,1,23,25,1),
+(6,1,1,24,26,1);

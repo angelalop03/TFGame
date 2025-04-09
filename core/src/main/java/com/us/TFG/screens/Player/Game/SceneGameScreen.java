@@ -438,7 +438,7 @@ public class SceneGameScreen implements Screen {
         // Actualizar puntos en el juego
         GameManager.updatePoints(gameId, option.getPointsM(), option.getPointsR());
         //Actualice el PlayerSceneState
-        PlayerDecisionStateManager.updateDecisionState(PlayerManager.getPlayerData(username).getId(),gameId, currentDecision.getId(), true);
+        PlayerDecisionStateManager.updateDecisionState(PlayerManager.getPlayerData(username).getId(),gameId, currentDecision.getId(),option.getId(), true);
 
         if (option.getNextDecisionId() != null) {
             // Cargar la siguiente decisión

@@ -231,5 +231,34 @@ public class ChapterManager {
     }
 
 
+    public static Chapter getChapterById(int chapterId) {
+        Chapter chapter = null;
+        String query = "SELECT * FROM chapters WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, chapterId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                chapter = new Chapter();
+                chapter.setId(rs.getInt("id"));
+                chapter.setName(rs.getString("name"));
+                chapter.setChapterNumber(rs.getString("chapter_number"));
+                chapter.setImagePath(rs.getString("image_path"));
+                chapter.setRequiredRelationshipState(rs.getString("required_relationship_state"));
+                chapter.setHistory(rs.getInt("history_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return chapter;
+    }
+
 
 }

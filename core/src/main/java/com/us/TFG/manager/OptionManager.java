@@ -45,4 +45,35 @@ public class OptionManager {
 
         return optionsList;
     }
+
+    public static Option getOptionById(int optionId) {
+        Option option = null;
+        String query = "SELECT * FROM options WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, optionId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                option = new Option();
+                option.setId(rs.getInt("id"));
+                option.setDecisionId(rs.getInt("decision_id"));
+                option.setText(rs.getString("text"));
+                option.setPointsM(rs.getInt("points_m"));
+                option.setPointsR(rs.getInt("points_r"));
+                option.setNextDecisionId(rs.getObject("next_decision_id") != null ? rs.getInt("next_decision_id") : null);
+                option.setRequiredPsychologicalState(rs.getString("required_psychological_state"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return option;
+    }
+
 }
