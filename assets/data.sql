@@ -90,12 +90,12 @@ VALUES
 (5,2, 'Living_Room.jpg', 1),
 
 --CAP1
-(6,3, 'Living_Room.jpg', 5),
-(7,3, 'Living_Room.jpg', 6),
-(8,3, 'Living_Room.jpg', 1),
-(9,3, 'Living_Room.jpg', 2),
+(6,3, 'Living_Room.jpg', 1);
+--(7,3, 'Living_Room.jpg', 2),
+--(8,3, 'Living_Room.jpg', 3),
+--(9,3, 'Living_Room.jpg', 4);
 --INTRO H2
-(10,28, 'Living_Room.jpg', 1);
+--(10,28, 'Living_Room.jpg', 1);
 
 
 
@@ -134,7 +134,13 @@ VALUES
 (22,5, 4, 2, 'Cada decisión tendrá consecuencias, algunas inmediatas y otras a largo plazo'),
 (23,5, 5, 2, 'Eres la voz interna de Bella, su guía y conciencia. A medida que avanzas por los capítulos, serás quien la ayude a interpretar sus emociones, analizar los comportamientos de David y decidir el mejor camino para ella. '),
 (24,5, 6, 2, 'Esta no es solo una historia de amor; es una exploración de los límites, la confianza y la búsqueda del bienestar personal. Toma decisiones con sabiduría, y recuerda: cada elección cuenta.'),
-(25,5, 7, 2, '¿Empezamos?');
+(25,5, 7, 2, '¿Empezamos?'),
+ --CAP 1
+(26,6, 1, 1, 'Bueno, aquí estamos, en nuestro primer hogar juntos. ¿Qué te parece? ¿Te imaginas todas las cosas increíbles que vamos a vivir aquí?'),
+(27,6, 2, 1, 'Claro que sí. Todo es nuevo, pero estoy seguro de que juntos podemos con esto. Este lugar será nuestro refugio, ¿no te parece?'),
+(28,6, 3, 1, 'Sabía que lo verías así. Estar aquí contigo hace que todo sea más fácil y emocionante'),
+(29,6, 4, 1, 'Lo entiendo, Bella. Este paso es grande para ambos. Pero estoy aquí para que lo enfrentemos juntos. Confío en que todo saldrá bien.'),
+(30,6, 5, 1, 'No puedo dejar de pensar en lo afortunado que soy. Tenerte aquí conmigo... significa todo para mí. Te quiero, Bella.');
 
 --INTRO H2
 --(26,13, 1, NULL, 'Historia2');
@@ -169,7 +175,16 @@ VALUES
 (23,'Continuar', 0, 0, 24, NULL),
 (24,'Continuar', 0, 0, 25, NULL),
 (25,'¡Si! Vamos allá', 0, 0, NULL, NULL),
-(25,'No, ¿Puedes repetir?', 0, 0, 19, NULL);
+(25,'No, ¿Puedes repetir?', 0, 0, 19, NULL),
+--CAP 1
+(26,'Sí, es increíble. Es un gran paso para los dos. Aunque siento que hay tanto por hacer aún...', 0, 0, 27, NULL),
+(27,'Sí, tienes razón. Ya puedo imaginar todos los momentos felices que viviremos aquí. Estoy tan feliz de haber tomado esta decisión contigo.', 0, 0, 28, NULL),
+(27,'Espero que sí... es un gran cambio, pero estoy dispuesta a intentarlo contigo. Necesitaré un poco de tiempo para adaptarme', 0, 0, 29, NULL),
+(28,'(Continuar)', 0, 0, 30, NULL),
+(29,'Si... tienes razón', 0, 0, 30, NULL),
+(30,'Yo también te quiero, David.', 0, 0, NULL, NULL);
+
+
 
 --INTRO H2
 --(25,'Capitulo 1 Historia2', 0, 0, NULL, NULL);

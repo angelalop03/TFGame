@@ -187,7 +187,7 @@ public class SceneGameScreen implements Screen {
             // Crear el fondo blanco con bordes redondeados para los diálogos
             int cornerRadius = 20;  // Radio de las esquinas redondeadas
             int backgroundWidth = 500;
-            int backgroundHeight = 200;
+            int backgroundHeight = 300;
 
             Pixmap pixmap = new Pixmap(backgroundWidth, backgroundHeight, Pixmap.Format.RGBA8888);
             pixmap.setBlending(Pixmap.Blending.SourceOver);
@@ -485,6 +485,7 @@ public class SceneGameScreen implements Screen {
             ChapterManager.markChapterAsPlayed(gameId, chapterId);
 
             int nextChapterId = ChapterManager.unlockNextChapter(gameId, chapterId);
+            Render.app.setScreen(new ChapterCatalogScreen(username, gameId));
 
             if (nextChapterId > 0) {
                 Scene firstScene = SceneManager.getFirstSceneOfChapter(nextChapterId);
@@ -501,7 +502,6 @@ public class SceneGameScreen implements Screen {
                     SceneManager.updateCurrentScene(gameId, currentScene.getId());
                     DecisionManager.updateCurrentDecision(gameId, (currentDecision != null) ? currentDecision.getId() : 0);
 
-                    Render.app.setScreen(new ChapterCatalogScreen(username, gameId));
                 }
             } else {
                 System.out.println("El next chapter id no se pilla bien");

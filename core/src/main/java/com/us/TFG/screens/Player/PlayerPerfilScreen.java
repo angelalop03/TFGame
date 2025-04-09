@@ -46,7 +46,7 @@ public class PlayerPerfilScreen implements Screen {
 
     @Override
     public void show() {
-        fondo = new Imagen(Resources.FONDON);
+        fondo = new Imagen(Resources.WARDROBE);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
         stage = new Stage(new ScreenViewport());
