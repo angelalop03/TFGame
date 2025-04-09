@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.manager.UserManager;
+import com.us.TFG.screens.Player.PlayerHistorialScreen;
 import com.us.TFG.screens.Player.PlayerPerfilScreen;
 import com.us.TFG.utils.*;
 import com.us.TFG.utils.validators.InputValidator;
@@ -115,7 +116,7 @@ public class AdminViewPlayersScreen implements Screen {
             historyButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    //Render.app.setScreen(new HistorialScreen(player.getUsername())); // Cambia a la pantalla del historial
+                    Render.app.setScreen(new AdminHistorialScreen(adminUsername,UserManager.findUserByPlayerId(player.getId()))); // Cambia a la pantalla del historial
                 }
             });
             actionTable.add(historyButton).width(110).padRight(10);
