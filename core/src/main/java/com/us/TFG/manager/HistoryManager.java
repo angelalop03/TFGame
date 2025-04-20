@@ -94,4 +94,24 @@ public class HistoryManager {
         return histories;
     }
 
+    public static void updateHistory(int historyId, String newTitle, String newDescription) {
+        String sql = "UPDATE historys SET title = ?, description = ? WHERE id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, newTitle);
+            stmt.setString(2, newDescription);
+            stmt.setInt(3, historyId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

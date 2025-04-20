@@ -1,0 +1,258 @@
+package com.us.TFG.screens.Admin.Game;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.us.TFG.elements.Imagen;
+import com.us.TFG.manager.ChapterManager;
+import com.us.TFG.manager.HistoryManager;
+import com.us.TFG.model.Chapter;
+import com.us.TFG.model.History;
+import com.us.TFG.utils.*;
+
+import java.util.List;
+
+public class AdminHistoryDetailScreen implements Screen {
+    private Stage stage;
+    private SpriteBatch batch;
+    private Imagen fondo;
+    private BitmapFont font;
+    private TopBar topBar;
+
+    private String username;
+    private History history;
+    private List<Chapter> chapters;
+
+    public AdminHistoryDetailScreen(String username, History history) {
+        this.username = username;
+        this.history = history;
+    }
+
+    @Override
+    public void show() {
+        fondo = new Imagen(Resources.FONDODOORS);
+        fondo.setSize(Config.WIDTH, Config.HEIGHT);
+        batch = Render.batch;
+
+        stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage);
+
+        font = UIStyle.getFont();
+        topBar = new TopBar(username, stage, font);
+
+        chapters = ChapterManager.getChaptersByHistoryId(history.getId());
+
+        Table mainTable = new Table();
+        mainTable.setFillParent(true);
+        mainTable.pad(50);
+        stage.addActor(mainTable);
+
+        // Fondo para las tablas
+        Pixmap backgroundPixmap = UIStyle.createRoundedPixmap(500, 600, new Color(0.6f, 0.3f, 0.6f, 0.8f)
+            , 0.8f);
+        TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(backgroundPixmap));
+        backgroundPixmap.dispose();
+
+        // Izquierda: Título y descripción con etiquetas y botón Editar
+        Table leftTable = new Table();
+        leftTable.setBackground(backgroundDrawable);
+
+        // Etiqueta Título
+        Label titleTag = new Label("Título:", UIStyle.getLabelStyle());
+        Label titleLabel = new Label(history.getTitle(), UIStyle.getTitleLabelStyle());
+        leftTable.add(titleTag).left().padBottom(5).row();
+        leftTable.add(titleLabel).left().padBottom(20).row();
+
+        // Etiqueta Descripción
+        Label descTag = new Label("Descripción:", UIStyle.getLabelStyle());
+        Label descLabel = new Label(history.getDescription(), UIStyle.getLabelStyle());
+        descLabel.setWrap(true);
+
+        // Envolver en ScrollPane
+        Table descTable = new Table();
+        descTable.add(descLabel).width(380).left().top();
+
+        ScrollPane.ScrollPaneStyle descScrollStyle = new ScrollPane.ScrollPaneStyle();
+        descScrollStyle.vScroll = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(6, 200, new Color(0.3f, 0.1f, 0.4f, 0.3f), 1f))
+        );
+        descScrollStyle.vScrollKnob = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(6, 60, new Color(0.9f, 0.7f, 1f, 1f), 1f))
+        );
+
+        ScrollPane descScroll = new ScrollPane(descTable, descScrollStyle);
+        descScroll.setFadeScrollBars(false);
+        descScroll.setScrollingDisabled(true, false);
+        descScroll.setScrollbarsOnTop(false);
+        descScroll.setForceScroll(false, true);
+
+        leftTable.add(descTag).left().padBottom(5).row();
+        leftTable.add(descScroll).width(400).height(150).left().padBottom(30).row();
+
+
+        // Botón Editar
+        TextButton editarBtn = new TextButton("Editar", UIStyle.getButtonStyle());
+        editarBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showEditHistoryDialog(history);
+                System.out.println("Editar historia: " + history.getTitle());
+            }
+        });
+        leftTable.add(editarBtn).left().padTop(10);
+
+        // Derecha: Lista de capítulos con scroll
+        Table rightTable = new Table();
+        rightTable.setBackground(backgroundDrawable);
+        Label chaptersTitle = new Label("Capítulos", UIStyle.getTitleLabelStyle());
+        rightTable.add(chaptersTitle).left().padBottom(20).padTop(10).row();
+
+        Table chaptersListTable = new Table().top().left();
+
+        if (chapters.isEmpty()) {
+            Label noChaptersLabel = new Label("No hay capítulos", UIStyle.getLabelStyle());
+            chaptersListTable.add(noChaptersLabel).left().padBottom(10).row();
+        } else {
+            for (Chapter chapter : chapters) {
+                Label chapterLabel = new Label("- " + chapter.getName() + " " + chapter.getChapterNumber(), UIStyle.getLabelStyle());
+                chaptersListTable.add(chapterLabel).left().padBottom(10).row();
+            }
+        }
+
+        // Scroll con barra visible
+        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
+        scrollStyle.vScroll = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(6, 200, new Color(0.3f, 0.1f, 0.4f, 0.3f), 1f))
+        );
+        scrollStyle.vScrollKnob = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(6, 60, new Color(0.9f, 0.7f, 1f, 1f), 1f))
+        );
+        ScrollPane scrollPane = new ScrollPane(chaptersListTable, scrollStyle);
+        scrollPane.setFadeScrollBars(false);
+        scrollPane.setScrollingDisabled(true, false); // solo vertical
+        scrollPane.setScrollbarsOnTop(false); // barra a la derecha
+        scrollPane.setForceScroll(false, true);
+
+        rightTable.add(scrollPane).width(400).height(300).expandY().fillY();
+
+        mainTable.add(leftTable).left().padRight(50).width(500).top();
+        mainTable.add(rightTable).left().width(500).top();
+    }
+
+    @Override
+    public void render(float delta) {
+        batch.begin();
+        fondo.draw();
+        batch.end();
+
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
+    }
+
+    @Override public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+    }
+
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
+    @Override public void dispose() {
+        stage.dispose();
+    }
+
+
+    private void showEditHistoryDialog(History history) {
+        // Estilo del diálogo
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(0.6f, 0.3f, 0.6f, 1f), 1f))
+        );
+
+        Dialog editDialog = new Dialog("Editar Historia", dialogStyle);
+
+        // Campo de texto para título y descripción
+        TextField titleField = new TextField(history.getTitle(), UIStyle.getTextFieldStyle());
+        TextArea descArea = new TextArea(history.getDescription(), UIStyle.getTextFieldStyle());
+
+        // Etiquetas
+        Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
+        editDialog.getContentTable().add(new Label("Título:", labelStyle)).left().pad(5);
+        editDialog.getContentTable().add(titleField).width(350).pad(5).row();
+
+        editDialog.getContentTable().add(new Label("Descripción:", labelStyle)).left().pad(5);
+        editDialog.getContentTable().add(descArea).width(350).height(200).row();
+
+        // Feedback
+        Label feedbackLabel = new Label("", UIStyle.getLabelStyle());
+        feedbackLabel.setWrap(true);
+        feedbackLabel.setAlignment(Align.center);
+
+        // Botón Guardar
+        TextButton saveButton = new TextButton("Guardar", UIStyle.getButtonStyle());
+        saveButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                String newTitle = titleField.getText().trim();
+                String newDesc = descArea.getText().trim();
+
+                if (newTitle.isEmpty() || newDesc.isEmpty()) {
+                    feedbackLabel.setText("El título y la descripción no pueden estar vacíos.");
+                    feedbackLabel.setColor(Color.RED);
+                    return;
+                }
+
+                // Guardar en BD
+                HistoryManager.updateHistory(history.getId(), newTitle, newDesc);
+                history.setTitle(newTitle);
+                history.setDescription(newDesc);
+
+                feedbackLabel.setText("Historia actualizada con éxito.");
+                feedbackLabel.setColor(Color.GREEN);
+
+                // Esperar 2 segundos y cerrar el diálogo
+                com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+                    @Override
+                    public void run() {
+                        editDialog.hide();
+                        editDialog.remove();
+                        Render.app.setScreen(new AdminHistoryDetailScreen(username, history));
+
+                    }
+                }, 2); // 2 segundos
+
+            }
+        });
+
+        // Botón Cancelar
+        TextButton cancelButton = new TextButton("Cerrar", UIStyle.getButtonStyle());
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editDialog.hide();
+                editDialog.remove();
+            }
+        });
+
+        // Agregar botones y feedback
+        editDialog.getButtonTable().add(saveButton).pad(10);
+        editDialog.getButtonTable().add(cancelButton).pad(10);
+        editDialog.getContentTable().add(feedbackLabel).colspan(2).padTop(10).width(400).row();
+
+        editDialog.show(stage);
+    }
+
+
+}

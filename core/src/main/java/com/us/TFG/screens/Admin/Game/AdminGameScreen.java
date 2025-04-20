@@ -137,7 +137,7 @@ public class AdminGameScreen implements Screen {
                 cardTable.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        //Render.app.setScreen(new HistoryDetailScreen(username, history));
+                        Render.app.setScreen(new AdminHistoryDetailScreen(username, history));
                     }
                 });
 
