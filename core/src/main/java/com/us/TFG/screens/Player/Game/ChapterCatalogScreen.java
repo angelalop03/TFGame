@@ -58,6 +58,7 @@ public class ChapterCatalogScreen implements Screen {
 
         chapters = ChapterManager.getChaptersForPlayerandGame(PlayerManager.getPlayerData(username).getId(), gameId);
 
+        chapters.removeIf(chapter -> "0".equals(chapter.getChapterNumber()));
         renderPage();
 
     }

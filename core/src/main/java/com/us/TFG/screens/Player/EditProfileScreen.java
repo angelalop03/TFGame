@@ -43,7 +43,7 @@ public class EditProfileScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         skin = UIStyle.getSkin();
         batch = Render.batch;
-        fondo = new Imagen(Resources.FONDON);
+        fondo = new Imagen(Resources.WARDROBE);
         fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         topBar = new TopBar(currentUsername, stage, UIStyle.getFont());

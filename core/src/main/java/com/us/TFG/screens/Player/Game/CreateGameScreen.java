@@ -98,14 +98,6 @@ public class CreateGameScreen implements Screen {
             Table cardTable = new Table(skin);
             Label gameNameLabel = new Label(history.getTitle(), labelStyle);
             cardTable.add(gameNameLabel).center().pad(10);
-
-            cardTable.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    Render.app.setScreen(new ChapterCatalogScreen(username, history.getId()));
-                }
-            });
-
             contentTable.add(cardTable).width(300).height(200).padTop(50).colspan(3);
         } else {
             // Flecha izquierda
