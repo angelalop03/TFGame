@@ -155,6 +155,29 @@ public class AdminGameScreen implements Screen {
         // Añadir los elementos a la escena
         mainTable.add(contentTable).center();
         stage.addActor(backArrowButton);
+
+
+        Table createContainer = new Table();
+        createContainer.setSize(250, 100);
+        createContainer.setPosition(Gdx.graphics.getWidth() - 380, 60); // esquina inferior derecha
+
+        // Botón con símbolo "+" y estilo desde UIStyle
+        TextButton createButton = new TextButton("+ Crear Historia", UIStyle.getCustomButtonStyle(220, 80, new Color(0.8f, 0.3f, 0.5f, 1f))); // Color opcional
+        createButton.pad(10);
+        createButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminCreateHistoryScreen(username)); // Pantalla a la que redirige
+            }
+        });
+
+        createContainer.add(createButton).center();
+        stage.addActor(createContainer);
+//
+
+
+
+
     }
 
     @Override

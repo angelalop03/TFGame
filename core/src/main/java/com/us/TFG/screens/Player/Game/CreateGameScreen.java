@@ -52,7 +52,7 @@ public class CreateGameScreen implements Screen {
         topBar = new TopBar(username, stage, font);
 
         // Cargar las partidas del jugador
-        histories = HistoryManager.getHistories();
+        histories = HistoryManager.getHistoriesPublished();
         currentIndex = 0;
 
         // Crear la flecha de retroceso
@@ -94,9 +94,18 @@ public class CreateGameScreen implements Screen {
             contentTable.add(noGamesLabel).colspan(3).padTop(50);
         } else if (histories.size() == 1) {
             History history = histories.get(0);
+
             Table cardTable = new Table(skin);
+            cardTable.setBackground(new TextureRegionDrawable(new Texture("assets/photos/Histories/" + history.getImagePath())));
             Label gameNameLabel = new Label(history.getTitle(), labelStyle);
             cardTable.add(gameNameLabel).center().pad(10);
+
+            cardTable.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Render.app.setScreen(new HistoryDetailScreen(username, history));
+                }
+            });
             contentTable.add(cardTable).width(300).height(200).padTop(50).colspan(3);
         } else {
             // Flecha izquierda
