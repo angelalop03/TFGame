@@ -59,27 +59,22 @@ public class AdminHistoryDetailScreen implements Screen {
         stage.addActor(mainTable);
 
         // Fondo para las tablas
-        Pixmap backgroundPixmap = UIStyle.createRoundedPixmap(500, 600, new Color(0.6f, 0.3f, 0.6f, 0.8f)
-            , 0.8f);
+        Pixmap backgroundPixmap = UIStyle.createRoundedPixmap(500, 600, new Color(0.6f, 0.3f, 0.6f, 0.8f), 0.8f);
         TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(backgroundPixmap));
         backgroundPixmap.dispose();
 
-        // Izquierda: Título y descripción con etiquetas y botón Editar
+        // Izquierda: Título y descripción
         Table leftTable = new Table();
         leftTable.setBackground(backgroundDrawable);
 
-        // Etiqueta Título
         Label titleTag = new Label("Título:", UIStyle.getLabelStyle());
         Label titleLabel = new Label(history.getTitle(), UIStyle.getTitleLabelStyle());
-        leftTable.add(titleTag).left().padBottom(5).row();
-        leftTable.add(titleLabel).left().padBottom(20).row();
 
-        // Etiqueta Descripción
         Label descTag = new Label("Descripción:", UIStyle.getLabelStyle());
         Label descLabel = new Label(history.getDescription(), UIStyle.getLabelStyle());
         descLabel.setWrap(true);
 
-        // Envolver en ScrollPane
+        // Scroll para descripción
         Table descTable = new Table();
         descTable.add(descLabel).width(380).left().top();
 
@@ -97,24 +92,25 @@ public class AdminHistoryDetailScreen implements Screen {
         descScroll.setScrollbarsOnTop(false);
         descScroll.setForceScroll(false, true);
 
-        leftTable.add(descTag).left().padBottom(5).row();
-        leftTable.add(descScroll).width(400).height(150).left().padBottom(30).row();
-
-
-        // Botón Editar
+        // Botón editar historia
         TextButton editarBtn = new TextButton("Editar", UIStyle.getButtonStyle());
         editarBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 showEditHistoryDialog(history);
-                System.out.println("Editar historia: " + history.getTitle());
             }
         });
+
+        leftTable.add(titleTag).left().padBottom(5).row();
+        leftTable.add(titleLabel).left().padBottom(20).row();
+        leftTable.add(descTag).left().padBottom(5).row();
+        leftTable.add(descScroll).width(400).height(150).left().padBottom(30).row();
         leftTable.add(editarBtn).left().padTop(10);
 
         // Derecha: Lista de capítulos con scroll
         Table rightTable = new Table();
         rightTable.setBackground(backgroundDrawable);
+
         Label chaptersTitle = new Label("Capítulos", UIStyle.getTitleLabelStyle());
         rightTable.add(chaptersTitle).left().padBottom(20).padTop(10).row();
 
@@ -125,8 +121,22 @@ public class AdminHistoryDetailScreen implements Screen {
             chaptersListTable.add(noChaptersLabel).left().padBottom(10).row();
         } else {
             for (Chapter chapter : chapters) {
+                Table chapterRow = new Table();
+
                 Label chapterLabel = new Label("- " + chapter.getName() + " " + chapter.getChapterNumber(), UIStyle.getLabelStyle());
-                chaptersListTable.add(chapterLabel).left().padBottom(10).row();
+                TextButton editButton = new TextButton("Editar", UIStyle.getButtonStyle());
+
+                editButton.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        Render.app.setScreen(new AdminEditChapterScreen(username, chapter));
+                    }
+                });
+
+                chapterRow.add(chapterLabel).left().padRight(10);
+                chapterRow.add(editButton).width(100).right();
+
+                chaptersListTable.add(chapterRow).left().padBottom(10).row();
             }
         }
 
@@ -138,17 +148,32 @@ public class AdminHistoryDetailScreen implements Screen {
         scrollStyle.vScrollKnob = new TextureRegionDrawable(
             new Texture(UIStyle.createRoundedPixmap(6, 60, new Color(0.9f, 0.7f, 1f, 1f), 1f))
         );
+
         ScrollPane scrollPane = new ScrollPane(chaptersListTable, scrollStyle);
         scrollPane.setFadeScrollBars(false);
-        scrollPane.setScrollingDisabled(true, false); // solo vertical
-        scrollPane.setScrollbarsOnTop(false); // barra a la derecha
+        scrollPane.setScrollingDisabled(true, false);
+        scrollPane.setScrollbarsOnTop(false);
         scrollPane.setForceScroll(false, true);
 
         rightTable.add(scrollPane).width(400).height(300).expandY().fillY();
 
+        // Botón Crear Capítulo
+        TextButton crearCapituloButton = new TextButton("+ Crear Capítulo", UIStyle.getButtonStyle());
+        crearCapituloButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminCreateChapterScreen(username, history));
+            }
+        });
+
+        rightTable.row().padTop(20);
+        rightTable.add(crearCapituloButton).width(200).center().padBottom(10);
+
+        // Añadir a main
         mainTable.add(leftTable).left().padRight(50).width(500).top();
         mainTable.add(rightTable).left().width(500).top();
     }
+
 
     @Override
     public void render(float delta) {

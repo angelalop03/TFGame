@@ -323,6 +323,32 @@ public class ChapterManager {
         return chapters;
     }
 
+    public static boolean createChapter(Chapter chapter) {
+        String query = "INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state, history_id) " +
+            "VALUES (?, ?, ?, ?, ?)";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, chapter.getName());
+            stmt.setString(2, chapter.getChapterNumber());
+            stmt.setString(3, chapter.getImagePath());
+            stmt.setString(4, chapter.getRequiredRelationshipState());
+            stmt.setInt(5, chapter.getHistory());
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 
 
 
