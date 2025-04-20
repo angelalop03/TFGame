@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -16,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
+import com.us.TFG.screens.Admin.Game.AdminGameScreen;
 import com.us.TFG.utils.*;
 
 public class AdminMenuScreen implements Screen {
@@ -51,14 +51,19 @@ public class AdminMenuScreen implements Screen {
         // Crear los botones de texto
         TextButton playerButton = new TextButton("Players", UIStyle.getButtonStyle());
         TextButton foroButton = new TextButton("Foro", UIStyle.getButtonStyle());
+        TextButton historyButton = new TextButton("Historias", UIStyle.getButtonStyle());
+
 
         // Ajustar el tamaño de los botones
         playerButton.setSize(300, 75);
         foroButton.setSize(300,75);
+        historyButton.setSize(300,75);
+
 
         // Posicionar los botones
         playerButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 340);
         foroButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 260);
+        historyButton.setPosition(Gdx.graphics.getWidth() / 2f - 175, 180);
 
         playerButton.addListener(new ClickListener() {
             @Override
@@ -73,9 +78,20 @@ public class AdminMenuScreen implements Screen {
                 Render.app.setScreen(new AdminForumScreen(username));
             }
         });
+
+        historyButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminGameScreen(username));
+            }
+        });
+
+
         // Añadir los botones al stage
         stage.addActor(playerButton);
         stage.addActor(foroButton);
+        stage.addActor(historyButton);
+
 
     }
 
