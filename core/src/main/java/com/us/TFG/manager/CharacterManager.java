@@ -6,6 +6,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.us.TFG.model.CharacterGame;
 
 
@@ -42,4 +45,33 @@ public class CharacterManager {
 
         return character;
     }
+
+    public static List<CharacterGame> getAllCharacters() {
+        List<CharacterGame> characters = new ArrayList<>();
+        String query = "SELECT * FROM characters";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                CharacterGame character = new CharacterGame(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("image_path")
+                );
+                characters.add(character);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return characters;
+    }
+
+
+
 }

@@ -19,10 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.manager.ChapterManager;
-import com.us.TFG.manager.DecisionManager;
-import com.us.TFG.model.Decision;
-import com.us.TFG.model.Scene;
+import com.us.TFG.manager.*;
+import com.us.TFG.model.*;
 import com.us.TFG.utils.*;
 
 import java.util.*;
@@ -39,7 +37,8 @@ public class AdminVisualStoryEditorScreen implements Screen {
     private Imagen fondo;
     private TopBar topBar;
 
-    private Map<Actor, List<Actor>> connections = new HashMap<>();
+    private Map<Integer, Actor> decisionNodeMap = new HashMap<>();
+    private List<int[]> decisionLinks = new ArrayList<>();
 
     public AdminVisualStoryEditorScreen(String username, Scene scene) {
         this.username = username;
@@ -73,12 +72,22 @@ public class AdminVisualStoryEditorScreen implements Screen {
             createDecisionNode(decision.getId(), offsetX + i * 250, offsetY - i * 100);
         }
 
+        for (Decision decision : decisions) {
+            List<Option> options = OptionManager.getOptionsByDecisionId(decision.getId());
+            for (Option option : options) {
+                Integer nextId = option.getNextDecisionId();
+                if (nextId != null && nextId > 0) {
+                    decisionLinks.add(new int[]{decision.getId(), nextId});
+                }
+            }
+        }
+
         TextButton addDecisionBtn = new TextButton("+ Añadir Decisión", UIStyle.getButtonStyle());
         addDecisionBtn.setPosition(30, 30);
         addDecisionBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Implementar diálogo de nueva decisión
+                showNewDecisionDialog();
             }
         });
         stage.addActor(addDecisionBtn);
@@ -94,6 +103,83 @@ public class AdminVisualStoryEditorScreen implements Screen {
             }
         });
         stage.addActor(backArrowButton);
+    }
+
+    private void showNewDecisionDialog() {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f)));
+
+        Dialog dialog = new Dialog("Nueva Decisión", dialogStyle);
+
+        TextField orderField = new TextField("", UIStyle.getTextFieldStyle());
+        TextField dialogueField = new TextField("", UIStyle.getTextFieldStyle());
+        SelectBox<String> characterBox = new SelectBox<>(UIStyle.getSelectBoxStyle());
+
+        List<CharacterGame> characters = CharacterManager.getAllCharacters();
+        Map<String, Integer> characterMap = new HashMap<>();
+        List<String> names = new ArrayList<>();
+        for (CharacterGame c : characters) {
+            characterMap.put(c.getName(), c.getId());
+            names.add(c.getName());
+        }
+        characterBox.setItems(names.toArray(new String[0]));
+
+        Label feedback = new Label("", UIStyle.getLabelStyle());
+        feedback.setWrap(true);
+
+        dialog.getContentTable().add(new Label("Orden:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(orderField).width(300).pad(5).row();
+
+        dialog.getContentTable().add(new Label("Diálogo:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(dialogueField).width(300).pad(5).row();
+
+        dialog.getContentTable().add(new Label("Personaje:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(characterBox).width(300).pad(5).row();
+
+        TextButton saveBtn = new TextButton("Guardar", UIStyle.getButtonStyle());
+        saveBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                try {
+                    int order = Integer.parseInt(orderField.getText().trim());
+                    String dialogue = dialogueField.getText().trim();
+                    int charId = characterMap.get(characterBox.getSelected());
+
+                    Decision decision = new Decision();
+                    decision.setSceneId(scene.getId());
+                    decision.setDecisionOrder(order);
+                    decision.setCharacterId(charId);
+                    decision.setDialogue(dialogue);
+
+                    int id = DecisionManager.createDecision(decision);
+                    if (id > 0) {
+                        createDecisionNode(id, 200 + canvas.getChildren().size * 250, 300);
+                        dialog.hide();
+                        dialog.remove();
+                    } else {
+                        UIStyle.showError(feedback, "Error al crear decisión.");
+                    }
+                } catch (Exception e) {
+                    UIStyle.showError(feedback, "Datos inválidos.");
+                }
+            }
+        });
+
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dialog.hide();
+            }
+        });
+
+        dialog.getButtonTable().add(saveBtn).pad(10);
+        dialog.getButtonTable().add(cancelBtn).pad(10);
+        dialog.getContentTable().add(feedback).colspan(2).padTop(10).row();
+
+        dialog.show(stage);
     }
 
     private void createDecisionNode(int decisionId, float x, float y) {
@@ -113,15 +199,14 @@ public class AdminVisualStoryEditorScreen implements Screen {
         });
 
         canvas.addActor(node);
-
-        if (canvas.getChildren().size > 1) {
-            Actor previous = canvas.getChildren().get(canvas.getChildren().size - 2);
-            connections.computeIfAbsent(previous, k -> new ArrayList<>()).add(node);
-        }
+        decisionNodeMap.put(decisionId, node);
     }
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(0.15f, 0.1f, 0.2f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         batch.begin();
         fondo.draw();
         batch.end();
@@ -131,9 +216,10 @@ public class AdminVisualStoryEditorScreen implements Screen {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.YELLOW);
-        for (Map.Entry<Actor, List<Actor>> entry : connections.entrySet()) {
-            Actor from = entry.getKey();
-            for (Actor to : entry.getValue()) {
+        for (int[] link : decisionLinks) {
+            Actor from = decisionNodeMap.get(link[0]);
+            Actor to = decisionNodeMap.get(link[1]);
+            if (from != null && to != null) {
                 float startX = from.getX() + from.getWidth() / 2;
                 float startY = from.getY() + from.getHeight() / 2;
                 float endX = to.getX() + to.getWidth() / 2;

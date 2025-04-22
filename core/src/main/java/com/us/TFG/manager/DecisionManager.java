@@ -159,6 +159,40 @@ public class DecisionManager {
         return decisions;
     }
 
+    public static int createDecision(Decision decision) {
+        String query = "INSERT INTO decisions (scene_id, decision_order, character_id, dialogue) VALUES (?, ?, ?, ?)";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, decision.getSceneId());
+            stmt.setInt(2, decision.getDecisionOrder());
+            stmt.setInt(3, decision.getCharacterId());
+            stmt.setString(4, decision.getDialogue());
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("La creación de la decisión falló, no se insertó ninguna fila.");
+            }
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("La creación de la decisión falló, no se obtuvo el ID.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+
 
 
 }
