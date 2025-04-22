@@ -348,6 +348,37 @@ public class ChapterManager {
         }
     }
 
+    public static boolean updateChapter(Chapter chapter) {
+        String query = "UPDATE chapters SET name = ?, chapter_number = ?, required_relationship_state = ? WHERE id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, chapter.getName());
+            stmt.setString(2, chapter.getChapterNumber());
+
+            // Manejar null explícitamente para required_relationship_state
+            if (chapter.getRequiredRelationshipState() == null || chapter.getRequiredRelationshipState().equalsIgnoreCase("null")) {
+                stmt.setNull(3, java.sql.Types.VARCHAR);
+            } else {
+                stmt.setString(3, chapter.getRequiredRelationshipState());
+            }
+
+            stmt.setInt(4, chapter.getId());
+
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 
 
 

@@ -1,3 +1,4 @@
+// Clase completa AdminHistoryDetailScreen con el dialogo de publicar/despublicar separado
 package com.us.TFG.screens.Admin.Game;
 
 import com.badlogic.gdx.Gdx;
@@ -19,6 +20,7 @@ import com.us.TFG.manager.ChapterManager;
 import com.us.TFG.manager.HistoryManager;
 import com.us.TFG.model.Chapter;
 import com.us.TFG.model.History;
+import com.us.TFG.screens.Admin.AdminForumScreen;
 import com.us.TFG.utils.*;
 
 import java.util.List;
@@ -58,12 +60,10 @@ public class AdminHistoryDetailScreen implements Screen {
         mainTable.pad(50);
         stage.addActor(mainTable);
 
-        // Fondo para las tablas
         Pixmap backgroundPixmap = UIStyle.createRoundedPixmap(500, 600, new Color(0.6f, 0.3f, 0.6f, 0.8f), 0.8f);
         TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(backgroundPixmap));
         backgroundPixmap.dispose();
 
-        // Izquierda: Título y descripción
         Table leftTable = new Table();
         leftTable.setBackground(backgroundDrawable);
 
@@ -74,7 +74,6 @@ public class AdminHistoryDetailScreen implements Screen {
         Label descLabel = new Label(history.getDescription(), UIStyle.getLabelStyle());
         descLabel.setWrap(true);
 
-        // Scroll para descripción
         Table descTable = new Table();
         descTable.add(descLabel).width(380).left().top();
 
@@ -92,12 +91,20 @@ public class AdminHistoryDetailScreen implements Screen {
         descScroll.setScrollbarsOnTop(false);
         descScroll.setForceScroll(false, true);
 
-        // Botón editar historia
         TextButton editarBtn = new TextButton("Editar", UIStyle.getButtonStyle());
+        editarBtn.setDisabled(history.isPublished());
         editarBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    showEditHistoryDialog(history);
+                }
+            });
+
+        TextButton publicarBtn = new TextButton(history.isPublished() ? "Despublicar" : "Publicar", UIStyle.getButtonStyle());
+        publicarBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                showEditHistoryDialog(history);
+                showPublishConfirmDialog();
             }
         });
 
@@ -105,9 +112,11 @@ public class AdminHistoryDetailScreen implements Screen {
         leftTable.add(titleLabel).left().padBottom(20).row();
         leftTable.add(descTag).left().padBottom(5).row();
         leftTable.add(descScroll).width(400).height(150).left().padBottom(30).row();
-        leftTable.add(editarBtn).left().padTop(10);
+        if (!history.isPublished()) {
+            leftTable.add(editarBtn).left().padTop(10).row();
+        }
+        leftTable.add(publicarBtn).left().padTop(10);
 
-        // Derecha: Lista de capítulos con scroll
         Table rightTable = new Table();
         rightTable.setBackground(backgroundDrawable);
 
@@ -115,7 +124,6 @@ public class AdminHistoryDetailScreen implements Screen {
         rightTable.add(chaptersTitle).left().padBottom(20).padTop(10).row();
 
         Table chaptersListTable = new Table().top().left();
-
         if (chapters.isEmpty()) {
             Label noChaptersLabel = new Label("No hay capítulos", UIStyle.getLabelStyle());
             chaptersListTable.add(noChaptersLabel).left().padBottom(10).row();
@@ -126,21 +134,22 @@ public class AdminHistoryDetailScreen implements Screen {
                 Label chapterLabel = new Label("- " + chapter.getName() + " " + chapter.getChapterNumber(), UIStyle.getLabelStyle());
                 TextButton editButton = new TextButton("Editar", UIStyle.getButtonStyle());
 
-                editButton.addListener(new ClickListener() {
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        Render.app.setScreen(new AdminEditChapterScreen(username, chapter));
-                    }
-                });
+                    editButton.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            Render.app.setScreen(new AdminEditChapterScreen(username, chapter));
+                        }
+                    });
+
 
                 chapterRow.add(chapterLabel).left().padRight(10);
-                chapterRow.add(editButton).width(100).right();
-
+                if (!history.isPublished()) {
+                    chapterRow.add(editButton).width(100).right();
+                }
                 chaptersListTable.add(chapterRow).left().padBottom(10).row();
             }
         }
 
-        // Scroll con barra visible
         ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
         scrollStyle.vScroll = new TextureRegionDrawable(
             new Texture(UIStyle.createRoundedPixmap(6, 200, new Color(0.3f, 0.1f, 0.4f, 0.3f), 1f))
@@ -157,21 +166,83 @@ public class AdminHistoryDetailScreen implements Screen {
 
         rightTable.add(scrollPane).width(400).height(300).expandY().fillY();
 
-        // Botón Crear Capítulo
         TextButton crearCapituloButton = new TextButton("+ Crear Capítulo", UIStyle.getButtonStyle());
-        crearCapituloButton.addListener(new ClickListener() {
+        crearCapituloButton.setDisabled(history.isPublished());
+            crearCapituloButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Render.app.setScreen(new AdminCreateChapterScreen(username, history));
+                }
+            });
+
+        rightTable.row().padTop(20);
+        if (!history.isPublished()) {
+            rightTable.add(crearCapituloButton).width(200).center().padBottom(10);
+        }
+
+        mainTable.add(leftTable).left().padRight(50).width(500).top();
+        mainTable.add(rightTable).left().width(500).top();
+
+        // Crear la flecha de retroceso
+        Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
+        backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new AdminCreateChapterScreen(username, history));
+                Render.app.setScreen(new AdminGameScreen(username));
+            }
+        });
+        stage.addActor(backArrowButton);
+    }
+
+    private void showPublishConfirmDialog() {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.6f, 0.3f, 0.6f, 1f), 1f))
+        );
+
+        Dialog publishDialog = new Dialog(history.isPublished() ? "Despublicar historia" : "¿Publicar historia?", dialogStyle);
+
+        String message = history.isPublished()
+            ? "¿Estás seguro? Si despublicas la historia, la gente no podrá jugarla."
+            : "¿Estás seguro? Una vez publicada no se podrá editar.";
+
+        Label confirmLabel = new Label(message, UIStyle.getLabelStyle());
+        confirmLabel.setWrap(true);
+        confirmLabel.setAlignment(Align.center);
+
+        publishDialog.getContentTable().add(confirmLabel).width(400).pad(20).row();
+
+        TextButton confirmBtn = new TextButton("Sí", UIStyle.getButtonStyle());
+        confirmBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                boolean nuevoEstado = !history.isPublished();
+                history.setPublished(nuevoEstado);
+                HistoryManager.setPublished(history.getId(), nuevoEstado);
+                publishDialog.hide();
+                publishDialog.remove();
+                Render.app.setScreen(new AdminHistoryDetailScreen(username, history));
             }
         });
 
-        rightTable.row().padTop(20);
-        rightTable.add(crearCapituloButton).width(200).center().padBottom(10);
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                publishDialog.hide();
+                publishDialog.remove();
+            }
+        });
 
-        // Añadir a main
-        mainTable.add(leftTable).left().padRight(50).width(500).top();
-        mainTable.add(rightTable).left().width(500).top();
+        publishDialog.getButtonTable().add(confirmBtn).pad(10);
+        publishDialog.getButtonTable().add(cancelBtn).pad(10);
+
+        publishDialog.show(stage);
     }
 
 
@@ -180,7 +251,6 @@ public class AdminHistoryDetailScreen implements Screen {
         batch.begin();
         fondo.draw();
         batch.end();
-
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
@@ -188,7 +258,6 @@ public class AdminHistoryDetailScreen implements Screen {
     @Override public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
     }
-
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
@@ -196,9 +265,7 @@ public class AdminHistoryDetailScreen implements Screen {
         stage.dispose();
     }
 
-
     private void showEditHistoryDialog(History history) {
-        // Estilo del diálogo
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
@@ -207,25 +274,19 @@ public class AdminHistoryDetailScreen implements Screen {
         );
 
         Dialog editDialog = new Dialog("Editar Historia", dialogStyle);
-
-        // Campo de texto para título y descripción
         TextField titleField = new TextField(history.getTitle(), UIStyle.getTextFieldStyle());
         TextArea descArea = new TextArea(history.getDescription(), UIStyle.getTextFieldStyle());
 
-        // Etiquetas
         Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
         editDialog.getContentTable().add(new Label("Título:", labelStyle)).left().pad(5);
         editDialog.getContentTable().add(titleField).width(350).pad(5).row();
-
         editDialog.getContentTable().add(new Label("Descripción:", labelStyle)).left().pad(5);
         editDialog.getContentTable().add(descArea).width(350).height(200).row();
 
-        // Feedback
         Label feedbackLabel = new Label("", UIStyle.getLabelStyle());
         feedbackLabel.setWrap(true);
         feedbackLabel.setAlignment(Align.center);
 
-        // Botón Guardar
         TextButton saveButton = new TextButton("Guardar", UIStyle.getButtonStyle());
         saveButton.addListener(new ClickListener() {
             @Override
@@ -239,7 +300,6 @@ public class AdminHistoryDetailScreen implements Screen {
                     return;
                 }
 
-                // Guardar en BD
                 HistoryManager.updateHistory(history.getId(), newTitle, newDesc);
                 history.setTitle(newTitle);
                 history.setDescription(newDesc);
@@ -247,21 +307,17 @@ public class AdminHistoryDetailScreen implements Screen {
                 feedbackLabel.setText("Historia actualizada con éxito.");
                 feedbackLabel.setColor(Color.GREEN);
 
-                // Esperar 2 segundos y cerrar el diálogo
                 com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
                     @Override
                     public void run() {
                         editDialog.hide();
                         editDialog.remove();
                         Render.app.setScreen(new AdminHistoryDetailScreen(username, history));
-
                     }
-                }, 2); // 2 segundos
-
+                }, 2);
             }
         });
 
-        // Botón Cancelar
         TextButton cancelButton = new TextButton("Cerrar", UIStyle.getButtonStyle());
         cancelButton.addListener(new ClickListener() {
             @Override
@@ -271,13 +327,9 @@ public class AdminHistoryDetailScreen implements Screen {
             }
         });
 
-        // Agregar botones y feedback
         editDialog.getButtonTable().add(saveButton).pad(10);
         editDialog.getButtonTable().add(cancelButton).pad(10);
         editDialog.getContentTable().add(feedbackLabel).colspan(2).padTop(10).width(400).row();
-
         editDialog.show(stage);
     }
-
-
 }

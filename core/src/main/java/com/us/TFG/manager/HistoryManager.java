@@ -14,7 +14,7 @@ public class HistoryManager {
 
     public static List<History> getHistories() {
         List<History> histories = new ArrayList<>();
-        String query = "SELECT id, title,image_path,description FROM historys";
+        String query = "SELECT id, title, published, image_path, description FROM historys";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
@@ -28,6 +28,7 @@ public class HistoryManager {
                     History history = new History();
                     history.setId(rs.getInt("id"));
                     history.setTitle(rs.getString("title"));
+                    history.setPublished(rs.getBoolean("published"));
                     history.setImagePath(rs.getString("image_path"));
                     history.setDescription(rs.getString("description"));
 
@@ -111,6 +112,24 @@ public class HistoryManager {
             e.printStackTrace();
         }
     }
+
+    public static void setPublished(int historyId, boolean published) {
+        String sql = "UPDATE historys SET published = ? WHERE id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setBoolean(1, published);
+            stmt.setInt(2, historyId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 

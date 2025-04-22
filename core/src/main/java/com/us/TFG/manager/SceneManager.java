@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SceneManager {
 
@@ -145,6 +147,38 @@ public class SceneManager {
 
         return firstScene;
     }
+
+    public static List<Scene> getScenesByChapterId(int chapterId) {
+        List<Scene> scenes = new ArrayList<>();
+        String query = "SELECT * FROM scenes WHERE chapter_id = ? ORDER BY scene_order ASC";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, chapterId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Scene scene = new Scene(
+                        rs.getInt("id"),
+                        rs.getInt("chapter_id"),
+                        rs.getString("background_image"),
+                        rs.getInt("scene_order")
+                    );
+                    scenes.add(scene);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return scenes;
+    }
+
 
 
 }

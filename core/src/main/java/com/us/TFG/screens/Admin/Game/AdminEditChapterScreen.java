@@ -1,44 +1,220 @@
 package com.us.TFG.screens.Admin.Game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.us.TFG.elements.Imagen;
+import com.us.TFG.manager.ChapterManager;
+import com.us.TFG.manager.SceneManager;
 import com.us.TFG.model.Chapter;
+import com.us.TFG.model.Scene;
+import com.us.TFG.utils.*;
+
+import java.util.List;
 
 public class AdminEditChapterScreen implements Screen {
+    private Stage stage;
+    private SpriteBatch batch;
+    private Imagen fondo;
+    private BitmapFont font;
+    private TopBar topBar;
+    private String username;
+    private Chapter chapter;
+
     public AdminEditChapterScreen(String username, Chapter chapter) {
+        this.username = username;
+        this.chapter = chapter;
     }
 
     @Override
     public void show() {
+        fondo = new Imagen(Resources.FONDODOORS);
+        fondo.setSize(Config.WIDTH, Config.HEIGHT);
+        batch = Render.batch;
 
+        stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage);
+
+        font = UIStyle.getFont();
+        topBar = new TopBar(username, stage, font);
+
+        Table mainTable = new Table();
+        mainTable.setFillParent(true);
+        mainTable.pad(50);
+        stage.addActor(mainTable);
+
+        Pixmap backgroundPixmap = UIStyle.createRoundedPixmap(500, 600, new Color(0.6f, 0.3f, 0.6f, 0.8f), 0.8f);
+        TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(backgroundPixmap));
+        backgroundPixmap.dispose();
+
+        // Left Table: Chapter info
+        Table leftTable = new Table();
+        leftTable.setBackground(backgroundDrawable);
+
+        leftTable.add(new Label("Nombre:", UIStyle.getLabelStyle())).left().padBottom(5).row();
+        leftTable.add(new Label(chapter.getName(), UIStyle.getTitleLabelStyle())).left().padBottom(20).row();
+
+        leftTable.add(new Label("Número de Capítulo:", UIStyle.getLabelStyle())).left().padBottom(5).row();
+        leftTable.add(new Label(chapter.getChapterNumber(), UIStyle.getLabelStyle())).left().padBottom(20).row();
+
+        leftTable.add(new Label("Estado de Relación Requerido:", UIStyle.getLabelStyle())).left().padBottom(5).row();
+        String state = chapter.getRequiredRelationshipState() != null ? chapter.getRequiredRelationshipState() : "Ninguno";
+        leftTable.add(new Label(state, UIStyle.getLabelStyle())).left().padBottom(20).row();
+
+        TextButton editBtn = new TextButton("Editar Capítulo", UIStyle.getButtonStyle());
+        editBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showEditChapterDialog(chapter);
+            }
+        });
+
+        leftTable.add(editBtn).left().padTop(20);
+
+
+        // Right Table: Scene list
+        Table rightTable = new Table();
+        rightTable.setBackground(backgroundDrawable);
+
+        rightTable.add(new Label("Escenas", UIStyle.getTitleLabelStyle())).left().padBottom(20).padTop(20).row();
+
+        List<Scene> scenes = SceneManager.getScenesByChapterId(chapter.getId());
+        Table sceneListTable = new Table().top().left();
+
+        if (scenes.isEmpty()) {
+            sceneListTable.add(new Label("No hay escenas", UIStyle.getLabelStyle())).left().padBottom(10).row();
+        } else {
+            for (Scene scene : scenes) {
+                Label sceneLabel = new Label("Escena" + scene.getSceneOrder(), UIStyle.getLabelStyle());
+                sceneListTable.add(sceneLabel).left().padBottom(10).row();
+            }
+        }
+
+        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
+        scrollStyle.vScroll = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(6, 200, new Color(0.3f, 0.1f, 0.4f, 0.3f), 1f))
+        );
+        scrollStyle.vScrollKnob = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(6, 60, new Color(0.9f, 0.7f, 1f, 1f), 1f))
+        );
+
+        ScrollPane scrollPane = new ScrollPane(sceneListTable, scrollStyle);
+        scrollPane.setFadeScrollBars(false);
+        scrollPane.setScrollingDisabled(true, false);
+        scrollPane.setScrollbarsOnTop(false);
+        scrollPane.setForceScroll(false, true);
+
+        rightTable.add(scrollPane).width(400).height(300).expandY().fillY();
+
+        mainTable.add(leftTable).left().padRight(50).width(500).top();
+        mainTable.add(rightTable).left().width(500).top();
     }
 
     @Override
     public void render(float delta) {
-
+        batch.begin();
+        fondo.draw();
+        batch.end();
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
     }
 
-    @Override
-    public void resize(int width, int height) {
+    @Override public void resize(int width, int height) { stage.getViewport().update(width, height, true); }
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
+    @Override public void dispose() { stage.dispose(); }
 
+    private void showEditChapterDialog(Chapter chapter) {
+        // Estilo del diálogo
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(0.6f, 0.3f, 0.6f, 1f), 1f))
+        );
+
+        Dialog editDialog = new Dialog("Editar Capítulo", dialogStyle);
+
+        TextField nameField = new TextField(chapter.getName(), UIStyle.getTextFieldStyle());
+        TextField numberField = new TextField(chapter.getChapterNumber(), UIStyle.getTextFieldStyle());
+
+        SelectBox<String> relationshipBox = new SelectBox<>(UIStyle.getSelectBoxStyle());
+        relationshipBox.setItems("NULL", "CONFIDENT", "LOW_TENSION", "HIGH_TENSION", "CRITICAL");
+        relationshipBox.setSelected(chapter.getRequiredRelationshipState() == null ? "NULL" : chapter.getRequiredRelationshipState());
+
+        Label feedback = new Label("", UIStyle.getLabelStyle());
+        feedback.setWrap(true);
+
+        editDialog.getContentTable().add(new Label("Nombre:", UIStyle.getLabelStyle())).left().pad(5);
+        editDialog.getContentTable().add(nameField).width(350).pad(5).row();
+
+        editDialog.getContentTable().add(new Label("Número:", UIStyle.getLabelStyle())).left().pad(5);
+        editDialog.getContentTable().add(numberField).width(350).pad(5).row();
+
+        editDialog.getContentTable().add(new Label("Relación:", UIStyle.getLabelStyle())).left().pad(5);
+        editDialog.getContentTable().add(relationshipBox).width(350).pad(5).row();
+
+        // Botón Guardar
+        TextButton saveBtn = new TextButton("Guardar", UIStyle.getButtonStyle());
+        saveBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                String newName = nameField.getText().trim();
+                String newNumber = numberField.getText().trim();
+                String newRelation = relationshipBox.getSelected();
+                String relationToSave = newRelation.equals("NULL") ? null : newRelation;
+
+                if (newName.isEmpty() || newNumber.isEmpty()) {
+                    UIStyle.showError(feedback, "Todos los campos son obligatorios.");
+                    return;
+                }
+
+                chapter.setName(newName);
+                chapter.setChapterNumber(newNumber);
+                chapter.setRequiredRelationshipState(relationToSave);
+
+                ChapterManager.updateChapter(chapter);
+
+                feedback.setText("Capítulo actualizado.");
+                feedback.setColor(Color.GREEN);
+
+                // Cierra después de 2s y refresca pantalla
+                com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+                    @Override
+                    public void run() {
+                        editDialog.hide();
+                        editDialog.remove();
+                        Render.app.setScreen(new AdminEditChapterScreen(username, chapter));
+                    }
+                }, 2);
+            }
+        });
+
+        // Botón Cancelar
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editDialog.hide();
+            }
+        });
+
+        editDialog.getButtonTable().add(saveBtn).pad(10);
+        editDialog.getButtonTable().add(cancelBtn).pad(10);
+        editDialog.getContentTable().add(feedback).colspan(2).width(400).padTop(10).row();
+
+        editDialog.show(stage);
     }
 
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
 }
