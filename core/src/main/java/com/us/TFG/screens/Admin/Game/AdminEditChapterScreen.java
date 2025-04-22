@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.ChapterManager;
+import com.us.TFG.manager.HistoryManager;
 import com.us.TFG.manager.SceneManager;
 import com.us.TFG.model.Chapter;
 import com.us.TFG.model.Scene;
@@ -114,10 +115,34 @@ public class AdminEditChapterScreen implements Screen {
         scrollPane.setScrollbarsOnTop(false);
         scrollPane.setForceScroll(false, true);
 
+        TextButton createSceneButton = new TextButton("Gestionar Escenas", UIStyle.getButtonStyle());
+        createSceneButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminVisualStoryEditorScreen(username, chapter));
+            }
+        });
+
+        rightTable.add(createSceneButton).padTop(20);
+
         rightTable.add(scrollPane).width(400).height(300).expandY().fillY();
 
         mainTable.add(leftTable).left().padRight(50).width(500).top();
         mainTable.add(rightTable).left().width(500).top();
+
+        // Crear la flecha de retroceso
+        Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setSize(100, 100); // Tamaño de la flecha
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150); // Posición en la esquina superior izquierda
+        backArrowButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminHistoryDetailScreen(username, HistoryManager.getHistoryByChapterId(chapter.getId())));
+            }
+        });
+        stage.addActor(backArrowButton);
+
     }
 
     @Override
@@ -178,6 +203,14 @@ public class AdminEditChapterScreen implements Screen {
                 if (newName.isEmpty() || newNumber.isEmpty()) {
                     UIStyle.showError(feedback, "Todos los campos son obligatorios.");
                     return;
+                }
+                // Validar que el número no esté duplicado
+                List<Chapter> existingChapters = ChapterManager.getChaptersByHistoryId(chapter.getHistory());
+                for (Chapter c : existingChapters) {
+                    if (c.getId() != chapter.getId() && c.getChapterNumber().equalsIgnoreCase(newNumber)) {
+                        UIStyle.showError(feedback, "Ya existe un capítulo con ese número.");
+                        return;
+                    }
                 }
 
                 chapter.setName(newName);

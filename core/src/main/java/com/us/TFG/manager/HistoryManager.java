@@ -129,6 +129,41 @@ public class HistoryManager {
             e.printStackTrace();
         }
     }
+    public static History getHistoryByChapterId(int chapterId) {
+        String query = "SELECT h.id, h.title, h.published, h.image_path, h.description " +
+            "FROM historys h " +
+            "JOIN chapters c ON h.id = c.history_id " +
+            "WHERE c.id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, chapterId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    History history = new History();
+                    history.setId(rs.getInt("id"));
+                    history.setTitle(rs.getString("title"));
+                    history.setPublished(rs.getBoolean("published"));
+                    history.setImagePath(rs.getString("image_path"));
+                    history.setDescription(rs.getString("description"));
+                    return history;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null; // No se encontró la historia
+    }
+
+
+
 
 
 

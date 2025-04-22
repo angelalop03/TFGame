@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 
@@ -137,5 +138,26 @@ public class UIStyle {
 
         return style;
     }
+
+    //-------------------------------------------------------------------------------------------
+
+
+    public static Drawable getBoxBackground() {
+        Pixmap pixmap = UIStyle.createRoundedPixmap(200, 100, new Color(0.2f, 0.2f, 0.5f, 0.8f), 0.9f);
+        return new TextureRegionDrawable(new Texture(pixmap));
+    }
+
+    public static Window.WindowStyle getDialogStyle() {
+        Window.WindowStyle style = new Window.WindowStyle();
+        style.titleFont = getFont();
+        style.titleFontColor = Color.WHITE;
+        style.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.3f, 0.5f, 1f), 1f))
+        );
+        return style;
+    }
+
+
+
 
 }

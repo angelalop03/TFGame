@@ -179,6 +179,40 @@ public class SceneManager {
         return scenes;
     }
 
+    public static int createScene(Scene scene) {
+        String sql = "INSERT INTO scenes (chapter_id, background_image, scene_order) VALUES (?, ?, ?)";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, scene.getChapterId());
+            stmt.setString(2, scene.getBackgroundImage() != null ? scene.getBackgroundImage() : "default_bg.png");
+            stmt.setInt(3, scene.getSceneOrder());
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("No se pudo crear la escena, ninguna fila afectada.");
+            }
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1); // Devuelve el ID generado
+                } else {
+                    throw new SQLException("No se pudo obtener el ID generado.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+
+
 
 
 }
