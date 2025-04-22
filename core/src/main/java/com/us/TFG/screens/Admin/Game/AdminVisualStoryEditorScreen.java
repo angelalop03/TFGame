@@ -69,7 +69,7 @@ public class AdminVisualStoryEditorScreen implements Screen {
         float offsetY = 400;
         for (int i = 0; i < decisions.size(); i++) {
             Decision decision = decisions.get(i);
-            createDecisionNode(decision.getId(), offsetX + i * 250, offsetY - i * 100);
+            createDecisionNode(decision, offsetX + i * 250, offsetY - i * 100);
         }
 
         for (Decision decision : decisions) {
@@ -103,6 +103,33 @@ public class AdminVisualStoryEditorScreen implements Screen {
             }
         });
         stage.addActor(backArrowButton);
+    }
+
+    private void createDecisionNode(Decision decision, float x, float y) {
+        Table node = new Table();
+        node.setSize(300, 150);
+        node.setBackground(new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(300, 150, new Color(0.3f, 0.3f, 0.3f, 0.7f), 0.7f))));
+        node.setPosition(x, y);
+
+        Label titleLabel = new Label("Decisión " + decision.getId(), UIStyle.getLabelStyle());
+        node.add(titleLabel).expand().center().row();
+
+        node.addListener(new DragListener() {
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                node.moveBy(x - node.getWidth() / 2, y - node.getHeight() / 2);
+            }
+        });
+
+        node.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showEditDecisionDialog(decision);
+            }
+        });
+
+        canvas.addActor(node);
+        decisionNodeMap.put(decision.getId(), node);
     }
 
     private void showNewDecisionDialog() {
@@ -155,7 +182,8 @@ public class AdminVisualStoryEditorScreen implements Screen {
 
                     int id = DecisionManager.createDecision(decision);
                     if (id > 0) {
-                        createDecisionNode(id, 200 + canvas.getChildren().size * 250, 300);
+                        decision.setId(id); // <- aquí asignas el ID correcto
+                        createDecisionNode(decision, 200 + canvas.getChildren().size * 250, 300);
                         dialog.hide();
                         dialog.remove();
                     } else {
@@ -182,25 +210,281 @@ public class AdminVisualStoryEditorScreen implements Screen {
         dialog.show(stage);
     }
 
-    private void createDecisionNode(int decisionId, float x, float y) {
-        Table node = new Table();
-        node.setSize(200, 100);
-        node.setBackground(new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(200, 100, new Color(0.3f, 0.3f, 0.3f, 0.7f), 0.7f))));
-        node.setPosition(x, y);
+    private void showEditDecisionDialog(Decision decision) {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f)));
 
-        Label titleLabel = new Label("Decisión " + decisionId, UIStyle.getLabelStyle());
-        node.add(titleLabel).expand().center();
+        Dialog dialog = new Dialog("Editar Decisión", dialogStyle);
 
-        node.addListener(new DragListener() {
+        TextField dialogueField = new TextField(decision.getDialogue(), UIStyle.getTextFieldStyle());
+
+        List<Option> options = OptionManager.getOptionsByDecisionId(decision.getId());
+
+        Label feedback = new Label("", UIStyle.getLabelStyle());
+        feedback.setWrap(true);
+
+        dialog.getContentTable().add(new Label("Diálogo:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(dialogueField).width(400).pad(5).row();
+
+        dialog.getContentTable().add(new Label("Opciones:", UIStyle.getLabelStyle())).colspan(2).padTop(10).row();
+
+        for (Option option : options) {
+            Table optionRow = new Table();
+            String optionText = String.format("%s → %s", "->" + option.getText(),
+                option.getNextDecisionId() != null ? "// Next Decisión " + option.getNextDecisionId() : "FIN");
+            Label optionLabel = new Label(optionText, UIStyle.getLabelStyle());
+            optionLabel.setEllipsis(true);
+            optionLabel.setWidth(250);
+            optionLabel.setWrap(false);
+            optionRow.add(optionLabel).width(250).left().pad(5);
+
+            TextButton editBtn = new TextButton("Editar", UIStyle.getButtonStyle());
+            editBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    showEditOptionDialog(option, decision);
+                    dialog.hide();
+                }
+            });
+            optionRow.add(editBtn).padLeft(10);
+
+            dialog.getContentTable().add(optionRow).colspan(2).pad(5).row();
+        }
+
+        TextButton addOptionBtn = new TextButton("+ Añadir Opción", UIStyle.getButtonStyle());
+        addOptionBtn.addListener(new ClickListener() {
             @Override
-            public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                node.moveBy(x - node.getWidth() / 2, y - node.getHeight() / 2);
+            public void clicked(InputEvent event, float x, float y) {
+                showAddOptionDialog(decision);
+                dialog.hide();
+            }
+        });
+        dialog.getContentTable().add(addOptionBtn).colspan(2).padTop(10).row();
+
+        TextButton saveBtn = new TextButton("Guardar", UIStyle.getButtonStyle());
+        saveBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                decision.setDialogue(dialogueField.getText().trim());
+                DecisionManager.updateDecision(decision);
+                dialog.hide();
             }
         });
 
-        canvas.addActor(node);
-        decisionNodeMap.put(decisionId, node);
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dialog.hide();
+            }
+        });
+
+        dialog.getButtonTable().add(saveBtn).pad(10);
+        dialog.getButtonTable().add(cancelBtn).pad(10);
+        dialog.getContentTable().add(feedback).colspan(2).padTop(10).row();
+
+        dialog.show(stage);
     }
+
+    private void showAddOptionDialog(Decision decision) {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f))
+        );
+
+        Dialog dialog = new Dialog("Añadir Opción", dialogStyle);
+
+        TextField textField = new TextField("(Continuar)", UIStyle.getTextFieldStyle());
+        TextField pointsMField = new TextField("0", UIStyle.getTextFieldStyle());
+        TextField pointsRField = new TextField("0", UIStyle.getTextFieldStyle());
+        SelectBox<String> nextDecisionBox = new SelectBox<>(UIStyle.getSelectBoxStyle());
+
+        // Estado psicológico como SelectBox
+        SelectBox<String> stateBox = new SelectBox<>(UIStyle.getSelectBoxStyle());
+        stateBox.setItems("NULL", "STABLE", "SLIGHTLY_ANXIOUS", "ANXIOUS", "DISTRESSED");
+
+        Map<String, Integer> decisionMap = new HashMap<>();
+        List<String> items = new ArrayList<>();
+        for (Decision d : DecisionManager.getDecisionsBySceneId(scene.getId())) {
+            if (d.getId() != decision.getId()) {
+                String label = "" + d.getId();
+                decisionMap.put(label, d.getId());
+                items.add(label);
+            }
+        }
+        items.add("Ninguna");
+        nextDecisionBox.setItems(items.toArray(new String[0]));
+
+        Label feedback = new Label("", UIStyle.getLabelStyle());
+
+        dialog.getContentTable().add(new Label("Texto:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(textField).width(300).pad(5).row();
+        dialog.getContentTable().add(new Label("Puntos M:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(pointsMField).width(300).pad(5).row();
+        dialog.getContentTable().add(new Label("Puntos R:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(pointsRField).width(300).pad(5).row();
+        dialog.getContentTable().add(new Label("Siguiente Decisión:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(nextDecisionBox).width(300).pad(5).row();
+        dialog.getContentTable().add(new Label("Estado Psicológico Requerido:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(stateBox).width(300).pad(5).row();
+
+        TextButton saveBtn = new TextButton("Guardar", UIStyle.getButtonStyle());
+        saveBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                try {
+                    Option option = new Option();
+                    option.setDecisionId(decision.getId());
+                    option.setText(textField.getText().trim());
+                    option.setPointsM(Integer.parseInt(pointsMField.getText().trim()));
+                    option.setPointsR(Integer.parseInt(pointsRField.getText().trim()));
+
+                    String selectedState = stateBox.getSelected();
+                    option.setRequiredPsychologicalState("Ninguno".equals(selectedState) ? "" : selectedState);
+
+                    String selected = nextDecisionBox.getSelected();
+                    if (!"Ninguna".equals(selected)) {
+                        option.setNextDecisionId(decisionMap.get(selected));
+                    }
+
+                    OptionManager.createOption(option);
+                    dialog.hide();
+                } catch (Exception e) {
+                    feedback.setText("Error al guardar la opción.");
+                    feedback.setColor(Color.RED);
+                }
+            }
+        });
+
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dialog.hide();
+            }
+        });
+
+        dialog.getButtonTable().add(saveBtn).pad(10);
+        dialog.getButtonTable().add(cancelBtn).pad(10);
+        dialog.getContentTable().add(feedback).colspan(2).padTop(10).row();
+
+        dialog.show(stage);
+    }
+
+
+    private void showEditOptionDialog(Option option, Decision currentDecision) {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f))
+        );
+
+        Dialog dialog = new Dialog("Editar Opción", dialogStyle);
+
+        // TextArea con scroll
+        TextArea textArea = new TextArea(option.getText(), UIStyle.getTextFieldStyle());
+        textArea.setPrefRows(5);
+        ScrollPane textScroll = new ScrollPane(textArea);
+        textScroll.setFadeScrollBars(false);
+        textScroll.setScrollingDisabled(true, false);
+
+        TextField pointsMField = new TextField(String.valueOf(option.getPointsM()), UIStyle.getTextFieldStyle());
+        TextField pointsRField = new TextField(String.valueOf(option.getPointsR()), UIStyle.getTextFieldStyle());
+        SelectBox<String> nextDecisionBox = new SelectBox<>(UIStyle.getSelectBoxStyle());
+
+        // SelectBox para el estado psicológico requerido
+        SelectBox<String> stateBox = new SelectBox<>(UIStyle.getSelectBoxStyle());
+        stateBox.setItems("NULL", "STABLE", "SLIGHTLY_ANXIOUS", "ANXIOUS", "DISTRESSED");
+        if (option.getRequiredPsychologicalState() == null || option.getRequiredPsychologicalState().isEmpty()) {
+            stateBox.setSelected("Ninguno");
+        } else {
+            stateBox.setSelected(option.getRequiredPsychologicalState());
+        }
+
+        Map<String, Integer> decisionMap = new HashMap<>();
+        List<String> items = new ArrayList<>();
+        for (Decision d : DecisionManager.getDecisionsBySceneId(scene.getId())) {
+            if (d.getId() != currentDecision.getId()) {
+                String label = String.valueOf(d.getId());
+                decisionMap.put(label, d.getId());
+                items.add(label);
+            }
+        }
+        items.add("Ninguna");
+        nextDecisionBox.setItems(items.toArray(new String[0]));
+        if (option.getNextDecisionId() != null) {
+            nextDecisionBox.setSelected(String.valueOf(option.getNextDecisionId()));
+        } else {
+            nextDecisionBox.setSelected("Ninguna");
+        }
+
+        Label feedback = new Label("", UIStyle.getLabelStyle());
+
+        Table contentTable = new Table();
+        contentTable.add(new Label("Texto:", UIStyle.getLabelStyle())).left().pad(5);
+        contentTable.add(textScroll).width(300).height(100).pad(5).row();
+        contentTable.add(new Label("Puntos M:", UIStyle.getLabelStyle())).left().pad(5);
+        contentTable.add(pointsMField).width(300).pad(5).row();
+        contentTable.add(new Label("Puntos R:", UIStyle.getLabelStyle())).left().pad(5);
+        contentTable.add(pointsRField).width(300).pad(5).row();
+        contentTable.add(new Label("Siguiente Decisión:", UIStyle.getLabelStyle())).left().pad(5);
+        contentTable.add(nextDecisionBox).width(300).pad(5).row();
+        contentTable.add(new Label("Estado Psicológico Requerido:", UIStyle.getLabelStyle())).left().pad(5);
+        contentTable.add(stateBox).width(300).pad(5).row();
+
+        dialog.getContentTable().add(contentTable).colspan(2).pad(10).row();
+
+        TextButton saveBtn = new TextButton("Guardar", UIStyle.getButtonStyle());
+        saveBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                try {
+                    option.setText(textArea.getText().trim());
+                    option.setPointsM(Integer.parseInt(pointsMField.getText().trim()));
+                    option.setPointsR(Integer.parseInt(pointsRField.getText().trim()));
+
+                    String selectedState = stateBox.getSelected();
+                    option.setRequiredPsychologicalState("Ninguno".equals(selectedState) ? "" : selectedState);
+
+                    String selected = nextDecisionBox.getSelected();
+                    if (!"Ninguna".equals(selected)) {
+                        option.setNextDecisionId(decisionMap.get(selected));
+                    } else {
+                        option.setNextDecisionId(null);
+                    }
+
+                    OptionManager.updateOption(option);
+                    dialog.hide();
+                } catch (Exception e) {
+                    feedback.setText("Error al guardar la opción.");
+                    feedback.setColor(Color.RED);
+                }
+            }
+        });
+
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dialog.hide();
+            }
+        });
+
+        dialog.getContentTable().add(feedback).colspan(2).padTop(15).row();
+        dialog.getButtonTable().add(saveBtn).pad(10);
+        dialog.getButtonTable().add(cancelBtn).pad(10);
+
+        dialog.show(stage);
+    }
+
+
+
+
 
     @Override
     public void render(float delta) {
@@ -229,7 +513,6 @@ public class AdminVisualStoryEditorScreen implements Screen {
         }
         shapeRenderer.end();
     }
-
     @Override public void resize(int width, int height) { stage.getViewport().update(width, height, true); }
     @Override public void pause() {}
     @Override public void resume() {}

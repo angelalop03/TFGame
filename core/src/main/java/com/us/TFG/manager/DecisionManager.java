@@ -192,6 +192,29 @@ public class DecisionManager {
         return -1;
     }
 
+    public static boolean updateDecision(Decision decision) {
+        String query = "UPDATE decisions SET dialogue = ?, character_id = ?, decision_order = ? WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, decision.getDialogue());
+            stmt.setInt(2, decision.getCharacterId());
+            stmt.setInt(3, decision.getDecisionOrder());
+            stmt.setInt(4, decision.getId());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 
 
 
