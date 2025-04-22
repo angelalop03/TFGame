@@ -108,12 +108,23 @@ public class AdminHistoryDetailScreen implements Screen {
             }
         });
 
+        TextButton eliminarBtn = new TextButton("Borrar historia", UIStyle.getButtonStyle());
+        eliminarBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showDeleteConfirmDialog();
+            }
+        });
+
+
         leftTable.add(titleTag).left().padBottom(5).row();
         leftTable.add(titleLabel).left().padBottom(20).row();
         leftTable.add(descTag).left().padBottom(5).row();
         leftTable.add(descScroll).width(400).height(150).left().padBottom(30).row();
         if (!history.isPublished()) {
             leftTable.add(editarBtn).left().padTop(10).row();
+            leftTable.add(eliminarBtn).left().padTop(10).row();
+
         }
         leftTable.add(publicarBtn).left().padTop(10);
 
@@ -245,6 +256,46 @@ public class AdminHistoryDetailScreen implements Screen {
         publishDialog.show(stage);
     }
 
+
+    private void showDeleteConfirmDialog() {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.6f, 0.2f, 0.2f, 1f), 1f))
+        );
+
+        Dialog confirmDialog = new Dialog("¿Eliminar historia?", dialogStyle);
+
+        Label warning = new Label("¿Estás seguro de que quieres eliminar esta historia?\nEsta acción no se puede deshacer.", UIStyle.getLabelStyle());
+        warning.setWrap(true);
+        warning.setAlignment(Align.center);
+
+        confirmDialog.getContentTable().add(warning).width(400).pad(20).row();
+
+        TextButton confirmBtn = new TextButton("Sí, eliminar", UIStyle.getButtonStyle());
+        confirmBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                HistoryManager.deleteHistory(history.getId());
+                confirmDialog.hide();
+                Render.app.setScreen(new AdminGameScreen(username));
+            }
+        });
+
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                confirmDialog.hide();
+            }
+        });
+
+        confirmDialog.getButtonTable().add(confirmBtn).pad(10);
+        confirmDialog.getButtonTable().add(cancelBtn).pad(10);
+
+        confirmDialog.show(stage);
+    }
 
     @Override
     public void render(float delta) {

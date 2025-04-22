@@ -162,6 +162,48 @@ public class HistoryManager {
         return null; // No se encontró la historia
     }
 
+    public static void deleteHistory(int historyId) {
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try {
+            connection.setAutoCommit(false); // Iniciar transacción
+
+            // Eliminar capítulos asociados
+            String deleteChaptersSql = "DELETE FROM chapters WHERE history_id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(deleteChaptersSql)) {
+                stmt.setInt(1, historyId);
+                stmt.executeUpdate();
+            }
+
+            // Eliminar la historia
+            String deleteHistorySql = "DELETE FROM historys WHERE id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(deleteHistorySql)) {
+                stmt.setInt(1, historyId);
+                stmt.executeUpdate();
+            }
+
+            connection.commit(); // Confirmar la transacción
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connection.rollback(); // Revertir cambios si hay error
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
 
 

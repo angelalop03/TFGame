@@ -50,7 +50,6 @@ public class AdminGameScreen implements Screen {
         font = UIStyle.getFont();
         topBar = new TopBar(username, stage, font);
 
-        // Cargar las partidas del jugador
         histories = HistoryManager.getHistories();
         currentIndex = 0;
 
@@ -97,6 +96,14 @@ public class AdminGameScreen implements Screen {
             Label gameNameLabel = new Label(history.getTitle(), labelStyle);
             cardTable.add(gameNameLabel).center().pad(10);
             contentTable.add(cardTable).width(300).height(200).padTop(50).colspan(3);
+            cardTable.setBackground(new TextureRegionDrawable(new Texture("assets/photos/Histories/" + history.getImagePath())));
+
+            cardTable.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Render.app.setScreen(new AdminHistoryDetailScreen(username, history));
+                }
+            });
         } else {
             // Flecha izquierda
             Texture leftArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
