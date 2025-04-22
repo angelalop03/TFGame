@@ -148,7 +148,7 @@ public class AdminHistoryDetailScreen implements Screen {
                     editButton.addListener(new ClickListener() {
                         @Override
                         public void clicked(InputEvent event, float x, float y) {
-                            Render.app.setScreen(new AdminEditChapterScreen(username, chapter));
+                            Render.app.setScreen(new AdminEditChapterScreen(username, chapter,history));
                         }
                     });
 

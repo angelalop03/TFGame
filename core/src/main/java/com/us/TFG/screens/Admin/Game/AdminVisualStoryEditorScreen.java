@@ -36,13 +36,15 @@ public class AdminVisualStoryEditorScreen implements Screen {
     private SpriteBatch batch;
     private Imagen fondo;
     private TopBar topBar;
+    private History history;
 
     private Map<Integer, Actor> decisionNodeMap = new HashMap<>();
     private List<int[]> decisionLinks = new ArrayList<>();
 
-    public AdminVisualStoryEditorScreen(String username, Scene scene) {
+    public AdminVisualStoryEditorScreen(String username, Scene scene,History history) {
         this.username = username;
         this.scene = scene;
+        this.history=history;
     }
 
     @Override
@@ -99,7 +101,7 @@ public class AdminVisualStoryEditorScreen implements Screen {
         backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new AdminEditChapterScreen(username, ChapterManager.getChapterById(scene.getChapterId())));
+                Render.app.setScreen(new AdminEditChapterScreen(username, ChapterManager.getChapterById(scene.getChapterId()),history));
             }
         });
         stage.addActor(backArrowButton);

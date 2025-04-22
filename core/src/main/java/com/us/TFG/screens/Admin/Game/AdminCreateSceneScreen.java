@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.SceneManager;
 import com.us.TFG.model.Chapter;
+import com.us.TFG.model.History;
 import com.us.TFG.model.Scene;
 import com.us.TFG.utils.*;
 
@@ -37,10 +38,12 @@ public class AdminCreateSceneScreen implements Screen {
     private TextField orderField;
     private Image previewImage;
     private Label feedbackLabel;
+    private History history;
 
-    public AdminCreateSceneScreen(String username, Chapter chapter) {
+    public AdminCreateSceneScreen(String username, Chapter chapter, History history) {
         this.username = username;
         this.chapter = chapter;
+        this.history =history;
     }
 
     @Override
@@ -115,7 +118,7 @@ public class AdminCreateSceneScreen implements Screen {
         cancelarBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new AdminEditChapterScreen(username, chapter));
+                Render.app.setScreen(new AdminEditChapterScreen(username, chapter,history));
             }
         });
 
@@ -154,7 +157,7 @@ public class AdminCreateSceneScreen implements Screen {
 
         int sceneId = SceneManager.createScene(newScene);
         if (sceneId > 0) {
-            Render.app.setScreen(new AdminEditChapterScreen(username, chapter));
+            Render.app.setScreen(new AdminEditChapterScreen(username, chapter,history));
         } else {
             UIStyle.showError(feedbackLabel, "Error al crear la escena.");
         }

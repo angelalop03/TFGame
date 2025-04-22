@@ -2,25 +2,30 @@ package com.us.TFG.screens.Admin.Game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.ChapterManager;
 import com.us.TFG.manager.HistoryManager;
 import com.us.TFG.manager.SceneManager;
 import com.us.TFG.model.Chapter;
+import com.us.TFG.model.History;
 import com.us.TFG.model.Scene;
 import com.us.TFG.utils.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminEditChapterScreen implements Screen {
@@ -31,10 +36,12 @@ public class AdminEditChapterScreen implements Screen {
     private TopBar topBar;
     private String username;
     private Chapter chapter;
+    private History history;
 
-    public AdminEditChapterScreen(String username, Chapter chapter) {
+    public AdminEditChapterScreen(String username, Chapter chapter, History history) {
         this.username = username;
         this.chapter = chapter;
+        this.history = history;
     }
 
     @Override
@@ -79,6 +86,16 @@ public class AdminEditChapterScreen implements Screen {
             }
         });
 
+        TextButton eliminarBtn = new TextButton("Eliminar Capítulo", UIStyle.getButtonStyle());
+        eliminarBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showDeleteChapterDialog();
+            }
+        });
+        leftTable.add(eliminarBtn).left().padTop(10).row();
+
+
         leftTable.add(editBtn).left().padTop(20);
 
         Table rightTable = new Table();
@@ -96,15 +113,25 @@ public class AdminEditChapterScreen implements Screen {
                 Table sceneEntry = new Table();
                 sceneEntry.add(new Label("Escena " + scene.getId(), UIStyle.getLabelStyle())).left().padRight(10);
 
+                TextButton editSceneBtn = new TextButton("Editar", UIStyle.getButtonStyle());
+                editSceneBtn.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        showEditSceneDialog(scene);
+                    }
+                });
+
                 TextButton manageBtn = new TextButton("Gestionar", UIStyle.getButtonStyle());
                 manageBtn.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        Render.app.setScreen(new AdminVisualStoryEditorScreen(username,scene));
+                        Render.app.setScreen(new AdminVisualStoryEditorScreen(username,scene,history));
                     }
                 });
 
                 sceneEntry.add(manageBtn).width(100).right();
+                sceneEntry.add(editSceneBtn).width(100).left().pad(10);
+
                 sceneListTable.add(sceneEntry).left().padBottom(10).row();
             }
         }
@@ -129,7 +156,7 @@ public class AdminEditChapterScreen implements Screen {
         createSceneButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new AdminCreateSceneScreen(username, chapter));
+                Render.app.setScreen(new AdminCreateSceneScreen(username, chapter,history));
             }
         });
 
@@ -231,7 +258,7 @@ public class AdminEditChapterScreen implements Screen {
                     public void run() {
                         editDialog.hide();
                         editDialog.remove();
-                        Render.app.setScreen(new AdminEditChapterScreen(username, chapter));
+                        Render.app.setScreen(new AdminEditChapterScreen(username, chapter,history));
                     }
                 }, 2);
             }
@@ -251,4 +278,179 @@ public class AdminEditChapterScreen implements Screen {
 
         editDialog.show(stage);
     }
+
+    private void showDeleteChapterDialog() {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.6f, 0.2f, 0.2f, 1f), 1f))
+        );
+
+        Dialog confirmDialog = new Dialog("¿Eliminar capítulo?", dialogStyle);
+
+        Label warning = new Label("¿Estás seguro de que quieres eliminar este capítulo?\nSe eliminarán también todas sus escenas.", UIStyle.getLabelStyle());
+        warning.setWrap(true);
+        warning.setAlignment(Align.center);
+
+        confirmDialog.getContentTable().add(warning).width(400).pad(20).row();
+
+        TextButton confirmBtn = new TextButton("Sí, eliminar", UIStyle.getButtonStyle());
+        confirmBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ChapterManager.deleteChapter(chapter.getId()); // Asegúrate de que elimina escenas también
+                confirmDialog.hide();
+                Render.app.setScreen(new AdminHistoryDetailScreen(username, history));
+            }
+        });
+
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                confirmDialog.hide();
+            }
+        });
+
+        confirmDialog.getButtonTable().add(confirmBtn).pad(10);
+        confirmDialog.getButtonTable().add(cancelBtn).pad(10);
+        confirmDialog.show(stage);
+    }
+
+    private String[] getSceneImageList() {
+        FileHandle dirHandle = Gdx.files.internal("assets/photos/Scenes");
+        if (!dirHandle.exists() || !dirHandle.isDirectory()) return new String[]{"Default_Scene.png"};
+
+        FileHandle[] files = dirHandle.list();
+        List<String> imageNames = new ArrayList<>();
+        for (FileHandle file : files) {
+            if (file.name().endsWith(".png") || file.name().endsWith(".jpg")) {
+                imageNames.add(file.name());
+            }
+        }
+
+        return imageNames.toArray(new String[0]);
+    }
+
+    private void updatePreviewImage(Image previewImage, String selectedImage) {
+        if (selectedImage != null && Gdx.files.internal("assets/photos/Scenes/" + selectedImage).exists()) {
+            previewImage.setDrawable(new TextureRegionDrawable(
+                new Texture(Gdx.files.internal("assets/photos/Scenes/" + selectedImage))
+            ));
+        }
+    }
+
+    private void showEditSceneDialog(Scene scene) {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(0.3f, 0.2f, 0.5f, 1f), 1f))
+        );
+
+        Dialog dialog = new Dialog("Editar Escena", dialogStyle);
+
+        SelectBox<String> backgroundImageBox = new SelectBox<>(UIStyle.getSelectBoxStyle());
+        backgroundImageBox.setItems(getSceneImageList());
+        backgroundImageBox.setSelected(scene.getBackgroundImage());
+
+        Image previewImage = new Image();
+        updatePreviewImage(previewImage, backgroundImageBox.getSelected());
+
+        backgroundImageBox.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                updatePreviewImage(previewImage, backgroundImageBox.getSelected());
+            }
+        });
+
+        backgroundImageBox.addListener(new ClickListener() {
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                updatePreviewImage(previewImage, backgroundImageBox.getSelected());
+            }
+        });
+
+        Label feedback = new Label("", UIStyle.getLabelStyle());
+
+        TextButton saveButton = new TextButton("Guardar Cambios", UIStyle.getButtonStyle());
+        saveButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                scene.setBackgroundImage(backgroundImageBox.getSelected());
+                SceneManager.updateScene(scene);
+                dialog.hide();
+            }
+        });
+
+        TextButton deleteButton = new TextButton("Eliminar Escena", UIStyle.getButtonStyle());
+        deleteButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dialog.hide();
+                showDeleteSceneDialog(scene);
+            }
+        });
+
+        TextButton cancelButton = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dialog.hide();
+            }
+        });
+
+        dialog.getContentTable().add(new Label("Imagen de Fondo:", UIStyle.getLabelStyle())).left().pad(5);
+        dialog.getContentTable().add(backgroundImageBox).width(300).pad(5).row();
+        dialog.getContentTable().add(new Label("Previsualización:", UIStyle.getLabelStyle())).left().padTop(10).colspan(2).row();
+        dialog.getContentTable().add(previewImage).width(300).height(150).colspan(2).pad(10).row();
+
+        dialog.getButtonTable().add(saveButton).pad(10);
+        dialog.getButtonTable().add(deleteButton).pad(10);
+        dialog.getButtonTable().add(cancelButton).pad(10);
+
+        dialog.show(stage);
+    }
+
+    private void showDeleteSceneDialog(Scene scene) {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.6f, 0.2f, 0.2f, 1f), 1f))
+        );
+
+        Dialog confirmDialog = new Dialog("¿Eliminar escena?", dialogStyle);
+        Label warning = new Label("¿Estás seguro de que quieres eliminar esta escena?", UIStyle.getLabelStyle());
+        warning.setWrap(true);
+        warning.setAlignment(Align.center);
+
+        confirmDialog.getContentTable().add(warning).width(400).pad(20).row();
+
+        TextButton confirmBtn = new TextButton("Sí, eliminar", UIStyle.getButtonStyle());
+        confirmBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                SceneManager.deleteScene(scene.getId());
+                confirmDialog.hide();
+                Render.app.setScreen(new AdminEditChapterScreen(username, chapter, history));
+            }
+        });
+
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                confirmDialog.hide();
+            }
+        });
+
+        confirmDialog.getButtonTable().add(confirmBtn).pad(10);
+        confirmDialog.getButtonTable().add(cancelBtn).pad(10);
+        confirmDialog.show(stage);
+    }
 }
+
+
+

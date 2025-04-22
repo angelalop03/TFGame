@@ -42,7 +42,6 @@ public class SceneManager {
         return scene;
     }
 
-    // Método para obtener la primera escena de un capítulo
     public static int getFirstSceneId(int chapterId) {
         String query = "SELECT id FROM scenes WHERE chapter_id = ? ORDER BY scene_order ASC LIMIT 1";
         Connection connection = MyTfgGame.databaseManager.getConnection();
@@ -208,6 +207,45 @@ public class SceneManager {
         } catch (SQLException e) {
             e.printStackTrace();
             return -1;
+        }
+    }
+
+    public static boolean updateScene(Scene scene) {
+        String sql = "UPDATE scenes SET background_image = ?, scene_order = ? WHERE id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, scene.getBackgroundImage());
+            stmt.setInt(2, scene.getSceneOrder());
+            stmt.setInt(3, scene.getId());
+
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean deleteScene(int sceneId) {
+        String sql = "DELETE FROM scenes WHERE id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, sceneId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

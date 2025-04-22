@@ -378,6 +378,48 @@ public class ChapterManager {
         }
     }
 
+    public static void deleteChapter(int chapterId) {
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try {
+            connection.setAutoCommit(false); // Iniciar transacción
+
+            // Eliminar escenas asociadas al capítulo
+            String deleteScenesSql = "DELETE FROM scenes WHERE chapter_id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(deleteScenesSql)) {
+                stmt.setInt(1, chapterId);
+                stmt.executeUpdate();
+            }
+
+            // Eliminar el capítulo
+            String deleteChapterSql = "DELETE FROM chapters WHERE id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(deleteChapterSql)) {
+                stmt.setInt(1, chapterId);
+                stmt.executeUpdate();
+            }
+
+            connection.commit(); // Confirmar los cambios
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connection.rollback(); // Revertir cambios en caso de error
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
 
 
