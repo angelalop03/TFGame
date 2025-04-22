@@ -93,7 +93,10 @@ public class AdminCreateSceneScreen implements Screen {
         });
 
         formTable.add(new Label("Orden de la Escena:", UIStyle.getLabelStyle())).left().pad(10);
-        orderField = new TextField("", UIStyle.getTextFieldStyle());
+
+        // Prellenar automáticamente con el siguiente orden
+        int siguienteOrden = getNextSceneOrder();
+        orderField = new TextField(String.valueOf(siguienteOrden), UIStyle.getTextFieldStyle());
         formTable.add(orderField).width(400).pad(10).row();
 
         feedbackLabel = new Label("", UIStyle.getLabelStyle());
@@ -157,6 +160,21 @@ public class AdminCreateSceneScreen implements Screen {
         }
     }
 
+    private int getNextSceneOrder() {
+        List<Scene> escenas = SceneManager.getScenesByChapterId(chapter.getId());
+        if (escenas == null || escenas.isEmpty()) {
+            return 1;
+        }
+
+        int maxOrder = 0;
+        for (Scene escena : escenas) {
+            if (escena.getSceneOrder() > maxOrder) {
+                maxOrder = escena.getSceneOrder();
+            }
+        }
+        return maxOrder + 1;
+    }
+
     private String[] getSceneImageList() {
         FileHandle dirHandle = Gdx.files.internal("assets/photos/Scenes");
         if (!dirHandle.exists() || !dirHandle.isDirectory()) return new String[]{"Default_Scene.png"};
@@ -180,9 +198,14 @@ public class AdminCreateSceneScreen implements Screen {
         stage.draw();
     }
 
-    @Override public void resize(int width, int height) { stage.getViewport().update(width, height, true); }
+    @Override public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+    }
+
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
-    @Override public void dispose() { stage.dispose(); }
+    @Override public void dispose() {
+        stage.dispose();
+    }
 }
