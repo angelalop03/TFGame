@@ -215,6 +215,57 @@ public class DecisionManager {
     }
 
 
+    public static boolean deleteDecision(int decisionId) {
+        String deleteOptionsQuery = "DELETE FROM options WHERE decision_id = ?";
+        String deleteDecisionQuery = "DELETE FROM decisions WHERE id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try {
+            // Inicia la transacción
+            connection.setAutoCommit(false);
+
+            // Eliminar las opciones asociadas
+            try (PreparedStatement deleteOptionsStmt = connection.prepareStatement(deleteOptionsQuery)) {
+                deleteOptionsStmt.setInt(1, decisionId);
+                deleteOptionsStmt.executeUpdate();
+            }
+
+            // Eliminar la decisión
+            try (PreparedStatement deleteDecisionStmt = connection.prepareStatement(deleteDecisionQuery)) {
+                deleteDecisionStmt.setInt(1, decisionId);
+                int rows = deleteDecisionStmt.executeUpdate();
+
+                if (rows == 0) {
+                    connection.rollback();
+                    return false;
+                }
+            }
+
+            connection.commit();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+            return false;
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
 
 

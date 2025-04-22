@@ -138,7 +138,8 @@ public class AdminVisualStoryEditorScreen implements Screen {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(
+            UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f)));
 
         Dialog dialog = new Dialog("Nueva Decisión", dialogStyle);
 
@@ -157,6 +158,7 @@ public class AdminVisualStoryEditorScreen implements Screen {
 
         Label feedback = new Label("", UIStyle.getLabelStyle());
         feedback.setWrap(true);
+        feedback.setColor(Color.RED); // asegurarse que se vea como error
 
         dialog.getContentTable().add(new Label("Orden:", UIStyle.getLabelStyle())).left().pad(5);
         dialog.getContentTable().add(orderField).width(300).pad(5).row();
@@ -171,8 +173,19 @@ public class AdminVisualStoryEditorScreen implements Screen {
         saveBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                String orderText = orderField.getText().trim();
+
+                if (orderText.isEmpty()) {
+                    UIStyle.showError(feedback, "El campo de orden no puede estar vacío.");
+                    return;
+                }
+                if (!orderText.matches("\\d+")) {
+                    UIStyle.showError(feedback, "El orden debe ser un número válido.");
+                    return;
+                }
+
                 try {
-                    int order = Integer.parseInt(orderField.getText().trim());
+                    int order = Integer.parseInt(orderText);
                     String dialogue = dialogueField.getText().trim();
                     int charId = characterMap.get(characterBox.getSelected());
 
@@ -184,15 +197,15 @@ public class AdminVisualStoryEditorScreen implements Screen {
 
                     int id = DecisionManager.createDecision(decision);
                     if (id > 0) {
-                        decision.setId(id); // <- aquí asignas el ID correcto
+                        decision.setId(id);
                         createDecisionNode(decision, 200 + canvas.getChildren().size * 250, 300);
                         dialog.hide();
                         dialog.remove();
                     } else {
-                        UIStyle.showError(feedback, "Error al crear decisión.");
+                        UIStyle.showError(feedback, "Error al crear la decisión.");
                     }
                 } catch (Exception e) {
-                    UIStyle.showError(feedback, "Datos inválidos.");
+                    UIStyle.showError(feedback, "Error inesperado al crear la decisión.");
                 }
             }
         });
@@ -207,10 +220,11 @@ public class AdminVisualStoryEditorScreen implements Screen {
 
         dialog.getButtonTable().add(saveBtn).pad(10);
         dialog.getButtonTable().add(cancelBtn).pad(10);
-        dialog.getContentTable().add(feedback).colspan(2).padTop(10).row();
+        dialog.getContentTable().add(feedback).colspan(2).padTop(10).width(400).row();
 
         dialog.show(stage);
     }
+
 
     private void showEditDecisionDialog(Decision decision) {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
@@ -221,7 +235,6 @@ public class AdminVisualStoryEditorScreen implements Screen {
         Dialog dialog = new Dialog("Editar Decisión", dialogStyle);
 
         TextField dialogueField = new TextField(decision.getDialogue(), UIStyle.getTextFieldStyle());
-
         List<Option> options = OptionManager.getOptionsByDecisionId(decision.getId());
 
         Label feedback = new Label("", UIStyle.getLabelStyle());
@@ -250,7 +263,18 @@ public class AdminVisualStoryEditorScreen implements Screen {
                     dialog.hide();
                 }
             });
-            optionRow.add(editBtn).padLeft(10);
+            optionRow.add(editBtn).width(100).padLeft(10);
+
+            TextButton deleteBtn = new TextButton("Eliminar", UIStyle.getButtonStyle());
+            deleteBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    OptionManager.deleteOption(option.getId());
+                    dialog.hide();
+                    showEditDecisionDialog(DecisionManager.getDecisionById(decision.getId())); // Refresca diálogo
+                }
+            });
+            optionRow.add(deleteBtn).width(100).padLeft(10);
 
             dialog.getContentTable().add(optionRow).colspan(2).pad(5).row();
         }
@@ -275,6 +299,15 @@ public class AdminVisualStoryEditorScreen implements Screen {
             }
         });
 
+        TextButton deleteBtn = new TextButton("Eliminar", UIStyle.getButtonStyle());
+        deleteBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dialog.hide();
+                showDeleteDecisionDialog(decision);
+            }
+        });
+
         TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
         cancelBtn.addListener(new ClickListener() {
             @Override
@@ -284,11 +317,51 @@ public class AdminVisualStoryEditorScreen implements Screen {
         });
 
         dialog.getButtonTable().add(saveBtn).pad(10);
+        dialog.getButtonTable().add(deleteBtn).pad(10);
         dialog.getButtonTable().add(cancelBtn).pad(10);
         dialog.getContentTable().add(feedback).colspan(2).padTop(10).row();
 
         dialog.show(stage);
     }
+
+    private void showDeleteDecisionDialog(Decision decision) {
+        Window.WindowStyle dialogStyle = new Window.WindowStyle();
+        dialogStyle.titleFont = font;
+        dialogStyle.titleFontColor = Color.WHITE;
+        dialogStyle.background = new TextureRegionDrawable(
+            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.6f, 0.2f, 0.2f, 1f), 1f))
+        );
+
+        Dialog confirmDialog = new Dialog("Eliminar Decisión", dialogStyle);
+        Label warning = new Label("¿Estás seguro de que deseas eliminar esta decisión?\nEsto eliminará también sus opciones asociadas.", UIStyle.getLabelStyle());
+        warning.setWrap(true);
+        warning.setAlignment(Align.center);
+
+        confirmDialog.getContentTable().add(warning).width(400).pad(20).row();
+
+        TextButton confirmBtn = new TextButton("Sí, eliminar", UIStyle.getButtonStyle());
+        confirmBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                DecisionManager.deleteDecision(decision.getId());
+                confirmDialog.hide();
+                Render.app.setScreen(new AdminVisualStoryEditorScreen(username, scene, history)); // Recarga pantalla
+            }
+        });
+
+        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                confirmDialog.hide();
+            }
+        });
+
+        confirmDialog.getButtonTable().add(confirmBtn).pad(10);
+        confirmDialog.getButtonTable().add(cancelBtn).pad(10);
+        confirmDialog.show(stage);
+    }
+
 
     private void showAddOptionDialog(Decision decision) {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
