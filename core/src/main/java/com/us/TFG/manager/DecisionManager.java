@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class DecisionManager {
@@ -124,8 +126,41 @@ public class DecisionManager {
             e.printStackTrace();
         }
 
-        return null; // Retorna null si no se encuentra la decisión
+        return null;
     }
+
+
+    public static List<Decision> getDecisionsBySceneId(int sceneId) {
+        List<Decision> decisions = new ArrayList<>();
+        String query = "SELECT * FROM decisions WHERE scene_id = ? ORDER BY decision_order ASC";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, sceneId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    decisions.add(new Decision(
+                        rs.getInt("id"),
+                        rs.getInt("scene_id"),
+                        rs.getInt("decision_order"),
+                        rs.getInt("character_id"),
+                        rs.getString("dialogue")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return decisions;
+    }
+
+
+
 }
 
 

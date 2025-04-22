@@ -19,9 +19,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.manager.HistoryManager;
-import com.us.TFG.manager.SceneManager;
-import com.us.TFG.model.Chapter;
+import com.us.TFG.manager.ChapterManager;
+import com.us.TFG.manager.DecisionManager;
+import com.us.TFG.model.Decision;
 import com.us.TFG.model.Scene;
 import com.us.TFG.utils.*;
 
@@ -30,7 +30,7 @@ import java.util.List;
 
 public class AdminVisualStoryEditorScreen implements Screen {
     private String username;
-    private Chapter chapter;
+    private Scene scene;
     private Stage stage;
     private Group canvas;
     private ShapeRenderer shapeRenderer;
@@ -41,14 +41,14 @@ public class AdminVisualStoryEditorScreen implements Screen {
 
     private Map<Actor, List<Actor>> connections = new HashMap<>();
 
-    public AdminVisualStoryEditorScreen(String username, Chapter chapter) {
+    public AdminVisualStoryEditorScreen(String username, Scene scene) {
         this.username = username;
-        this.chapter = chapter;
+        this.scene = scene;
     }
 
     @Override
     public void show() {
-        fondo = new Imagen(Resources.FONDODOORS);
+        fondo = new Imagen(Resources.FONDOBOOK2);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
@@ -65,23 +65,23 @@ public class AdminVisualStoryEditorScreen implements Screen {
         scrollPane.setFillParent(true);
         stage.addActor(scrollPane);
 
-        List<Scene> scenes = SceneManager.getScenesByChapterId(chapter.getId());
+        List<Decision> decisions = DecisionManager.getDecisionsBySceneId(scene.getId());
         float offsetX = 100;
         float offsetY = 400;
-        for (int i = 0; i < scenes.size(); i++) {
-            Scene scene = scenes.get(i);
-            createSceneNode(scene.getId(), offsetX + i * 250, offsetY - i * 100);
+        for (int i = 0; i < decisions.size(); i++) {
+            Decision decision = decisions.get(i);
+            createDecisionNode(decision.getId(), offsetX + i * 250, offsetY - i * 100);
         }
 
-        TextButton addSceneBtn = new TextButton("+ Añadir Escena", UIStyle.getButtonStyle());
-        addSceneBtn.setPosition(30, 30);
-        addSceneBtn.addListener(new ClickListener() {
+        TextButton addDecisionBtn = new TextButton("+ Añadir Decisión", UIStyle.getButtonStyle());
+        addDecisionBtn.setPosition(30, 30);
+        addDecisionBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                showNewSceneDialog();
+                // Implementar diálogo de nueva decisión
             }
         });
-        stage.addActor(addSceneBtn);
+        stage.addActor(addDecisionBtn);
 
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
         ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
@@ -90,33 +90,25 @@ public class AdminVisualStoryEditorScreen implements Screen {
         backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new AdminEditChapterScreen(username, chapter));
+                Render.app.setScreen(new AdminEditChapterScreen(username, ChapterManager.getChapterById(scene.getChapterId())));
             }
         });
         stage.addActor(backArrowButton);
     }
 
-    private void createSceneNode(int sceneId, float x, float y) {
+    private void createDecisionNode(int decisionId, float x, float y) {
         Table node = new Table();
-        node.setBackground(UIStyle.getBoxBackground());
+        node.setSize(200, 100);
+        node.setBackground(new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(200, 100, new Color(0.3f, 0.3f, 0.3f, 0.7f), 0.7f))));
         node.setPosition(x, y);
 
-        Label titleLabel = new Label("Escena " + sceneId, UIStyle.getLabelStyle());
-        node.add(titleLabel).pad(10);
+        Label titleLabel = new Label("Decisión " + decisionId, UIStyle.getLabelStyle());
+        node.add(titleLabel).expand().center();
 
         node.addListener(new DragListener() {
             @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
                 node.moveBy(x - node.getWidth() / 2, y - node.getHeight() / 2);
-            }
-        });
-
-        node.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (getTapCount() == 2) {
-                    showEditDialog(titleLabel);
-                }
             }
         });
 
@@ -126,117 +118,6 @@ public class AdminVisualStoryEditorScreen implements Screen {
             Actor previous = canvas.getChildren().get(canvas.getChildren().size - 2);
             connections.computeIfAbsent(previous, k -> new ArrayList<>()).add(node);
         }
-    }
-
-    private void showNewSceneDialog() {
-        Window.WindowStyle dialogStyle = new Window.WindowStyle();
-        dialogStyle.titleFont = font;
-        dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(
-            new Texture(UIStyle.createRoundedPixmap(500, 250, new Color(0.3f, 0.2f, 0.5f, 1f), 1f))
-        );
-
-        Dialog dialog = new Dialog("Nueva Escena", dialogStyle);
-
-        Label feedback = new Label("", UIStyle.getLabelStyle());
-        feedback.setWrap(true);
-        feedback.setAlignment(Align.center);
-
-        dialog.getContentTable().add(new Label("¿Deseas crear una nueva escena?", UIStyle.getLabelStyle()))
-            .colspan(2).pad(20).row();
-
-        TextButton createBtn = new TextButton("Crear", UIStyle.getButtonStyle());
-        createBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Scene nueva = new Scene();
-                nueva.setChapterId(chapter.getId());
-                nueva.setSceneOrder(canvas.getChildren().size + 1);
-
-                int newId = SceneManager.createScene(nueva);
-
-                if (newId > 0) {
-                    x = 100 + canvas.getChildren().size * 180;
-                    y = 300;
-                    createSceneNode(newId, x, y);
-                    dialog.hide();
-                    dialog.remove();
-                } else {
-                    UIStyle.showError(feedback, "Error al crear la escena.");
-                }
-            }
-        });
-
-        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
-        cancelBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                dialog.hide();
-            }
-        });
-
-        dialog.getButtonTable().add(createBtn).pad(10);
-        dialog.getButtonTable().add(cancelBtn).pad(10);
-        dialog.getContentTable().add(feedback).colspan(2).width(400).padTop(10).row();
-
-        dialog.show(stage);
-    }
-
-    private void showEditDialog(Label label) {
-        Window.WindowStyle dialogStyle = new Window.WindowStyle();
-        dialogStyle.titleFont = font;
-        dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(
-            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f))
-        );
-
-        Dialog dialog = new Dialog("Editar Escena", dialogStyle);
-
-        TextField input = new TextField(label.getText().toString(), UIStyle.getTextFieldStyle());
-
-        Label feedback = new Label("", UIStyle.getLabelStyle());
-        feedback.setWrap(true);
-
-        dialog.getContentTable().add(new Label("Nuevo Título:", UIStyle.getLabelStyle())).left().pad(5);
-        dialog.getContentTable().add(input).width(350).pad(5).row();
-
-        TextButton saveBtn = new TextButton("Guardar", UIStyle.getButtonStyle());
-        saveBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                String newText = input.getText().trim();
-                if (newText.isEmpty()) {
-                    UIStyle.showError(feedback, "El título no puede estar vacío.");
-                    return;
-                }
-
-                label.setText(newText);
-                feedback.setText("Título actualizado.");
-                feedback.setColor(Color.GREEN);
-
-                com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
-                    @Override
-                    public void run() {
-                        dialog.hide();
-                        dialog.remove();
-                    }
-                }, 1.2f);
-            }
-        });
-
-        TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
-        cancelBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                dialog.hide();
-            }
-        });
-
-        dialog.getButtonTable().add(saveBtn).pad(10);
-        dialog.getButtonTable().add(cancelBtn).pad(10);
-        dialog.getContentTable().add(feedback).colspan(2).width(400).padTop(10).row();
-
-        dialog.show(stage);
     }
 
     @Override

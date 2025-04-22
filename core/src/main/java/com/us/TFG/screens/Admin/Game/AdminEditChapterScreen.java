@@ -58,7 +58,6 @@ public class AdminEditChapterScreen implements Screen {
         TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(backgroundPixmap));
         backgroundPixmap.dispose();
 
-        // Left Table: Chapter info
         Table leftTable = new Table();
         leftTable.setBackground(backgroundDrawable);
 
@@ -82,8 +81,6 @@ public class AdminEditChapterScreen implements Screen {
 
         leftTable.add(editBtn).left().padTop(20);
 
-
-        // Right Table: Scene list
         Table rightTable = new Table();
         rightTable.setBackground(backgroundDrawable);
 
@@ -96,8 +93,19 @@ public class AdminEditChapterScreen implements Screen {
             sceneListTable.add(new Label("No hay escenas", UIStyle.getLabelStyle())).left().padBottom(10).row();
         } else {
             for (Scene scene : scenes) {
-                Label sceneLabel = new Label("Escena" + scene.getSceneOrder(), UIStyle.getLabelStyle());
-                sceneListTable.add(sceneLabel).left().padBottom(10).row();
+                Table sceneEntry = new Table();
+                sceneEntry.add(new Label("Escena " + scene.getId(), UIStyle.getLabelStyle())).left().padRight(10);
+
+                TextButton manageBtn = new TextButton("Gestionar", UIStyle.getButtonStyle());
+                manageBtn.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        Render.app.setScreen(new AdminVisualStoryEditorScreen(username,scene));
+                    }
+                });
+
+                sceneEntry.add(manageBtn).width(100).right();
+                sceneListTable.add(sceneEntry).left().padBottom(10).row();
             }
         }
 
@@ -115,26 +123,25 @@ public class AdminEditChapterScreen implements Screen {
         scrollPane.setScrollbarsOnTop(false);
         scrollPane.setForceScroll(false, true);
 
-        TextButton createSceneButton = new TextButton("Gestionar Escenas", UIStyle.getButtonStyle());
+        rightTable.add(scrollPane).width(400).height(300).expandY().fillY().row();
+
+        TextButton createSceneButton = new TextButton("Crear Escena", UIStyle.getButtonStyle());
         createSceneButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new AdminVisualStoryEditorScreen(username, chapter));
+                Render.app.setScreen(new AdminCreateSceneScreen(username, chapter));
             }
         });
 
-        rightTable.add(createSceneButton).padTop(20);
-
-        rightTable.add(scrollPane).width(400).height(300).expandY().fillY();
+        rightTable.add(createSceneButton).width(300).padTop(20).center().padBottom(20).row();
 
         mainTable.add(leftTable).left().padRight(50).width(500).top();
         mainTable.add(rightTable).left().width(500).top();
 
-        // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
         ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
-        backArrowButton.setSize(100, 100); // Tamaño de la flecha
-        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150); // Posición en la esquina superior izquierda
+        backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -142,7 +149,6 @@ public class AdminEditChapterScreen implements Screen {
             }
         });
         stage.addActor(backArrowButton);
-
     }
 
     @Override
@@ -161,7 +167,6 @@ public class AdminEditChapterScreen implements Screen {
     @Override public void dispose() { stage.dispose(); }
 
     private void showEditChapterDialog(Chapter chapter) {
-        // Estilo del diálogo
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
@@ -190,7 +195,6 @@ public class AdminEditChapterScreen implements Screen {
         editDialog.getContentTable().add(new Label("Relación:", UIStyle.getLabelStyle())).left().pad(5);
         editDialog.getContentTable().add(relationshipBox).width(350).pad(5).row();
 
-        // Botón Guardar
         TextButton saveBtn = new TextButton("Guardar", UIStyle.getButtonStyle());
         saveBtn.addListener(new ClickListener() {
             @Override
@@ -204,7 +208,7 @@ public class AdminEditChapterScreen implements Screen {
                     UIStyle.showError(feedback, "Todos los campos son obligatorios.");
                     return;
                 }
-                // Validar que el número no esté duplicado
+
                 List<Chapter> existingChapters = ChapterManager.getChaptersByHistoryId(chapter.getHistory());
                 for (Chapter c : existingChapters) {
                     if (c.getId() != chapter.getId() && c.getChapterNumber().equalsIgnoreCase(newNumber)) {
@@ -222,7 +226,6 @@ public class AdminEditChapterScreen implements Screen {
                 feedback.setText("Capítulo actualizado.");
                 feedback.setColor(Color.GREEN);
 
-                // Cierra después de 2s y refresca pantalla
                 com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
                     @Override
                     public void run() {
@@ -234,7 +237,6 @@ public class AdminEditChapterScreen implements Screen {
             }
         });
 
-        // Botón Cancelar
         TextButton cancelBtn = new TextButton("Cancelar", UIStyle.getButtonStyle());
         cancelBtn.addListener(new ClickListener() {
             @Override
@@ -249,5 +251,4 @@ public class AdminEditChapterScreen implements Screen {
 
         editDialog.show(stage);
     }
-
 }
