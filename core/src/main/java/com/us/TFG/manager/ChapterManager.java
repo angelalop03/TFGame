@@ -290,6 +290,139 @@ public class ChapterManager {
         return null;
     }
 
+    public static List<Chapter> getChaptersByHistoryId(int historyId) {
+        List<Chapter> chapters = new ArrayList<>();
+
+        String query = "SELECT * FROM chapters WHERE history_id = ? ORDER BY CAST(chapter_number AS DECIMAL) ASC";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, historyId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Chapter chapter = new Chapter();
+                chapter.setId(rs.getInt("id"));
+                chapter.setName(rs.getString("name"));
+                chapter.setChapterNumber(rs.getString("chapter_number"));
+                chapter.setImagePath(rs.getString("image_path"));
+                chapter.setRequiredRelationshipState(rs.getString("required_relationship_state"));
+                chapter.setHistory(rs.getInt("history_id"));
+
+                chapters.add(chapter);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return chapters;
+    }
+
+    public static boolean createChapter(Chapter chapter) {
+        String query = "INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state, history_id) " +
+            "VALUES (?, ?, ?, ?, ?)";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, chapter.getName());
+            stmt.setString(2, chapter.getChapterNumber());
+            stmt.setString(3, chapter.getImagePath());
+            stmt.setString(4, chapter.getRequiredRelationshipState());
+            stmt.setInt(5, chapter.getHistory());
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean updateChapter(Chapter chapter) {
+        String query = "UPDATE chapters SET name = ?, chapter_number = ?, required_relationship_state = ? WHERE id = ?";
+
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, chapter.getName());
+            stmt.setString(2, chapter.getChapterNumber());
+
+            // Manejar null explícitamente para required_relationship_state
+            if (chapter.getRequiredRelationshipState() == null || chapter.getRequiredRelationshipState().equalsIgnoreCase("null")) {
+                stmt.setNull(3, java.sql.Types.VARCHAR);
+            } else {
+                stmt.setString(3, chapter.getRequiredRelationshipState());
+            }
+
+            stmt.setInt(4, chapter.getId());
+
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void deleteChapter(int chapterId) {
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try {
+            connection.setAutoCommit(false); // Iniciar transacción
+
+            // Eliminar escenas asociadas al capítulo
+            String deleteScenesSql = "DELETE FROM scenes WHERE chapter_id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(deleteScenesSql)) {
+                stmt.setInt(1, chapterId);
+                stmt.executeUpdate();
+            }
+
+            // Eliminar el capítulo
+            String deleteChapterSql = "DELETE FROM chapters WHERE id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(deleteChapterSql)) {
+                stmt.setInt(1, chapterId);
+                stmt.executeUpdate();
+            }
+
+            connection.commit(); // Confirmar los cambios
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connection.rollback(); // Revertir cambios en caso de error
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+
+
 
 
 }

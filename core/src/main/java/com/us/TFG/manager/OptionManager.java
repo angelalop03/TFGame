@@ -76,4 +76,87 @@ public class OptionManager {
         return option;
     }
 
+
+    public static boolean createOption(Option option) {
+        String query = "INSERT INTO options (decision_id, text, points_m, points_r, next_decision_id, required_psychological_state) " +
+            "VALUES (?, ?, ?, ?, ?, ?)";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, option.getDecisionId());
+            stmt.setString(2, option.getText());
+            stmt.setInt(3, option.getPointsM());
+            stmt.setInt(4, option.getPointsR());
+
+            if (option.getNextDecisionId() != null) {
+                stmt.setInt(5, option.getNextDecisionId());
+            } else {
+                stmt.setNull(5, java.sql.Types.INTEGER);
+            }
+
+            stmt.setString(6, option.getRequiredPsychologicalState());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public static boolean updateOption(Option option) {
+        String query = "UPDATE options SET text = ?, points_m = ?, points_r = ?, next_decision_id = ?, required_psychological_state = ? WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, option.getText());
+            stmt.setInt(2, option.getPointsM());
+            stmt.setInt(3, option.getPointsR());
+
+            if (option.getNextDecisionId() != null) {
+                stmt.setInt(4, option.getNextDecisionId());
+            } else {
+                stmt.setNull(4, java.sql.Types.INTEGER);
+            }
+
+            stmt.setString(5, option.getRequiredPsychologicalState());
+            stmt.setInt(6, option.getId());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public static boolean deleteOption(int optionId) {
+        String query = "DELETE FROM options WHERE id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, optionId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 }
