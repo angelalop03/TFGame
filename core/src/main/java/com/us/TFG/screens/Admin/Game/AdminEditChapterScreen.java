@@ -17,12 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.manager.ChapterManager;
-import com.us.TFG.manager.HistoryManager;
-import com.us.TFG.manager.SceneManager;
-import com.us.TFG.model.Chapter;
-import com.us.TFG.model.History;
-import com.us.TFG.model.Scene;
+import com.us.TFG.manager.*;
+import com.us.TFG.model.*;
 import com.us.TFG.utils.*;
 
 import java.util.ArrayList;
@@ -432,6 +428,20 @@ public class AdminEditChapterScreen implements Screen {
         confirmBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                List<Decision> decisions = DecisionManager.getDecisionsBySceneId(scene.getId());
+
+                for (Decision decision : decisions) {
+                    // Obtener y eliminar todas las opciones de cada decisión
+                    List<Option> options = OptionManager.getOptionsByDecisionId(decision.getId());
+                    for (Option option : options) {
+                        OptionManager.deleteOption(option.getId());
+                    }
+
+                    // Eliminar la decisión
+                    DecisionManager.deleteDecision(decision.getId());
+                }
+
+                // Finalmente eliminar la escena
                 SceneManager.deleteScene(scene.getId());
                 confirmDialog.hide();
                 Render.app.setScreen(new AdminEditChapterScreen(username, chapter, history));

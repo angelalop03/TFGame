@@ -16,10 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
-import com.us.TFG.manager.ChapterManager;
-import com.us.TFG.manager.HistoryManager;
-import com.us.TFG.model.Chapter;
-import com.us.TFG.model.History;
+import com.us.TFG.manager.*;
+import com.us.TFG.model.*;
 import com.us.TFG.screens.Admin.AdminForumScreen;
 import com.us.TFG.utils.*;
 
@@ -277,6 +275,33 @@ public class AdminHistoryDetailScreen implements Screen {
         confirmBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                // Obtener capítulos de la historia
+                List<Chapter> chapters = ChapterManager.getChaptersByHistoryId(history.getId());
+
+                for (Chapter chapter : chapters) {
+                    // Obtener escenas del capítulo
+                    List<Scene> scenes = SceneManager.getScenesByChapterId(chapter.getId());
+
+                    for (Scene scene : scenes) {
+                        // Obtener decisiones de la escena
+                        List<Decision> decisions = DecisionManager.getDecisionsBySceneId(scene.getId());
+
+                        for (Decision decision : decisions) {
+                            // Obtener opciones de la decisión
+                            List<Option> options = OptionManager.getOptionsByDecisionId(decision.getId());
+
+                            for (Option option : options) {
+                                OptionManager.deleteOption(option.getId()); // Eliminar opción
+                            }
+
+                            DecisionManager.deleteDecision(decision.getId()); // Eliminar decisión
+                        }
+
+                        SceneManager.deleteScene(scene.getId()); // Eliminar escena
+                    }
+
+                    ChapterManager.deleteChapter(chapter.getId()); // Eliminar capítulo
+                }
                 HistoryManager.deleteHistory(history.getId());
                 confirmDialog.hide();
                 Render.app.setScreen(new AdminGameScreen(username));
