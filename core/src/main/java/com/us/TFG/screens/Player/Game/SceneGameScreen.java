@@ -102,6 +102,8 @@ public class SceneGameScreen implements Screen {
             }
         }
     }
+
+
     private void setupBars() {
         stage = new Stage(new ScreenViewport());
 
@@ -165,8 +167,17 @@ public class SceneGameScreen implements Screen {
                 return;
             }
 
-            if (currentScene != null && assetManager.isLoaded("assets/photos/Scenes/" + currentScene.getBackgroundImage())) {
-                bgTexture = assetManager.get("assets/photos/Scenes/" + currentScene.getBackgroundImage(), Texture.class);
+            if (currentScene != null) {
+                String backgroundPath = "assets/photos/Scenes/" + currentScene.getBackgroundImage();
+                if (Gdx.files.internal(backgroundPath).exists()) {
+                    bgTexture = new Texture(Gdx.files.internal(backgroundPath));
+                } else {
+                    Pixmap pixmap = new Pixmap(1280, 720, Pixmap.Format.RGBA8888);
+                    pixmap.setColor(Color.DARK_GRAY);
+                    pixmap.fill();
+                    bgTexture = new Texture(pixmap);
+                    pixmap.dispose();
+                }
                 background = new Image(new TextureRegionDrawable(bgTexture));
                 background.setFillParent(true);
                 stage.addActor(background);
@@ -180,8 +191,6 @@ public class SceneGameScreen implements Screen {
                 characterImage.setSize(390, 600);
                 characterImage.setPosition(180, 0);
                 stage.addActor(characterImage);
-            } else {
-                displayErrorMessage("Error al cargar la textura del personaje.");
             }
 
             // Crear el fondo blanco con bordes redondeados para los diálogos
@@ -444,6 +453,8 @@ public class SceneGameScreen implements Screen {
             // Cargar la siguiente decisión
             currentDecision = DecisionManager.getDecisionById(option.getNextDecisionId());
             DecisionManager.updateCurrentDecision(gameId, currentDecision.getId());
+
+
             currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
             updateCharacterImage();
             dialogueLabel.setText(currentDecision.getDialogue());
@@ -459,12 +470,37 @@ public class SceneGameScreen implements Screen {
         }
     }
 
+    private void updateBackgroundImage() {
+        if (background != null) {
+            stage.getActors().removeValue(background, true);
+        }
+
+        if (currentScene != null) {
+            String backgroundPath = "assets/photos/Scenes/" + currentScene.getBackgroundImage();
+            if (Gdx.files.internal(backgroundPath).exists()) {
+                bgTexture = new Texture(Gdx.files.internal(backgroundPath));
+            } else {
+                Pixmap pixmap = new Pixmap(1280, 720, Pixmap.Format.RGBA8888);
+                pixmap.setColor(Color.DARK_GRAY);
+                pixmap.fill();
+                bgTexture = new Texture(pixmap);
+                pixmap.dispose();
+            }
+            background = new Image(new TextureRegionDrawable(bgTexture));
+            background.setFillParent(true);
+            stage.addActor(background);
+            background.toBack();
+
+        }
+    }
+
     private void goToNextSceneOrChapter() {
         Scene nextScene = SceneManager.getNextSceneInChapter(currentScene.getId(), chapterId);
 
         if (nextScene != null) {
             currentScene = nextScene;
             currentDecision = DecisionManager.getFirstDecisionBySceneId(currentScene.getId());
+            updateBackgroundImage();
 
             if (currentDecision != null) {
                 currentCharacter = CharacterManager.getCharacterById(currentDecision.getCharacterId());
