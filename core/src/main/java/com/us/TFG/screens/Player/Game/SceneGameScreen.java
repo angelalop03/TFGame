@@ -374,7 +374,8 @@ public class SceneGameScreen implements Screen {
     private void showOptions() {
         optionsTable.clear();
 
-        List<Option> options = OptionManager.getOptionsByDecisionId(currentDecision.getId());
+        //List<Option> availableOptions = OptionManager.getOptionsByDecisionId(currentDecision.getId());
+        List<Option>  options = OptionManager.getAvailableOptions(currentDecision.getId(), GameManager.getGameById(gameId));
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = UIStyle.getFont();
         buttonStyle.fontColor = Color.WHITE;
