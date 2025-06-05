@@ -29,8 +29,8 @@ INSERT INTO games (name,history_id, current_chapter_id, current_scene_id, curren
 VALUES
 ('Partida1',1, 2, 5, 19, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
 ('Partida2',1, 2, 5, 19, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
-('Partida3',2, 1, 1, 1, 2, '1736965255031', 'IN_PROGRESS', 0, 0);
-
+('Partida3',2, 1, 1, 1, 2, '1736965255031', 'IN_PROGRESS', 0, 0),
+('Prueba' ,1, 8, 24,354,1,'1736965255031', 'IN_PROGRESS',0,0);
 
 -- Capítulos base
 INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state,history_id)
@@ -74,7 +74,8 @@ VALUES
     (1, 7,1, false, true),
     (1,11,1, false, true),
     (1, 2,2, false, true),
-    (1, 2,3, false, true);
+    (1, 2,3, false, true),
+    (1,8,4,false, true);
 
 
 INSERT INTO scenes (id,chapter_id, background_image, scene_order)
@@ -108,7 +109,9 @@ VALUES
 (20,7,'Kitchen.png',1),
 (21,7, 'Living_Room.jpg', 2 ),
 (22,7,'Living_Room_Nigth.png',3),
-(23,7,'Living_Room.jpg', 4 );
+(23,7,'Living_Room.jpg', 4 ),
+--CAP6.1
+(24,8,'Hotel_Room.png',1);
 
 
 --INTRO H2
@@ -489,7 +492,59 @@ VALUES
 (350,23,20,1, 'Qué suerte tienes de poder separar así las cosas.Yo no puedo. Yo sí siento.'),
 (351,23,21,1,'(David se reclina hacia atrás, como cerrándose. Se cruza de brazos, callado.)'),
 (352,23,22,null, '(Bella se queda, sentada, mirando a la nada) '),
-(353,23,23,null, '¡Enhorabuena!');
+(353,23,23,null, '¡Enhorabuena!'),
+--CAP6.1
+---E.1
+(354,24,1,NULL, '(Bella entra en la habitación del hotel, exhausta. Deja su maleta, se quita los zapatos y se deja caer sobre la cama. Suspira.)'),
+(355,24,2,NULL, '(Mira al techo por unos segundos. El móvil vibra en la mesita.)'),
+(356,24,3,5,'Mensaje-David:"¿Llegaste bien?"'),
+(357,24,4,null, '(Otra vibración )'),
+(358,24,5,5, 'Mensaje-David: "¿Con quién estás?"'),
+(359,24,6,5, 'Mensaje-David: "¿Qué tal el hotel? ¿Está lejos del centro?"'),
+(360,24,7,5, 'Mensaje-David: "Avísame si sales, ¿vale?"'),
+(361,24,8,null, '(Lo vuelve a dejar, esta vez boca abajo.)'),
+(362,24,9,null, '(Deja el móvil en la mesilla, boca abajo. Suspira. Se levanta lentamente y abre la maleta.)'),
+(363,24,10,null,'(Deja el móvil en la mesilla solo un segundo. Se incorpora para abrir la maleta, pero el móvil vibra otra vez antes de que pueda sacar siquiera una prenda.)'),
+(364,24,11,5,'(Nada más enviar el último mensaje, el móvil vibra otra vez. Esta vez, una llamada entrante.)'),
+(365,24,12,null, '(Toma el vestido de la maleta y se acerca al armario a colgarlo. Se mira al espejo unos segundos.)'),
+(366,24,13,null, '(Mientras cierra la puerta del armario, escucha el móvil sonar. Es una llamada.)'),
+(367,24,14,null, '(Lo ve iluminado sobre la mesilla: David. Suspira antes de contestar.)'),
+(368,24,15,5, '¿Por qué tardaste tanto? Pensé que te habías quedado dormida.'),
+(369,24,16,5, 'Es que no sabía si estabas sola. No respondías.'),
+(370,24,17,5, 'Ya, perdona… es que sabes cómo me pongo. No puedo evitar preocuparme.'),
+(371,24,18,5,'¿Me llamas después de cenar?'),
+(372,24,19,5, 'Te quiero mucho.'),
+(373,24,20,null, '(Y así se queda dormida)'),
+(374,24,21,null, '(Empieza a sacar la ropa. Mientras coloca las prendas en el armario, escucha el sonido breve de una notificación. Luego otra.)'),
+(375,24,22,null,'(Se detiene unos segundos, mirando la ropa en sus manos. Decide no volverse aún.)'),
+(376,24,23,null,'(Va al baño, coloca el neceser sobre el lavabo, abre el grifo y se enjuaga la cara con agua fresca.)'),
+(377,24,24,null,'(Al levantar la vista, ve su reflejo en el espejo: los ojos le brillan de cansancio.)'),
+(378,24,25,null, '(Se acerca. Ve varias notificaciones de mensajes nuevos y una llamada perdida de David.)'),
+(379,24,26,5, 'Llamada Perdida'),
+(380,24,27,null, '(Se sienta en la cama, agotada. La habitación vibra suavemente con el sonido del aire acondicionado.)'),
+(381,24,28,5, 'Mensaje-David:"¿Has cenado ya?"'),
+(382,24,29,null, '(Mientras responde, saca una blusa y la coloca en el armario apresuradamente.El móvil vibra otra vez en la mesilla.)'),
+(383,24,30,5, 'Mensaje-David:"¿Qué vas a cenar? ¿Dónde?"'),
+(384,24,31,5, 'David:"Mejor. No me gusta que andes sola de noche en sitios que no conoces."'),
+(385,24,32,null, '(Dobla mal una camiseta. Vuelve a mirar el móvil aunque no haya sonado.)'),
+(386,24,33,null,'(Deja el móvil en la mesita, pero no puede evitar volver a mirarlo cada pocos minutos mientras termina de colocar sus cosas.)'),
+(387,24,34,null, '(Se acerca a la mesilla, vuelve a mirar el móvil. Un nuevo mensaje acaba de llegar.) '),
+(388,24,35,5, 'Mensaje-David:"No tardes mucho en escribirme después de cenar, ¿vale? No quiero quedarme intranquilo toda la noche."'),
+(389,24,36,null, '(Deja el telefono boca abajo en la mesilla)'),
+(390,24,37,5, '(Con tono suave, pero cargado de intención.)—Tardaste en contestar. Me preocupé.'),
+(391,24,38,5, 'No pasa nada. Solo... me cuesta cuando no respondes. Me da vueltas la cabeza.'),
+(392,24,39,5,'(Se incorpora un poco en la cama, con el teléfono pegado a la oreja. La maleta sigue cerrada a sus pies.)'),
+(393,24,40,5,'¿Estás segura de que estás sola?'),
+(394,24,41,5,'Ya... Es solo que... no me gusta que estés tan lejos. Me hace sentir... no sé... fuera de lugar.'),
+(395,24,42,5,'(Silencio breve. Luego, con voz baja.)—¿Puedes decirme el número de habitación?'),
+(396,24,43,5,'Gracias. Solo por si pasa algo, ¿vale?'),
+(397,24,44,5,'(Pasa media hora en llamada. La maleta sigue cerrada. Ella está sentada en la cama, en la misma postura.)'),
+(398,24,45,5,'¿Estás muy cansada?'),
+(399,24,46,5,'¿Y no prefieres quedarte conmigo en llamada un rato más? Me gusta escucharte'),
+(400,24,47,5,'(Sonríe débilmente. Mira de reojo la maleta, aún cerrada. Piensa en el tiempo que le queda para instalarse, en los correos que no ha revisado.)'),
+(401,24,48,5,'(Pero no se mueve. Se queda con el teléfono en la oreja, hablando)');
+---E.2
+
 
 
 
@@ -887,7 +942,65 @@ VALUES
 (350, 'Yo también siento.Y siento que si no hago esto ahora, después voy a arrepentirme.',0,0,351,null),
 (351, '(Continuar)',0,0,352,null),
 (352, '(Continuar)',0,0,353,null),
-(353, 'FIN CAPITULO 5',0,0,null,null);
+(353, 'FIN CAPITULO 5',0,0,null,null),
+--CAP6.1
+---E.1
+(354,'(Continuar)',0,0,355,null),
+(355,'(Continuar)',0,0,356,null),
+(356,'(Deja el movil) ',0,0,357,null),
+(357,'(Mirar el movil) ',0,0,358,null),
+(358,'(Continuar)',0,0,359,null),
+(359,'(Continuar)',0,0,360,null),
+(360,'Todo correcto, el hotel está bien ubicado.',-1,1,361,null),
+(360,'Sí, acabo de llegar. El hotel está bien.Voy a organizarme un poco y desconectar. Luego te escribo, ¿vale?',-2,5,362,'STABLE'),
+(360,'Sí, ya llegué.Sola, claro.El hotel está bien, bastante cerca del centro.Te avisaré si salgo, tranquilo.',2,3,363,'SLIGHTLY_ANXIOUS'),
+(360,'Perdón, estaba sacando las cosas de la maleta.Estoy sola, en la habitación.El hotel está bien, no te preocupes.Claro que te aviso si salgo.',3,2,364,'ANXIOUS'),
+(361,' (Continuar)',0,0,365,null),
+(365,' (Continuar)',0,0,366,null),
+(366,' (Acercarte al movil)',0,0,367,null),
+(367,' (Coge el móvil, responde) -Hola',0,0,368,null),
+(368,' Estaba dejando las cosas en el armario. Acabo de llegar, estoy acomodando todo. ',0,0,369,null),
+(369,' David, solo me alejé un momento. Estoy sola, como te dije',0,0,370,null),
+(370,'(Se sienta al borde de la cama, el móvil aún en la mano.)—No pasa nada. Estoy bien.',0,0,371,null),
+(371,'(Mira la maleta a medio abrir, las prendas revueltas sobre la cama.)—Sí… cuando termine de organizarme, te escribo ',0,0,372,null),
+(372,'Yo también, David.',0,0,373,null),
+(373,'(Continuar)',0,0,null,null),
+(362,'(Continuar) ',0,0,374,null),
+(374,'(Continuar)',0,0,375,null),
+(375,'(Continuar)',0,0,376,null),
+(376,'(Continuar)',0,0,377,null),
+(377,'"No pasa nada. Sólo unos días. Trabajo, descanso."',0,0,378,null),
+(378,'(Suspira profundamente. Toma el móvil con una mano.)',0,0,379,null),
+(379,'"Estoy bien, David. Necesito descansar un poco. Te escribo mañana."',0,0,380,null),
+(380,'(Cierra los ojos, respirando hondo.) Hoy no voy a mirar más el movil...',0,0,373,null),
+(363,'(Se detiene. Mira el móvil de reojo. Suspira muy suave y vuelve a cogerlo.) ',0,0,381,null),
+(381, 'No todavía, estaba organizando mis cosas primero.',0,0,382,null),
+(382, '(Bella deja la ropa a medias sobre la cama. Toma el móvil otra vez.)',0,0,383,null),
+(383, 'Creo que pediré algo aquí, en el hotel. No quiero salir',0,0,384,null),
+(384, '(Suspira y continúa deshaciendo la maleta, pero ahora más distraída, pendiente del móvil.)',0,0,385,null),
+(385, '(Se detiene junto a la maleta abierta. Se pasa una mano por el cabello, nerviosa.) ',0,0,386,null),
+(386, '(Es normal que quiera saber. Solo se preocupa)',0,0,387,null),
+(387, '(Se acerca a la mesilla, vuelve a mirar el móvil. Un nuevo mensaje acaba de llegar.) ',0,0,388,null),
+(388, '"Okey, no te preocupes"',0,0,389,null),
+(389, '(Continuar)',0,0,373,null),
+(364, '(Suspira suavemente, se aclara la garganta y contesta al momento.)—Hola...',0,0,390,null),
+(390,'Estaba colocando las cosas... lo siento. ',0,0,391,null),
+(391,'Ya, ya sé. No quería hacerte sentir mal.',0,0,392,null),
+(392,'(Continuar)',0,0,393,null),
+(393,'Sí, David. Te lo acabo de decir.',0,0,394,null),
+(394,'Estoy aquí por trabajo. Solo por eso. No voy a ningún sitio raro, ni con nadie extraño.',0,0,395,null),
+(395,'608....',0,0,396,null),
+(396,'Claro.',0,0,397,null),
+(397,'(Continuar)',0,0,398,null),
+(398,'Sí... bastante.',0,0,399,null),
+(399,'Vale... me quedo un poco más.',0,0,400,null),
+(400,'(Continuar)',0,0,401,null),
+(401,'(Continuar)',0,0,373,null);
+
+
+
+
+
 
 
 
