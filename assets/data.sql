@@ -30,7 +30,7 @@ VALUES
 ('Partida1',1, 2, 5, 19, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
 ('Partida2',1, 2, 5, 19, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
 ('Partida3',2, 1, 1, 1, 2, '1736965255031', 'IN_PROGRESS', 0, 0),
-('Prueba' ,1, 10, 33,633,1,'1736965255031', 'IN_PROGRESS',10,10);
+('Prueba' ,1, 11, 37,746,1,'1736965255031', 'IN_PROGRESS',10,10);
 
 -- Capítulos base
 INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state,history_id)
@@ -75,7 +75,7 @@ VALUES
     (1,11,1, false, true),
     (1, 2,2, false, true),
     (1, 2,3, false, true),
-    (1,10,4,false, true);
+    (1,11,4,false, true);
 
 
 INSERT INTO scenes (id,chapter_id, background_image, scene_order)
@@ -124,7 +124,12 @@ VALUES
 --CAP6.3
 (33,10,'Lobby_Hotel.png',1),
 (34,10,'Hotel_Room.png',2),
-(35,10,'Hotel_Door.png',3);
+(35,10,'Hotel_Door.png',3),
+(36,10,'Restaurant_Hotel.png',4),
+--CAP6.4
+(37,11,'Beedrom.png',1),
+(38,11,'Living_Room_Nigth.png',2),
+(39,11,'Bedroom_Night.png',3);
 
 
 
@@ -859,37 +864,185 @@ VALUES
 (686,35,1,1,'Te dije que te echaba de menos. Y no podía más. Necesitaba verte.'),
 (687,35,1,1,'Te dije que te echaba de menos. No podía más sin verte.'),
 (688,35,1,1,'No sabes lo que significa para mí estar aquí. Me sentía tan mal estos días. Necesitaba esto.'),
-
 (689,35,1,1,'Pero he venido , solo para estar contigo...'),
 (690,35,1,1,'Bueno , pues perdona , solo queria pasar timepo con mi novia'),
 (691,35,1,1,'Si te parece mal, me voy, no pasa nada...'),
 (692,35,1,1,'Claro. Lo que tú quieras.'),
-
 (693,35,1,1,'Solo quería hacer algo bonito por nosotros. Me pareció una buena idea… Pero bueno, ya veo que no te hace ilusión.'),
 (694,35,1,1,'(Silencio breve. La mira fijamente.)—¿Presión? ¿Yo te estoy presionando por aparecer aquí sin avisar?'),
 (695,35,1,1,'Vale… pues nada. Haré lo que tú digas.'),
 (696,35,1,1,'(Él recoge su maleta sin decir más, y entran juntos al vestíbulo en silencio.)'),
-
-
 (697,35,1,1,'¿No te hace ilusión? No pasa nada si no te alegra. A lo mejor yo tenía más ganas que tú.'),
 (698,35,1,1,'(La mira)'),
 (699,35,1,1,'Entonces vamos a descansar juntos. Ya está, no tienes que decir nada. Estoy aquí ahora.'),
 (700,35,1,1,'Vamos a tomar algo, ¿sí?'),
-
 (701,35,1,null,'(Siente cómo la mirada de algunos compañeros se desvía hacia ellos.)'),
 (702,35,1,null,'(Si ha venido, es porque necesitaba verme. No puedo echarle en cara que haya venido hasta aquí por mí.)'),
 (703,35,1,1,'Pensé que te alegrarías más. Pero bueno… quizás estabas muy ocupada.'),
 (704,35,1,1,'Bueno, ya estoy aquí. . Así podemos vernos sin depender del teléfono.'),
 (705,35,1,1,'¿Vamos a tomar algo? Como tú prefieras.'),
 (706,35,1,1,'(Los dos entran al hotel. David lleva su maleta, caminando cerca de ella.)'),
-
 (707,35,1,1,'¿Tienes planes esta tarde? ¿O puedo quedarme contigo?'),
 (708,35,1,1,'Perfecto. Te voy a cuidar. Prometido.'),
 (709,35,1,1,'(Asiente otra vez, sin decir palabra. Camina junto a él, con una leve rigidez en los hombros.)'),
+(710,35,1,1,'(Ha venido sin avisar. Tenía reuniones, correos por responder, pendientes de la jornada…)'),
+---E.3
+(711,36,1,NULL,'(Después de pasar el día acompañando a David entre cafés, paseos  y momentos en los que apenas pudo revisar sus correos)'),
+(712,36,1,NULL,'Tiene el horario ajustado. Tiene varias reuniones y actividades laborales.)'),
+(713,36,1,null, '(Después de una de ellas, el equipo baja a desayunar en el restaurante del hotel.) '),
+(714,36,1,null, '(Ella se sienta con Eva y dos compañeros más. Ríen brevemente mientras hablan del cliente y revisan unas notas en la tablet.)'),
+(715,36,1,null,' (Cuando de pronto entra.)'),
+(716,36,1,1,'(David aparece en el comedor del hotel. La ve y camina directamente hacia ella)'),
+(717,36,1,1,'¡Buenos días! ¿Me haces un sitio?'),
+(718,36,1,1,'(Su compañero de la izquierda se mueve un poco, incómodo. David se sienta.)'),
+(719,36,1,1,'Tenía ganas de compartir el desayuno contigo… y ver con quién trabajas.'),
+(720,36,1,1,'(Sus ojos recorren la mesa. Mira de reojo al compañero que estaba hablando con Bella minutos antes.)'),
+(721,36,1,1,'(Salen juntos del salón, cruzando el vestíbulo hasta un rincón más privado del hotel.)'),
+(722,36,1,1,'(Bella se pone de pie, con calma, y le indica a David que la acompañe. Caminan hasta un pasillo lateral del restaurante, lejos del grupo.)'),
+(723,36,1,1,'(David mira a todos)'),
+(724,36,1,1,'(Se levanta de la silla antes de que David responda. Mira a sus compañeros, con una sonrisa rápida.)'),
+(725,36,1,1,'(David asiente sin decir nada y la sigue.)'),
+(726,36,1,1,'Solo quería pasar un rato contigo, ¿eso está mal también? Estás todo el tiempo ocupada, Bella.'),
+(727,36,1,1,'Vale... Lo entiendo. No volverá a pasar, tranquila. Aunque… no estaría mal que me incluyeras un poco más. Me haces sentir fuera.'),
+(728,36,1,1,'Está bien. Solo recuerda que yo estoy aquí, haciendo un esfuerzo por estar cerca. Para ti.'),
+(729,36,1,1,'Tranquila, no te molesto más.'),
+(730,36,1,1,'Lo que tu digas'),
+(731,36,1,1,'(David se acomoda junto a ella. Mientras los demás reanudan la conversación)'),
+(732,36,1,1,'(David asiente, pero su mirada no está en la conversación, sino en con quién Bella habla, a quién sonríe, cuánto tiempo tarda en responder.)'),
+(733,36,1,1,'(Pasan los minutos. El ambiente se vuelve más frío. Los compañeros comienzan a hablar entre ellos en voz baja.)'),
+(734,36,1,1,'(Tendría que haber dicho algo. Pero ya está aquí… no quiero que se moleste.)'),
+(735,36,1,8,'Bueno, nosotros vamos recogiendo. Nos vemos más tarde, Bella.'),
+(736,36,1,1,'¿Ves? Al final no fue para tanto. Solo quería estar un rato contigo.'),
+(737,36,1,1,'(Mira a todos)'),
+(738,36,1,8,'(Con cierta sorpresa, pero sin decir mucho.)-Vale… sí, luego hablamos.'),
+(739,36,1,1,'(David se levanta también. No agradece ni se despide del grupo.)'),
+(740,36,1,1,'(Caminan por el vestíbulo del hotel en silencio)'),
+(741,36,1,1,'(Susurrando, casi satisfecho.)—Gracias por entenderme.'),
+(742,36,1,1,'(Salen del comedor juntos. Al cruzar el vestíbulo, David le toma la mano y se la aprieta con fuerza.)'),
+(743,36,1,1,'Gracias. No quería arruinarte nada, solo quería estar contigo.'),
+(744,36,1,1,'(Quizá no era el momento, pero… ¿y si lo necesitaba? Tal vez hice bien.)'),
+(745,36,1,NULL,'¡Enhorabuena!'),
+--CAP6.4
+(746,37,1,NULL,'(La habitación está en silencio.)'),
+(747,37,1,NULL,'(La maleta abierta aún no está del todo llena.)'),
+(748,37,1,1,'(David está en el umbral de la puerta, apoyado con los brazos cruzados.)'),
+(749,37,1,1,'(La observa sin hablar durante varios segundos.)'),
+(750,37,1,1,'No sé. Me siento raro. Llevo todo el día así.'),
+(751,37,1,1,'No lo sé… es como si algo me dijera que no deberías ir. No quiero sonar paranoico. Solo… siento que no es buena idea.'),
+(752,37,1,1,'No te estoy diciendo que no vayas, ¿eh? Solo… me siento mal. Muy mal.'),
+(753,37,1,1,'(La mira)'),
 
-(710,35,1,1,'(Ha venido sin avisar. Tenía reuniones, correos por responder, pendientes de la jornada…)');
+(754,37,1,1,'(Se queda en silencio )'),
+(755,37,1,1,'Lo sé… pero ¿y si pasa algo? ¿Y si tú no estás y yo me hundo?'),
+(756,37,1,1,'Me siento como si algo se fuera a romper.'),
+(757,37,1,1,'No es culpa tuya. Solo… no puedo soportar imaginarte lejos. No en este momento.'),
+(758,37,1,1,'No sabes cuánto necesitaba escucharte decir eso.'),
 
+(759,37,1,1,'(Suspira. Se levanta de la cama y cierra la maleta a medias.)'),
+(760,37,1,1,'(La mira)'),
+(761,37,1,1,'(Se sienta de nuevo, con las manos sobre las rodillas.)'),
+(762,37,1,1,'(Sonrie)'),
+(763,37,1,1,'Gracias. Te juro que no quería que lo hicieras por mí, pero esto me da paz.'),
 
+(764,37,1,1,'(Se queda en silencio)'),
+(765,37,1,1,'(Finalmente la cierra del todo y se sienta de nuevo.)'),
+(766,37,1,1,'(La mira)'),
+(767,37,1,1,'(Sonrie)'),
+(768,37,1,1,'Solo quería estar contigo. Gracias por entenderlo'),
+
+(769,37,1,1,' (Se queda en silencio)'),
+(770,37,1,1,'Gracias. No sabes cuánto significa eso para mí'),
+
+(771,37,1,1,'(Se separa un poco, confusa.)'),
+(772,37,1,1,'(Sonríe)'),
+(773,37,1,1,'Sabía que me entenderías. Solo tú sabes cómo calmarme.'),
+
+(774,37,1,1,'(Se queda en silencio)'),
+(775,37,1,1,'(Mira la maleta abierta y empieza a sacar la ropa sin decir nada más.)'),
+
+(776,37,1,null,'(Ahora tengo que escribirles a los del trabajo. ¿Qué les digo? ¿Que me puse enferma? ¿Que ha surgido algo personal?) '),
+(777,37,1,null,'(Todo esto… por no hacerle daño. Pero, ¿y yo?) '),
+---E.2
+(778,38,1,null,'(Después de la conversación con David, el ambiente en la casa se vuelve más tranquilo.)'),
+(779,38,1,1,'(Él se muestra aliviado. Se mueve por la cocina silbando suavemente mientras prepara la cena) '),
+(780,38,1,null,'(Entra al salón con el portátil en brazos y lo deja sobre la mesa. Se sienta frente a él.)'),
+(781,38,1,null,'(El ruido de las teclas es lo único que suena. Ya es de noche. El reloj marca las 23:48.)'),
+(782,38,1,null,'(La pestaña del correo está abierta. Aún no hay nada escrito)'),
+(783,38,1,null,'(Mira el portatil abierto)'),
+
+(784,38,1,null,'(Escribe sin mirar mucho: “Hola. Lamento avisar tan tarde. Me encuentro mal esta noche, no podré viajar mañana. Lo siento.”)'),
+(785,38,1,null,'(Se queda unos segundos en silencio antes de escribir.)'),
+(786,38,1,null,'(Empieza a escribir: “Hola, me temo que estoy con fiebre y no podré asistir al viaje…”)'),
+(787,38,1,null,'(Escribe el correo con rapidez. Apenas lo relee.)'),
+(788,38,1,null,'(Escribe el correo despacio. A medida que las palabras aparecen en pantalla, sus ojos se llenan de lágrimas.)'),
+
+(789,38,1,null,'(Lo lee solo una vez. Lo envía. )'),
+(790,38,1,null,' (Luego cierra el portátil y se recuesta en el sofá, con la cabeza hacia atrás y los ojos cerrados.)'),
+(791,38,1,1,'(Aparece con dos platos. Le da uno y se sienta junto a ella.)—Ahora sí. Podemos estar tranquilos.'),
+(792,38,1,null,'(No siente paz. Solo inercia.)'),
+
+(793,38,1,null,'(Escribe :“Hola equipo. Me sabe mal avisar así. Esta noche no me encuentro bien y no podré viajar mañana. Gracias por la comprensión.”)'),
+(794,38,1,null,'(Lo relee una vez. Suspira. Envía.)'),
+(795,38,1,1,'(Desde la cocina.)—¿Todo hecho?'),
+(796,38,1,null,'(Se queda mirando el portátil cerrado, con una expresión ambigua: ni alivio, ni rabia. Solo un peso que no se va.)'),
+
+(797,38,1,null,'(Luego borra “fiebre” y escribe “malestar”.)'),
+(798,38,1,null,'(Lee el mensaje varias veces. Cambia el asunto del correo dos veces.)'),
+(799,38,1,null,'(Finalmente, lo envía.Se queda mirando la pantalla)'),
+(800,38,1,1,'(Se acerca y le acaricia el hombro.) —¿Ya está? Ahora puedes relajarte, ¿ves?'),
+
+(801,38,1,null,'(Enseguida abre otro mensaje)'),
+(802,38,1,null,'(Escribe a su equipo: “Siento mucho avisar a esta hora.)'),
+(803,38,1,null,'("De verdad, lo siento. Espero que todo vaya bien.”) '),
+(804,38,1,null,'(Le da a enviar. Luego se queda inmóvil, con las manos en el teclado.)'),
+(805,38,1,1,'(Aparece con dos platos. Deja uno frente a ella.)—Me hace feliz que lo hayas hecho. Ahora podremos descansar.'),
+
+(806,38,1,null,'(No llora con fuerza, pero una gota silenciosa cae sobre la tecla espaciadora.) '),
+(807,38,1,null,'(La limpia rápido con la manga del pijama, sin hacer ruido.)'),
+(808,38,1,null,'(Lee el mensaje en voz baja, apenas un susurro. No termina de procesar el contenido.)'),
+(809,38,1,null,'(Hace clic en “Enviar”. Suspira, sin levantar la cabeza.)'),
+(810,38,1,1,'¿Ya está hecho? Bien. Esto nos va a venir bien a los dos. Te lo prometo.'),
+
+(811,38,1,1,'(La cena transcurre en silencio.)'),
+---E.3
+(812,38,1,1,'( David come tranquilo, sin preocuparse demasiado por llenar el vacío de palabras.)'),
+(813,38,1,1,'(Al terminar, recogen en calma.)'),
+(814,38,1,1,'(David le dice que se adelante a la cama, que ahora va. )'),
+(815,39,1,1,'(Cuando él entra al cuarto, la encuentra ya acostada.)'),
+(816,39,1,null,'(Se mete bajo las sábanas, la abraza desde atrás y se queda dormido en pocos minutos.)'),
+
+(817,39,1,null,'(Mirando el techo)'),
+
+(818,39,1,null,'(Se da la vuelta lentamente, sin despertar a David.)'),
+(819,39,1,null,'(Se desliza con cuidado fuera de la cama. Busca su cuaderno en el escritorio)'),
+(820,39,1,null,'(Acaricia la sábana con los dedos. Mira a David. Luego al techo.)'),
+(821,39,1,null,'(Sus ojos están abiertos, pero no parpadea. )'),
+(822,39,1,null,'(Se encoge sobre sí misma.)'),
+
+(823,39,1,null,'(Mira el móvil en la mesilla. No lo toca.)'),
+(824,39,1,null,'(Cierra los ojos con fuerza, intentando no pensar.Pero su cuerpo no se relaja.) '),
+(825,39,1,null,'(Más tarde, se levanta en silencio, saca un cuaderno escondido bajo la ropa en un cajón y escribe) '),
+(826,39,1,null,'(Luego lo vuelve a ocultar.)'),
+
+(827,39,1,null,'(Lo abre con manos temblorosas y escribe sin pensar demasiado.)'),
+(828,39,1,null,'(Frases cortas. Palabras sueltas. No busca sentido, solo dejar registro.)'),
+(829,39,1,null,'(Luego lo esconde en el fondo de una mochila que guarda bajo la cama.)'),
+
+(830,39,1,null,'(Siente una punzada en el estómago que no logra nombrar.)'),
+(831,39,1,null,'(Piensa que solo fue un viaje. Que ya se pasará.) '),
+(832,39,1,null,'(Antes de dormirse, se incorpora un segundo y anota en una libreta doblada dentro del cajón)'),
+
+(833,39,1,null,'(Tiene el cuerpo tenso, la mente acelerada.)'),
+(834,39,1,null,'(Casi sin darse cuenta, saca el cuaderno de su bolso y escribe) '),
+(835,39,1,null,'(Luego lo guarda debajo del colchón.)'),
+
+(836,39,1,null,'(Siente que la respiración no le alcanza. )'),
+(837,39,1,null,'(Aprieta la mandíbula para no llorar.)'),
+(838,39,1,null,'(Más tarde, busca en silencio el cuaderno escondido tras la cómoda.)'),
+
+(839,39,1,null,'(Luego se mete en la cama, sin hacer ruido.)'),
+(840,39,1,null,'(David sigue dormido.)'),
+(841,39,1,null,'¡Enhorabuena!');
 
 
 
@@ -1616,8 +1769,6 @@ VALUES
 (637,'Estoy en recepción, todo correcto. Ahora necesito instalarme y descansar un poco. Luego hablamos con más calma.',-2,5,639,'STABLE'),
 (637,'Mira, todo tranquilo. Yo pedí una habitación individual',2,3,640,'SLIGHTLY_ANXIOUS'),
 (637,'Aquí está la entrada, los ascensores están al fondo. Pedí habitación sola. El hotel está limpio, tranquilo… no hay nada raro.',3,2,641,'ANXIOUS'),
-
-
 (638,'No es nada raro, David. Es un hotel normal. Lo de siempre.',0,0,642,null),
 (642,'Estoy bien',0,0,643,null),
 (643,'Mira, que me está llamando la recepcionista ',0,0,644,null),
@@ -1625,8 +1776,6 @@ VALUES
 (645,'Lo haré. Un beso.',0,0,646,null),
 (646,'(Continuar)',0,0,647,null),
 (647,'(Continuar)',0,0,NULL,null),
-
-
 (639,'(Suspira, manteniéndose serena.)—Está todo bien. Solo necesito un momento para ocuparme de lo básico, ¿vale? ',0,0,648,null),
 (648,'No es que no quiera hablar contigo, es que literalmente estoy en recepción. Hay gente esperando. No es buen momento.',0,0,649,null),
 (649,'No es molestia. Pero después, cuando esté tranquila, hablamos con calma',0,0,650,null),
@@ -1634,7 +1783,6 @@ VALUES
 (651,'(Cuelga. Suspira. Se guarda el móvil en el bolso sin pensarlo demasiado.) ',0,0,652,null),
 (652,'(Camina hacia el mostrador mientras nota esa tensión pequeña que siempre queda)',0,0,653,null),
 (653,'(Tras hablar con la recepcionista que le da la tarjeta de la habietación , sube a la misma)',0,0,NULL,null),
-
 (640,'¿Ahora? Es que me están llamando ya…',0,0,654,null),
 (654,'Bueno… está bien.',0,0,655,null),
 (655,'(Continuar)',0,0,656,null),
@@ -1647,8 +1795,6 @@ VALUES
 (662,'Sí… te escribo.',0,0,663,null),
 (663,'(Bella se queda con el móvil en la mano unos segundos. No sabe muy bien qué siente.)',0,0,664,null),
 (664,'(Continuar)',0,0,null,null),
-
-
 (641,'Un segundo, por favor. ',0,0,665,null),
 (665,'Vale... te quedas en línea. ',0,0,666,null),
 (666,'(Continuar)',0,0,667,null),
@@ -1658,12 +1804,9 @@ VALUES
 (670,'Gracias.',0,0,671,null),
 (671,'Sí, individual.  ',0,0,672,null),
 (672,'(Se detiene un segundo en seco.)—Sí. Vale.. ',0,0,664,null),
-
-
 (673,'(Continuar)',0,0,674,null),
 (674,'(Continuar)',0,0,675,null),
 (675,'(Continuar)',0,0,null,null),
-
 ---E2
 (676,'(Continuar)',0,0,677,null),
 (677,'(Continuar)',0,0,678,null),
@@ -1677,25 +1820,21 @@ VALUES
 (683,'(Sonríe y lo abraza suavemente.)—No me lo esperaba... Has hecho todo este esfuerzo…',2,3,686,'SLIGHTLY_ANXIOUS'),
 (683,'(Lo abraza con fuerza.)—Qué sorpresa... Me alegra que estés aquí',3,2,687,'ANXIOUS'),
 (683,'(Le sonríe con dulzura, le acaricia el rostro.)—Me hacía falta verte también. Gracias por venir',4,1,688,'DISTRESSED'),
-
 (684,'Es que ha sido un día largo, y sinceramente, pensaba descansar esta noche. Mañana tengo reuniones temprano.',0,0,689,null),
-(689,'Lo se , y te lo agradezco , solo que me hubiera gustado que me hubieras avisado ',0,0,689,null),
+(689,'Lo se , y te lo agradezco , solo que me hubiera gustado que me hubieras avisado ',0,0,690,null),
 (690,'No es ...',0,0,691,null),
 (691,'Solo me hubiera gustado saberlo antes, nada más. Pero ya que estás aquí… ¿te apetece que vayamos a tomar algo?',0,0,692,null),
 (692,'(Asiente y los dos entran juntos al hotel)',0,0,710,null),
-
 (685,'Tengo una agenda cerrada. No tengo mucho margen para improvisar',0,0,693,null),
 (693,'No es eso. Solo que hubiera preferido saberlo. Así podía organizarme mejor. Te lo digo porque necesito poder moverme con libertad estos días, sin presiones.',0,0,694,null),
 (694,'No lo digo para discutir. Solo… estoy agotada. Y necesito poder estar centrada en lo que vine a hacer.',0,0,695,null),
 (695,'(Asiente con una leve sonrisa tensa)',0,0,696,null),
 (696,'(Continuar)',0,0,710,null),
-
 (686,'(Se queda unos segundos en silencio.) ',0,0,697,null),
 (697,'(Se aparta un poco, intentando que no se note la incomodidad.)—Claro… sí. Solo que… no me lo esperaba, eso es todo. ',0,0,698,null),
 (698,'Solo me ha pillado un poco desprevenida. Hoy ha sido un día largo…',0,0,699,null),
 (699,'(¿Qué le voy a decir? ¿Que tengo cosas que hacer? Vino hasta aquí por mí…)',0,0,700,null),
 (700,'Lo que tú digas. ',0,0,710,null),
-
 (687,'(Lo abraza con fuerza. Él la mantiene cerca más de lo habitual.)',0,0,701,null),
 (701,'(Siente cómo la mirada de algunos compañeros se desvía hacia ellos.)',0,0,702,null),
 (702,'(Si ha venido, es porque necesitaba verme. No puedo echarle en cara que haya venido hasta aquí por mí.)',0,0,703,null),
@@ -1703,15 +1842,190 @@ VALUES
 (704,'(Asiente, tragando saliva.) —Vale… sí. Es buena idea.',0,0,705,null),
 (705,'(Sonríe otra vez, aunque algo más tensa.) —Vamos a tomar algo, sí.',0,0,706,null),
 (706,'(No dice nada más.)',0,0,710,null),
-
 (688,'(Es lo que quiere. No puedo decepcionarlo ahora. No importa si no me lo dijo antes.) ',0,0,707,null),
 (707,'No… no tenía nada fijo.',0,0,708,null),
 (708,'(Está contento. Eso es lo importante. Solo tengo que hacer que todo fluya.) ',0,0,709,null),
 (709,'(Asiente otra vez, sin decir palabra. Camina junto a él, con una leve rigidez en los hombros.)',0,0,710,null),
+(710,'(Continuar)',0,0,NULL,null),
+---E.3
+(711,'(Continuar)',0,0,712,NULL),
+(712,'(Continuar)',0,0,713,NULL),
+(713,'(Continuar)',0,0,714,NULL),
+(714,'(Continuar)',0,0,715,NULL),
+(715,'(Continuar)',0,0,716,NULL),
+(716,'(Continuar)',0,0,717,NULL),
+(717,'(Se queda unos segundos en silencio.)',0,0,718,NULL),
+(718,'No sabía que bajarías…',0,0,719,NULL),
+(719,'(Continuar)',0,0,720,NULL),
+(720,'No esperaba verte aquí... ¿Podemos hablar un momento fuera?',-1,1,721,NULL),
+(720,'Necesito que salgas un momento. Tenemos que hablar',-2,5,722,'STABLE'),
+(720,'Bueno… siéntate, claro',2,3,723,'SLIGHTLY_ANXIOUS'),
+(720,'¿Quieres que vayamos tú y yo a otro sitio? Así estamos tranquilos.',3,2,724,'ANXIOUS'),
+(720,'(Se pone de pie sin mirar a nadie.)—Vamos a desayunar los dos mejor.',4,1,725,'DISTRESSED'),
+(721,'David, sé que viniste con buena intención. Pero este desayuno era con mi equipo, es parte del trabajo. No puedes aparecer sin avisar ni sentarte así',0,0,726,NULL),
+(726,'Y te lo he dicho, estoy aquí por trabajo',0,0,727,NULL),
+(727,'David, es que… son cosas del trabajo. No es algo personal.',0,0,728,NULL),
+(728,'(Con tono bajo, mirando al suelo un segundo antes de levantar la vista de nuevo.)—Y yo lo valoro.',0,0,729,NULL),
+(729,'Tengo que volver con el equipo. Hablamos después, ¿vale?',0,0,730,NULL),
+(730,'(Continuar)',0,0,745,NULL),
+(722,'(Continuar)',0,0,726,NULL),
+(723,'Estábamos justo comentando lo de la presentación de ayer.',0,0,731,NULL),
+(731,'David también trabaja en temas de gestión, aunque en otro sector. Seguro que entiende estas dinámicas, ¿verdad?',0,0,732,NULL),
+(732,'(Continuar)',0,0,733,NULL),
+(733,'(Bebe un poco de café, mira a su alrededor, forzando normalidad.)',0,0,734,NULL),
+(734,'(Continuar)',0,0,735,NULL),
+(735,'Claro, luego nos vemos',0,0,736,NULL),
+(736,'Sí… está bien.',0,0,745,NULL),
+(724,'(Continuar)',0,0,737,NULL),
+(737,'Perdonad, voy a salir un rato con él. Ya nos vemos luego para lo del informe.',0,0,738,NULL),
+(738,'(Continuar)',0,0,739,NULL),
+(739,'(Lo sigue sin mirar atrás.)',0,0,740,NULL),
+(740,'(Continuar)',0,0,741,NULL),
+(741,'Claro… es lo mínimo.',0,0,745,NULL),
+(725,'(No se despide del grupo, ni cruza miradas.) ',0,0,742,NULL),
+(742,'(Continua)',0,0,743,NULL),
+(743,'No arruinaste nada. De verdad.',0,0,744,NULL),
+(744,'(Continuar)',0,0,745,NULL),
+(745,'FIN CAPITULO 6',0,0,null,NULL),
+--CAP6.4
+(746,'(Continuar)',0,0,747,NULL),
+(747,'(Continuar)',0,0,748,NULL),
+(748,'(Continuar)',0,0,749,NULL),
+(749,'¿Pasa algo?',0,0,750,NULL),
+(750,'¿Por qué? ¿Qué te pasa?',0,0,751,NULL),
+(751,'(Se sienta en el borde de la cama)',0,0,752,NULL),
+(752,' (Lo mira en silencio. Siente cómo la energía del cuerpo empieza a apagarse.) ',0,0,753,NULL),
 
-(710,'(Continuar)',0,0,NULL,null);
+(753,'David, no es la primera vez que te pasa algo así antes de que me vaya',-1,1,754,NULL),
+(753,'David, sé que esto te inquieta. Pero necesito que entiendas que este viaje es importante para mí.',-2,5,755,'STABLE'),
+(753,'No quiero que te pongas así. Ya bastante estrés hay con todo…',2,3,756,'SLIGHTLY_ANXIOUS'),
+(753,'Perdón… no sabía que te afectaba tanto',3,2,757,'ANXIOUS'),
+(753,'Perdóname. No voy a ir. Nunca debí insistir tanto. No vale la pena verte así',4,1,758,'DISTRESSED'),
+
+(754,'Este viaje me ha supuesto más desgaste del que esperaba…',0,0,759,NULL),
+(759,'(Continuar)',0,0,760,NULL),
+(760,'Solo quiero descansar, pensar con claridad.',0,0,761,NULL),
+(761,'(Continuar)',0,0,762,NULL),
+(762,'No sé si es lo mejor ir mañana en este estado. Tal vez debería dejarlo pasar esta vez..',0,0,763,NULL),
+(763,'Lo sé. (Pero también necesito recuperar la mía.) ',0,0,776,NULL),
+
+(755,'Me parte escucharte decir eso. Pero no puedo cargar con ese miedo ahora. Lo siento, David',0,0,764,NULL),
+(764,'(Mira su maleta, se muerde el labio. )',0,0,765,NULL),
+(765,'(Continuar)',0,0,766,NULL),
+(766,'No sé si es lo mejor ir mañana en este estado. Tal vez debería dejarlo pasar esta vez...',0,0,767,NULL),
+(767,'Pero será porque lo decido yo.',0,0,768,NULL),
+(768,'(Continuar)',0,0,776,NULL),
+
+(756,'Bueno… si va a afectarte así…',0,0,769,NULL),
+(769,' Tal vez lo mejor sea que me quede.',0,0,770,NULL),
+(770,' Al final… no es para tanto. Iré la próxima vez.',0,0,776,NULL),
+
+(757,'Yo solo quería cumplir con lo mío, no hacerte daño',0,0,771,NULL),
+(771,'Quizá… quizá lo mejor sea que me quede ',0,0,772,NULL),
+(772,'Ya está, no voy. No te preocupes más.',0,0,773,NULL),
+(773,'(Continuar)',0,0,776,NULL),
+
+(758,'(Continuar)',0,0,774,NULL),
+(774,'No quiero hacerte daño. No quiero que sufras por mi culpa.',0,0,775,NULL),
+(775,'Estoy aquí. Me quedo contigo. No quiero verte mal.',0,0,776,NULL),
+
+(776,'(Continuar)',0,0,777,NULL),
+(777,'(Continuar)',0,0,null,NULL),
+---E.2
+(778,'(Continuar)',0,0,779,NULL),
+(779,'(Continuar)',0,0,780,NULL),
+(780,'(Continuar)',0,0,781,NULL),
+(781,'(Continuar)',0,0,782,NULL),
+(782,'(Continuar)',0,0,783,NULL),
+
+(783,'(Voy a decir simplemente que no me encuentro bien. Nada más. )',-1,1,784,NULL),
+(783,'(Voy a escribirlo… pero tengo que aceptar que esto también es una forma de rendirme un poco)',-2,5,785,'STABLE'),
+(783,'(No sé qué poner… no quiero mentir, pero tampoco puedo decir la verdad)',2,3,786,'SLIGHTLY_ANXIOUS'),
+(783,'(Vale, lo escribo rápido. Que no piensen mal… )',3,2,787,'ANXIOUS'),
+(783,'(No sé cómo hacerlo… No quiero enviarlo, pero tengo que hacerlo.)',4,1,788,'DISTRESSED'),
+
+(784,'(Continuar)',0,0,789,NULL),
+(789,'(Continuar)',0,0,790,NULL),
+(790,'(Continuar)',0,0,791,NULL),
+(791,'Sí… claro.Pero en su mente, algo sigue agitado.)',0,0,792,NULL),
+(792,'(Continuar)',0,0,811,NULL),
+
+(785,'(Continuar)',0,0,793,NULL),
+(793,'(Continuar)',0,0,794,NULL),
+(794,'(Continuar)',0,0,795,NULL),
+(795,'Sí… ya está.',0,0,796,NULL),
+(796,'(Continuar)',0,0,811,NULL),
+
+(786,'(Continuar)',0,0,797,NULL),
+(797,'(Continuar)',0,0,798,NULL),
+(798,'(Continuar)',0,0,799,NULL),
+(799,'(Continuar)',0,0,800,NULL),
+(800,'Si..Claro',0,0,811,NULL),
 
 
+(787,'(Continuar)',0,0,801,NULL),
+(801,'(Continuar)',0,0,802,NULL),
+(802,'(Continuar)',0,0,803,NULL),
+(803,'(Continuar)',0,0,804,NULL),
+(804,'(Continuar)',0,0,805,NULL),
+(805,'(Afianza la mandíbula. Mira la cena sin tocarla.)',0,0,811,NULL),
+
+(788,'(Continuar)',0,0,806,NULL),
+(806,'(Continuar)',0,0,807,NULL),
+(807,'(Continuar)',0,0,808,NULL),
+(808,'(Continuar)',0,0,809,NULL),
+(809,'(Continuar)',0,0,810,NULL),
+(810,'(Asiente levemente, sin mirarlo. Parpadea para secar los ojos antes de que vuelva a salir otra lágrima.)—Sí… ya está.',0,0,811,NULL),
+
+(811,'(Continuar)',0,0,812,NULL),
+---E.3
+(812,'(Continuar)',0,0,813,NULL),
+(813,'(Continuar)',0,0,814,NULL),
+(814,'(Continuar)',0,0,NULL,NULL),
+(815,'(Continuar)',0,0,816,NULL),
+(816,'(Continuar)',0,0,817,NULL),
+
+(817,'(Ya está hecho… solo necesito dormir.)',-1,1,818,NULL),
+(817,'(Hoy me perdí a mí misma un poco, y no quiero olvidarlo)',-2,5,819,'STABLE'),
+(817,'(No es tan grave… supongo)',2,3,820,'SLIGHTLY_ANXIOUS'),
+(817,'(Debería haber ido, ¿por qué no fui?)',3,2,821,'ANXIOUS'),
+(817,'(Ojalá pudiera desaparecer un rato)',4,1,822,'DISTRESSED'),
+
+(818,'(Continuar)',0,0,823,NULL),
+(823,'(Continuar)',0,0,824,NULL),
+(824,'(Continuar)',0,0,825,NULL),
+(825,'(Continuar)',0,0,826,NULL),
+(826,'(Continuar)',0,0,839,NULL),
+
+(819,'(Continuar)',0,0,827,NULL),
+(827,'(Continuar)',0,0,828,NULL),
+(828,'(Continuar)',0,0,829,NULL),
+(829,'(Continuar)',0,0,839,NULL),
+
+(820,'(Continuar)',0,0,830,NULL),
+(830,'(Continuar)',0,0,831,NULL),
+(831,'(Continuar)',0,0,832,NULL),
+(832,'(Continuar)',0,0,839,NULL),
+
+(821,'(Continuar)',0,0,833,NULL),
+(833,'(Continuar)',0,0,834,NULL),
+(834,'(Continuar)',0,0,835,NULL),
+(835,'(Continuar)',0,0,839,NULL),
+
+(822,'(Continuar)',0,0,836,NULL),
+(836,'(Continuar)',0,0,837,NULL),
+(837,'(Continuar)',0,0,838,NULL),
+(838,'(Continuar)',0,0,839,NULL),
+
+(839,'(Continuar)',0,0,840,NULL),
+(840,'(Continuar)',0,0,841,NULL),
+(841,'FIN CAPITULO 6',0,0,NULL,NULL);
+
+--(842,'(Continuar)',0,0,843,NULL),
+--(843,'(Continuar)',0,0,844,NULL),
+--(844,'(Continuar)',0,0,845,NULL),
+--(845,'(Continuar)',0,0,846,NULL),
+--(846,'(Continuar)',0,0,847,NULL);
 
 
 
