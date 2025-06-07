@@ -174,6 +174,8 @@ public class ChapterManager {
             "AND chapter_number > (SELECT chapter_number FROM chapters WHERE id = ?) " +
             "ORDER BY CAST(chapter_number AS DECIMAL) ASC";
 
+        String currentChapterNumberQuery = "SELECT chapter_number FROM chapters WHERE id = ?";
+
         String insertUnlockQuery = "INSERT INTO player_chapter_state (player_id, chapter_id, game_id, played, unlocked) VALUES (?, ?, ?, false, true)";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
@@ -185,7 +187,27 @@ public class ChapterManager {
         int nextChapterId = -1;
 
         try {
-            // Obtener todos los capítulos posteriores al actual de la misma historia
+            // Obtener el número del capítulo actual
+            PreparedStatement currentChapterStmt = connection.prepareStatement(currentChapterNumberQuery);
+            currentChapterStmt.setInt(1, currentChapterId);
+            ResultSet currentChapterRs = currentChapterStmt.executeQuery();
+            String currentChapterNumber = null;
+
+            if (currentChapterRs.next()) {
+                currentChapterNumber = currentChapterRs.getString("chapter_number");
+            }
+
+            currentChapterRs.close();
+            currentChapterStmt.close();
+
+            if (currentChapterNumber == null) {
+                throw new RuntimeException("No se pudo encontrar el capítulo actual.");
+            }
+
+            // Separar X.Y del capítulo actual
+            String[] parts = currentChapterNumber.split("\\.");
+            int currentGroup = Integer.parseInt(parts[0]);
+
             PreparedStatement nextChaptersStmt = connection.prepareStatement(nextChaptersQuery);
             nextChaptersStmt.setInt(1, gameId);
             nextChaptersStmt.setInt(2, currentChapterId);
@@ -196,11 +218,20 @@ public class ChapterManager {
 
             while (rs.next()) {
                 int candidateChapterId = rs.getInt("id");
+                String candidateChapterNumber = rs.getString("chapter_number");
                 String requiredRelationshipState = rs.getString("required_relationship_state");
 
-                // Verificar si el estado de la relación cumple con el requisito del capítulo
+                // Separar grupo del candidato
+                String[] candidateParts = candidateChapterNumber.split("\\.");
+                int candidateGroup = Integer.parseInt(candidateParts[0]);
+
+                // Bloquear todos los demás capítulos del mismo grupo
+                if (candidateGroup == currentGroup) {
+                    continue;
+                }
+
+                // Verificar estado de relación
                 if (requiredRelationshipState == null || currentRelationshipState.name().equals(requiredRelationshipState)) {
-                    // Insertar el desbloqueo del capítulo en player_chapter_state
                     PreparedStatement insertUnlockStmt = connection.prepareStatement(insertUnlockQuery);
                     insertUnlockStmt.setInt(1, currentGame.getPlayerId());
                     insertUnlockStmt.setInt(2, candidateChapterId);
@@ -208,14 +239,14 @@ public class ChapterManager {
 
                     int rowsInserted = insertUnlockStmt.executeUpdate();
                     if (rowsInserted > 0) {
-                        System.out.println("Capítulo " + rs.getString("chapter_number") + " desbloqueado para el juego " + gameId);
+                        System.out.println("Capítulo " + candidateChapterNumber + " desbloqueado para el juego " + gameId);
                     } else {
                         System.err.println("El capítulo " + candidateChapterId + " ya estaba desbloqueado.");
                     }
                     insertUnlockStmt.close();
 
                     nextChapterId = candidateChapterId;
-                    break; // Salir del bucle una vez se desbloquea el primer capítulo válido
+                    break;
                 } else {
                     System.out.println("El estado de la relación actual (" + currentRelationshipState + ") no cumple con el requisito para desbloquear el capítulo " + candidateChapterId + " (" + requiredRelationshipState + ").");
                 }
@@ -229,6 +260,7 @@ public class ChapterManager {
 
         return nextChapterId;
     }
+
 
 
     public static Chapter getChapterById(int chapterId) {
