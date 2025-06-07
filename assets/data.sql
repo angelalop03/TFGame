@@ -30,7 +30,7 @@ VALUES
 ('Partida1',1, 2, 5, 19, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
 ('Partida2',1, 2, 5, 19, 1, '1736965255031', 'IN_PROGRESS', 0, 0),
 ('Partida3',2, 1, 1, 1, 2, '1736965255031', 'IN_PROGRESS', 0, 0),
-('Prueba' ,1, 19, 61,1427,1,'1736965255031', 'IN_PROGRESS',10,10);
+('Prueba' ,1, 21, 67,1553,1,'1736965255031', 'IN_PROGRESS',10,10);
 
 -- Capítulos base
 INSERT INTO chapters (name, chapter_number, image_path, required_relationship_state,history_id)
@@ -75,7 +75,7 @@ VALUES
     (1,11,1, false, true),
     (1, 2,2, false, true),
     (1, 2,3, false, true),
-    (1,19,4,false, true);
+    (1,21,4,false, true);
 
 
 INSERT INTO scenes (id,chapter_id, background_image, scene_order)
@@ -159,7 +159,18 @@ VALUES
 (59,18,'Living_Room_Nigth.png',1),
 (60,18,'Bedroom_Night.png',2),
 --CAP8.4
-(61,19,'Living_Room.jpg',1);
+(61,19,'Living_Room.jpg',1),
+--CAP9.1
+(62,20,'Bedroom_Night.png',1),
+(63,20,'Bathroom_Nigth.png',2),
+(64,20,'Bedroom_Night.png',3),
+(65,20,'Kitchen.png',4),
+(66,20,'Living_Room.jpg',5),
+--CAP9.2
+(67,21,'Living_Room_Nigth.png',1),
+(68,21,'Living_Room.jpg',2),
+(69,21,'Park.png',3);
+
 
 
 
@@ -182,7 +193,9 @@ VALUES
 ('Eva','Eva.png'),
 ('Marcos', 'Marcos.png'),
 ('Recepcionista','Recepcionista.png'),
-('Eva_Call','Eva_Call.png');
+('Eva_Call','Eva_Call.png'),
+('Eva_Phone','Eva_Phone.png'),
+('Note','Note.png');
 
 
 INSERT INTO decisions (id,scene_id, decision_order, character_id, dialogue)
@@ -1739,10 +1752,94 @@ VALUES
 (1500,61,1,1,'No me gusta esto, Bella. Odio sentir que me estás juzgando.'),
 (1501,61,1,1,'No quise empujarte… Pero es que tú no entiendes lo que es estar así, tan perdido'),
 (1502,61,1,NULL,'La casa queda en completo silencio.'),
-(1503,61,1,NULL,'¿Enhorabuena?');
+(1503,61,1,NULL,'¿Enhorabuena?'),
 --CAP9.1
+(1504,62,1,NULL,'(Es de madrugada.)'),
+(1505,62,1,NULL,'(La casa está en silencio, pero Bella no duerme)'),
+(1506,62,1,NULL,'(Hace horas que David se acostó, pero ella sigue despierta, con la luz del móvil reflejándose en su rostro. )'),
+(1507,62,1,NULL,'(En su mente, algo ha cambiado. No es una fantasía ni una posibilidad. Es una certeza.)'),
+(1508,62,1,NULL,'(Tiene que irse.)'),
+(1509,62,1,NULL,'(Mira alrededor con una nueva lucidez: el abrigo colgado detrás de la puerta, el bolso donde guarda sus documentos, la ubicación de su cargador.)'),
+(1510,62,1,NULL,'(Todo empieza a tener valor estratégico.)'),
+(1511,63,1,NULL,'(El espejo refleja su cansancio.)'),
+(1512,63,1,NULL,'(Toma el móvil. Con los dedos temblorosos escribe)'),
+(1513,63,1,11,'Mensaje a Eva:"Necesito tu ayuda"'),
+(1514,63,1,11,'Bella:“¿Podrías ayudarme a salir de aquí? No quiero que él lo sepa todavía.”'),
+(1515,63,1,11,'Respuesta de Eva:“Cuando digas. Estoy contigo.”'),
+(1516,63,1,NULL,'(Volvió a la cama)'),
+(1517,64,1,NULL,'(No durmió bien.)'),
+(1518,65,1,null,'(Al día siguiente temprano en la cocina)'),
+(1519,65,1,null,'(La luz entra pálida por la ventana.)'),
+(1520,65,1,1,'(David ya está vestido, revisando el móvil.)'),
+(1521,65,1,1,'(Levanta la vista lentamente. Cierra la pantalla del móvil.)—¿Sí? ¿Qué pasa ahora?'),
+(1522,65,1,1,'(La mira)'),
+(1523,65,1,1,'(Frunce el ceño)'),
+(1524,65,1,1,'(La mira fijamente)'),
+(1525,65,1,1,'(Pausa. Un segundo exacto de silencio absoluto.)'),
+(1526,65,1,1,'(Frunce el ceño. Su mandíbula se tensa.) —¿Cómo que dejarlo?'),
+(1527,65,1,1,'(Suelta una risa seca. Luego deja la taza con un golpe sordo en la encimera.)—Mira, no tengo tiempo para tus dramatismos esta mañana.'),
+(1528,65,1,1,'No vamos a hablar de esto ahora.'),
+(1529,65,1,1,'Cuando vuelva, lo hablamos con calma. ¿Vale?'),
+(1530,65,1,1,'Ya te calmarás. Siempre haces esto cuando te llenas de ideas.'),
+(1531,65,1,1,'Después hablamos.'),
+(1532,65,1,NULL,'(Cierra la puerta al salir. El silencio que queda no es alivio. ) '),
+(1533,65,1,11,'Bella:“Está fuera. ¿Puedes venir?”'),
+(1534,65,1,11,'Clara (Respuesta inmediata):“Voy. En 20.”'),
+(1535,65,1,NULL,'(El sonido del timbre hace que Bella se sobresalte.)'),
+(1536,66,1,7,'(Entra rápido. No abraza a Bella de inmediato. Le toma el rostro con ambas manos.)—¿Estás bien?'),
+(1537,66,1,7,'(La abraza entonces, con fuerza, pero sin brusquedad. Bella se derrumba un instante, en silencio. Luego se separan.)—¿Tienes algo preparado?'),
+(1538,66,1,7,'Vale. Lo primero: mochila con lo básico. DNI, tarjeta, móvil, cargador, ropa interior. ¿Tienes algún sitio donde quieras ir?'),
+(1539,66,1,7,'Entonces vienes conmigo. Lo resolvemos paso a paso. ¿Sí?'),
+(1540,66,1,7,'(Comienzan a moverse. Clara abre cajones, pregunta antes de tocar. Bella responde con la mirada o con gestos breves.)'),
+(1541,66,1,NULL,'(Bella saca una mochila. Mete dos pantalones, cuatro camisetas. Mete ropa interior, el neceser.)'),
+(1542,66,1,7,'Yo los busco. ¿Dónde están?'),
+(1543,66,1,7,'(Clara se mueve con rapidez y cuidado. Encuentra la carpeta azul. )'),
+(1544,66,1,7,'(Vuelve con los documentos.)—Aquí está todo. DNI, tarjeta sanitaria, copia del contrato.'),
+(1545,66,1,7,'Bella… ¿quieres dejarle algo?'),
+(1546,66,1,12,'(Escribe)'),
+(1547,66,1,NULL,'(Dobla la hoja. La deja en el centro de la mesa del salón)'),
+(1548,66,1,7,'¿Lista?'),
+(1549,66,1,NULL,'(Apaga la luz del salón. Ambas caminan hasta la puerta. Clara abre. Bella cruza el umbral, se detiene medio segundo y vuelve a cerrar la puerta detrás de ella. ) '),
+(1550,66,1,NULL,'(Con suavidad, gira la llave y escucha el sonido firme del cerrojo.)'),
+(1551,66,1,NULL,'( Y por primera vez vez en mucho tiempo , no tuvo miedo)'),
+(1552,66,1,NULL,'¡Enhorabuena, has terminado Bella´s Heart!'),
+--CAP9.2
+(1553,67,1,NULL,'(La televisión está apagada. Las persianas bajadas a medias dejan entrar una luz apagada, casi triste.)'),
+(1554,67,1,NULL,'(Bella está sola. David ha salido hace un rato, sin decir a dónde iba. No le avisó, pero ella no preguntó.'),
+(1555,67,1,NULL,'(Se sienta frente al portátil. Lo abre con una lentitud automática. Como si no supiera muy bien por qué lo hace.) '),
+(1556,67,1,NULL,'(Durante un rato, el cursor parpadea en el buscador.)'),
+(1557,67,1,NULL,'(Luego, sin pensarlo demasiado, teclea:“cómo saber si estás en una relación tóxica”)'),
+(1558,67,1,NULL,'(“Pareja me controla pero no me pega”)'),
+(1559,67,1,NULL,'(“Violencia psicológica señales”)'),
+(1560,67,1,NULL,'(Uno a uno, los resultados aparecen)'),
+(1561,67,1,NULL,'(Artículos. Foros. Blogs. Testimonios con nombres que no recuerda.Frases que duelen de tan parecidas.)'),
+(1562,67,1,NULL,'(En pantalla:“No es que seas débil. Es que estás sobreviviendo.”“El miedo no necesita gritos para instalarse.”“Cuando empiezas a preguntarte si lo que vives es normal… probablemente ya no lo es.”'),
+(1563,67,1,NULL,'(Lee en silencio.Sus dedos tiemblan apenas sobre el touchpad. Siente un nudo en la garganta. No llora.)'),
+(1564,67,1,NULL,'(“Te aísla sin que te des cuenta.”“Te convence de que todo es por tu bien.”)'),
+(1565,67,1,NULL,'Clic.'),
+(1566,67,1,NULL,'(La habitación parece la misma, pero no lo es.)'),
 
+(1567,68,1,NULL,'( Es media tarde. El sol entra por las persianas, cortando la sala en líneas de luz y sombra.)'),
+(1568,68,1,NULL,'David ha salido a comprar algo. No dijo cuánto tardaría. Bella no lo preguntó.'),
+(1569,68,1,11,'En la mesa, el móvil de Bella vibra con un mensaje:“Sabes que estoy aquí para o que necesites. No lo dudes. – Eva”'),
+(1570,68,1,NULL,'(Suspira. Siente el latido acelerado. Mira a su alrededor.)'),
+(1571,68,1,NULL,'(Es la primera vez en semanas que está sola en casa.Tiene miedo. Pero no está paralizada.)'),
+(1572,68,1,NULL,'Guarda lo justo: — Unas mudas, su cepillo de dientes, una carpeta con documentos.— El móvil. El cargador.  — El diario.'),
+(1573,68,1,NULL,'(Se detiene. Respira. Escucha el silencio. Aún no se oyen llaves en la puerta.)'),
+(1574,68,1,12,'(Va a la mesa del salón.Arranca una hoja de su libreta y escribe con trazos nerviosos'),
+(1575,68,1,NULL,'(Dobla el papel. Lo deja sobre la mesa del salón )'),
 
+(1576,68,1,NULL,'(De pronto, pasos en la escalera. La voz que no quería oír.)'),
+(1577,68,1,1,'(Se detiene en seco al verla, con la mochila al hombro.) —¿Adónde crees que vas?'),
+(1578,68,1,1,'¿Qué? ¿Así nada más? ¿Y todo lo que hemos pasado? ¿Vas a tirarlo todo?'),
+(1579,68,1,1,'No puedes hacer esto. Yo te necesito.¡Esto es una locura!'),
+(1580,68,1,1,'No te vas a ir. No puedes dejar esto así. No me puedes dejar así.'),
+(1581,68,1,1,'¡¿Tú te crees con derecho a hablar de vida ahora?! ¡Después de todo lo que hice por ti!'),
+(1582,68,1,1,'Si te vas, no vuelvas. No vas a encontrar a nadie que aguante lo que yo he aguantado de ti.'),
+(1583,69,1,NULL,'(El aire es frío, pero no más que la casa que ha dejado atrás. )'),
+(1584,69,1,11,'Mira el móvil. Eva le ha hablado: “Ven. Te espero.”'),
+(1585,69,1,NULL,'(Por primera vez, el miedo no ha sido más fuerte que su decisión. )'),
+(1586,69,1,NULL,'¡Enhorabuena, has terminado Bella´s Heart!');
 
 
 
@@ -3233,34 +3330,27 @@ VALUES
 (1288,'(Continuar)',0,0,1289,NULL),
 (1289,'¿Qué estás haciendo?',0,0,1290,NULL),
 (1290,'(Camina hasta la mesa.)',0,0,1291,NULL),
-
 (1291,'(Cierra el portátil suavemente.)—Voy a seguir con esto más tarde.',-1,1,1292,NULL),
 (1291,'David, no es el fondo de pantalla. Estabas leyendo mi correo.',-2,5,1293,'STABLE'),
 (1291,'Ah… bueno. Está bien. Solo… para otra vez, avísame, ¿sí?',2,3,1294,'SLIGHTLY_ANXIOUS'),
 (1291,'¿Estabas... viendo mis cosas?',3,2,1295,'ANXIOUS'),
 (1291,'No pasa nada. Si quieres ver cosas, puedes.',4,1,1296,'DISTRESSED'),
-
 (1292,'Claro',0,0,1297,NULL),
 (1297,'(Observa la pantalla unos segundos.)',0,0,1298,NULL),
 (1298,'(Continuar)',0,0,1299,NULL),
 (1299,'(Continuar)',0,0,1308,NULL),
-
 (1293,'No escondo nada. Pero mis cosas son mías',0,0,1300,NULL),
 (1300,'Te pido que no vuelvas a hacerlo.',0,0,1301,NULL),
 (1301,'(Cierra el portátil con calma, lo lleva a la habitación y, por primera vez, siente la necesidad urgente de proteger sus límites.)',0,0,1299,NULL),
-
 (1294,'Ya… lo sé',0,0,1302,NULL),
 (1302,'(Se sienta de nuevo, obligándose a sonreír.)',0,0,1308,NULL),
-
 (1295,'Perdón… es que tengo muchos archivos abiertos y... no quiero que pienses mal.',0,0,1303,NULL),
 (1303,'No, no... solo que es trabajo. Cosas confidenciales. No pasa nada.',0,0,1304,NULL),
 (1304,'(Se queda sola frente a la pantalla. Respira hondo. Luego empieza a revisar sus conversaciones, sus carpetas, uno por uno, eliminando cualquier cosa que podría malinterpretarse.)',0,0,1308,NULL),
-
 (1296,'No me pongo nada. Está bien, de verdad.',0,0,1305,NULL),
 (1305,'Está bien. Puedes mirar lo que necesites',0,0,1306,NULL),
 (1306,'(Permanece allí. Mira su ordenador, aún encendido. Pasa el cursor por encima de los documentos, pero no abre ninguno.)',0,0,1307,NULL),
 (1307,'(Continuar)',0,0,1308,NULL),
-
 (1308,'(Continuar)',0,0,1309,NULL),
 (1309,'(Continuar)',0,0,1310,NULL),
 (1310,'(Continuar)',0,0,1311,NULL),
@@ -3272,27 +3362,21 @@ VALUES
 (1315,'Sí, solo un paseo. Y pasaré por la tienda.',0,0,1316,NULL),
 (1316,'Gracias, pero prefiero ir sola esta vez.',0,0,1317,NULL),
 (1317,'(Siente cómo algo se le encoge dentro. Esa frase la ha escuchado antes. ) ',0,0,1318,NULL),
-
 (1318,'David, de verdad, necesito estar sola un rato. No es un rechazo.',-1,1,1319,NULL),
 (1318,'No estás molestando. Pero tener tiempo sola no significa que no te quiera cerca. Es solo tiempo conmigo misma',-2,5,1320,'STABLE'),
 (1318,'No es que me moleste estar contigo, David. Solo que... hoy necesito pensar un poco. Caminar sola. Es por eso',2,3,1321,'SLIGHTLY_ANXIOUS'),
 (1318,'Bueno… si te apetece venir, no pasa nada. Podemos salir los dos.',3,2,1322,'ANXIOUS'),
 (1318,'Sí... claro. Vente conmigo',4,1,1323,'DISTRESSED'),
-
 (1319,'(Le sostiene la mirada unos segundos, en silencio. Luego abre la puerta.)',0,0,1324,NULL),
 (1324,'(Continuar)',0,0,NULL,NULL),
-
 (1320,'Y lo haremos. Pero ahora me voy sola.',0,0,1325,NULL),
 (1325,'(Continuar)',0,0,NULL,NULL),
-
 (1321,'No lo tomes así, por favor. No es personal. Solo necesito aire.',0,0,1326,NULL),
 (1326,'No, no es eso. Es solo... no sé. A veces me ayuda estar sola un rato. Caminar, pensar.',0,0,1327,NULL),
 (1327,'No tardo mucho. Luego si quieres podemos ver algo juntos.',0,0,1328,NULL),
 (1328,'(Continuar)',0,0,NULL,NULL),
-
 (1322,'No era nada importante, solo un paseo. Pensé en desconectar un poco. Pero mejor si me acompañas, así aprovechamos y charlamos.',0,0,1329,NULL),
 (1329,'(Traga saliva. Abre la puerta con movimientos medidos. Mientras bajan por las escaleras, no puede evitar sentir que acaba de entregar, una vez más, un pedazo de su tiempo propio.)',0,0,NULL,NULL),
-
 (1323,'Tienes razón. No fue mi intención.',0,0,1330,NULL),
 (1330,'(Asiente, sin decir nada más. Caminan juntos por la calle. Ella va en silencio, con la vista baja. Siente que, aunque están uno al lado del otro, no hay compañía, solo vigilancia.) ',0,0,NULL,NULL),
 ---E.3
@@ -3333,30 +3417,22 @@ VALUES
 (1364,'No es eso. Simplemente estoy cansada. No quiero pelear.',0,0,1365,NULL),
 (1365,'(Da un paso atrás, instintivamente. Lo mira, confundida.)¿Qué…?',0,0,1366,NULL),
 (1366,'(Se queda quieta.)',0,0,1367,NULL),
-
 (1367,' (Guardar silencio )',-1,1,1368,NULL),
 (1367,'Mira, no quiero pelear. Me voy al cuarto. Hablamos luego.',-2,5,1369,'STABLE'),
 (1367,'No es justo lo que me estás diciendo… Solo quería compartir algo bueno contigo.',2,3,1370,'SLIGHTLY_ANXIOUS'),
 (1367,'Perdón si sonó mal. Solo quería contártelo. Sé que a veces me equivoco, pero no era mi intención.)',3,2,1371,'ANXIOUS'),
 (1367,'Tienes razón…',4,1,1372,'DISTRESSED'),
-
 (1368,'(Continuar)',0,0,1373,NULL),
 (1373,' (Bella no responde. Da media vuelta y se dirige al dormitorio. Entra, cierra la puerta y echa el pestillo.)',0,0,1374,NULL),
 (1374,'(Se sienta en la cama, abrazando una almohada. Necesita calma. Aunque solo sea un momento.)',0,0,NULL,NULL),
-
 (1369,'No estoy escapando. Estoy poniendo un límite',0,0,1375,NULL),
 (1375,'(Bella gira sobre sus talones, entra en el dormitorio y cierra la puerta con llave. Respira hondo, sentada en el borde de la cama.)',0,0,NULL,NULL),
-
-
 (1370,'Eso no es verdad… yo también pienso en ti.',0,0,1376,NULL),
 (1376,'(Bella se queda callada. Luego entra en el dormitorio sin decir nada, cierra con pestillo y se deja caer sentada en el suelo, con la espalda contra la puerta.)',0,0,NULL,NULL),
-
 (1371,'Solo quería que te sintieras parte de esto…',0,0,1377,NULL),
 (1377,'(Bella traga saliva y entra al dormitorio. Cierra la puerta y se sienta en la cama, con las manos apretadas sobre las piernas.)',0,0,NULL,NULL),
-
 (1372,'No era mi intención. Solo pensé que… que podía contar contigo. ',0,0,1378,NULL),
 (1378,'(Bella gira lentamente y entra al dormitorio. Cierra con pestillo. Se sienta en el suelo, junto a la cama, con la mirada perdida y las piernas encogidas.)',0,0,NULL,NULL),
-
 (1379,'(Continuar)',0,0,1380,NULL),
 ---E.2
 (1380,'(No responde.)',0,0,1381,NULL),
@@ -3365,35 +3441,28 @@ VALUES
 (1383,'No quería más gritos. Solo eso.',0,0,1384,NULL),
 (1384,'(Continuar)',0,0,1385,NULL),
 (1385,' Bella da un salto, congelada.',0,0,1386,NULL),
-
 (1386,'(Retroceder un paso, mirarlo sin decir nada.)',-1,1,1387,NULL),
 (1386,'(No decir nada, tomar la chaqueta y las llaves, y salir de casa sin mirar atrás.)',-2,5,1388,'STABLE'),
 (1386,'David, por favor… tranquilízate, no es necesario esto',2,3,1389,'SLIGHTLY_ANXIOUS'),
 (1386,'Lo siento… fue culpa mía. No quise molestarte. (Empieza a recoger los pedazos del jarrón.)',3,2,1390,'ANXIOUS'),
 (1386,'No pasa nada… ya está. (Se agacha, barre en silencio, sin levantar la mirada.)',4,1,1391,'DISTRESSED'),
-
 (1387,'(Traga saliva, pero no responde)',0,0,1392,NULL),
 (1392,'(Continuar)',0,0,1393,NULL),
 (1393,'(Sigue en silencio. La mirada fija en él, pero sin expresión.)',0,0,1394,NULL),
 (1394,'(Continuar)',0,0,1395,NULL),
 (1395,'(Parpadea, y recién entonces se permite soltar el aire retenido.)',0,0,1404,NULL),
-
 (1388,'No estoy huyendo. Solo quiero paz, David. Esto no lleva a ningún lado.',0,0,1396,NULL),
 (1396,'(Continuar)',0,0,1397,NULL),
 (1397,'(Cierra los ojos cuando escucha el estruendo.',0,0,1404,NULL),
-
 (1389,'Solo… solo quería que hablaras conmigo. Pero sin romper cosas. Esto da miedo. ',0,0,1398,NULL),
 (1398,'(Continuar)',0,0,1399,NULL),
 (1399,'(El portazo retumba por toda la casa. Bella se estremece.)',0,0,1404,NULL),
-
 (1390,'No era mi intención. Yo solo… quería compartir algo.',0,0,1400,NULL),
 (1400,'(Continuar)',0,0,1401,NULL),
 (1401,'(Parpadea, y recién entonces se permite soltar el aire retenido.)',0,0,1404,NULL),
-
 (1391,'(Continua recogiendo los cristales)',0,0,1402,NULL),
 (1402,'(Mueve la cabeza muy levemente, pero no responde.)',0,0,1403,NULL),
 (1403,'(Parpadea, y recién entonces se permite soltar el aire retenido.)',0,0,1404,NULL),
-
 (1404,'(Continuar)',0,0,1405,NULL),
 ---E.3
 (1405,'(Continuar)',0,0,1406,NULL),
@@ -3403,31 +3472,24 @@ VALUES
 (1409,'(Continuar)',0,0,1410,NULL),
 (1410,'(Continuar)',0,0,1411,NULL),
 (1411,'(Continuar)',0,0,1412,NULL),
-
 (1412,'Hoy no puedo hablar de esto',-1,1,1413,NULL),
 (1412,' Puedes estar mal, pero eso no justifica lo de antes.',-2,5,1414,'STABLE'),
 (1412,'Entiendo que estés mal',2,3,1415,'SLIGHTLY_ANXIOUS'),
 (1412,'No pasa nada (Lo abraza.)',3,2,1416,'ANXIOUS'),
 (1412,'Tienes razón. Perdón si hice algo mal.',4,1,1417,'DISTRESSED'),
-
 (1413,'Tienes que hacer algo con eso. No me puedes poner en medio de tus tormentas. ',0,0,1418,NULL),
 (1418,'(Acaba apoyando la cabeza en su hombro, con el pecho apretado por dentro.)',0,0,1426,NULL),
-
 (1414,'Yo también me he sentido mal. Pero no por eso he dejado de respetarte.',0,0,1419,NULL),
 (1419,'David, llorar no borra lo que hiciste.',0,0,1420,NULL),
 (1420,'(Termina arrodillada frente a él. Le pone una mano en el hombro. No dice nada, pero ya lo está calmando.)',0,0,1426,NULL),
-
 (1415,'(Continuar)',0,0,1421,NULL),
 (1421,'(Se sienta en la cama, a unos pasos de él.)',0,0,1422,NULL),
 (1422,'(Suspira, derrotada, y le acaricia el cabello )',0,0,1426,NULL),
-
 (1416,'Perdón si sonó mal. Solo quería contártelo… Sé que a veces me emociono y no pienso en cómo te afecta. No quise hacerte sentir mal',0,0,1423,NULL),
 (1423,'Shh… no digas eso. No te voy a dejar. ',0,0,1424,NULL),
 (1424,'(Por dentro, se siente sola. Pero ya no puede retroceder.)',0,0,1426,NULL),
-
 (1417,'(Continuar)',0,0,1425,NULL),
 (1425,'(Se abraza a él como si temiera desaparecer. Siente un vacío inmenso por dentro. Pero también siente alivio, aunque no sepa de qué.)',0,0,1426,NULL),
-
 (1426,'FIN CAPITULO 8',0,0,NULL,NULL),
 --CAP8.4
 (1427,'(Continuar)',0,0,1428,NULL),
@@ -3439,35 +3501,28 @@ VALUES
 (1433,'David, necesito ir al trabajo. ¿Puedes abrir?',0,0,1434,NULL),
 (1434,'(Pausa)',0,0,1435,NULL),
 (1435,'(Siente un vuelco interno. Sabe lo que viene.)',0,0,1436,NULL),
-
 (1436,' David, abre la puerta.',-1,1,1437,NULL),
 (1436,'David, abre. No tienes derecho a hacer esto',-2,5,1438,'STABLE'),
 (1436,'No es lo que piensas… Es solo trabajo',2,3,1439,'SLIGHTLY_ANXIOUS'),
 (1436,'Está bien… Si quieres que me quede, me quedo',3,2,1440,'ANXIOUS'),
 (1436,'Perdón. No quería que te sintieras mal.',4,1,1441,'DISTRESSED'),
-
 (1437,'No voy a discutir. Pero necesito salir.',0,0,1442,NULL),
 (1442,'Estoy yendo a trabajar',0,0,1443,NULL),
 (1443,'No se trata de comodidad. No tienes derecho a decidir eso por mí.',0,0,1444,NULL),
 (1444,'No te estoy escondiendo nada. Pero esto... esto es demasiado.',0,0,1445,NULL),
 (1445,'(Continuar)',0,0,1454,NULL),
-
 (1438,'Eso no justifica que bloquees la puerta.',0,0,1446,NULL),
 (1446,'¿Proteger? Esto no protege a nadie. Esto asfixia.',0,0,1447,NULL),
 (1447,'(Continuar)',0,0,1454,NULL),
-
 (1439,'Porque sé que reaccionas así. Pero no hay nada raro. Me lo propusieron ayer, ni siquiera es algo personal',0,0,1448,NULL),
 (1448,'No te estoy mintiendo, David…',0,0,1449,NULL),
 (1449,'(Continuar)',0,0,1454,NULL),
-
 (1440,'No es eso. Solo quería cumplir con mi trabajo, no molestarte.',0,0,1450,NULL),
 (1450,'No pensé en eso. Perdón si te hice sentir así.',0,0,1451,NULL),
 (1451,'(Continuar)',0,0,1454,NULL),
-
 (1441,'No sabía que esto te dolía así…',0,0,1452,NULL),
 (1452,'(Solo asiente)',0,0,1453,NULL),
 (1453,'(Respira hondo)',0,0,1454,NULL),
-
 (1454,'(Continuar)',0,0,1455,NULL),
 (1455,'(Continuar)',0,0,1456,NULL),
 (1456,'(Continuar)',0,0,1457,NULL),
@@ -3476,24 +3531,19 @@ VALUES
 (1458,'Esto no es hablar. Esto es control. ',0,0,1459,NULL),
 (1459,'(Continuar)',0,0,1460,NULL),
 (1460,'(Continuar)',0,0,1461,NULL),
-
 (1461,'(Bella lo mira en silencio, retrocede un paso y se encierra en el dormitorio.)',-1,1,1462,NULL),
 (1461,'(Bella se encierra en el baño sin discutir más.)',-2,5,1463,'STABLE'),
 (1461,'David… ¿qué haces? Por favor, cálmate.',2,3,1464,'SLIGHTLY_ANXIOUS'),
 (1461,')Perdón… fue mi culpa. No debí insistir.',3,2,1465,'ANXIOUS'),
 (1461,'No pasa nada… ya está.',4,1,1466,'DISTRESSED'),
-
 (1462,'(Continuar)',0,0,1467,NULL),
 (1467,'(Permanece quieta. El eco del portazo resuena más que cualquier grito.)',0,0,1478,NULL),
-
 (1463,'(Continuar)',0,0,1468,NULL),
 (1468,'(Se sienta en la tapa del váter. Tiembla, en silencio, sin lágrimas, solo con ese ruido final en la cabeza.)',0,0,1478,NULL),
-
 (1464,'David, por favor… tranquilízate, no es necesario esto…',0,0,1469,NULL),
 (1469,'(Abre la boca para decir algo más, pero no le salen las palabras.)',0,0,1470,NULL),
 (1470,'(Continuar)',0,0,1471,NULL),
 (1471,'(Se queda helada en medio del salón, con el corazón golpeando en la garganta.)',0,0,1478,NULL),
-
 (1465,'(Continuar)',0,0,1472,NULL),
 (1472,'(Continuar)',0,0,1473,NULL),
 (1473,'(Continuar)',0,0,1474,NULL),
@@ -3503,7 +3553,6 @@ VALUES
 (1475,'(Continuar)',0,0,1476,NULL),
 (1476,'(Continuar)',0,0,1477,NULL),
 (1477,'(Sigue en el suelo, sin moverse.)',0,0,1478,NULL),
-
 (1478,'(Continuar)',0,0,1479,NULL),
 ---E.3
 (1479,'(Continuar)',0,0,1480,NULL),
@@ -3518,29 +3567,112 @@ VALUES
 (1488,'David… me estás haciendo daño. Suéltame.',0,0,1489,NULL),
 (1489,'(La sacudida es suficiente para dejarla inmóvil.) ',0,0,1490,NULL),
 (1490,'(Continuar)',0,0,1491,NULL),
-
 (1491,'(Se aparta despacio, lo mira unos segundos en silencio y se encierra sola en el baño.)',-1,1,1492,NULL),
 (1491,'No lo hiciste queriendo… ¿verdad?',2,3,1493,'SLIGHTLY_ANXIOUS'),
 (1491,' Perdón, fue culpa mía por insistir',3,2,1494,'ANXIOUS'),
 (1491,'Ya está… no pasa nada',4,1,1495,'DISTRESSED'),
-
 (1492,'(Continuar)',0,0,1496,NULL),
 (1496,'(Continuar)',0,0,1497,NULL),
 (1497,'(Cierra los ojos. No contesta. Se desliza hasta el suelo, con las piernas encogidas.) ',0,0,1502,NULL),
-
 (1493,'(Traga saliva. No sabe si abrazarlo o alejarse.)',0,0,1498,NULL),
 (1498,'(No dice nada. Se queda quieta.)',0,0,1502,NULL),
-
 (1494,'(Solo asiente. Tiene miedo de decir algo más.)',0,0,1499,NULL),
 (1499,'(Asiente sin mirarlo.)',0,0,1500,NULL),
 (1500,'(Se queda quieta, con los ojos fijos en la pared.)',0,0,1502,NULL),
-
 (1495,'(Solo asiente.)',0,0,1501,NULL),
 (1501,'(Silencio.)',0,0,1499,NULL),
-
-
 (1502,'(Continuar)',0,0,1503,NULL),
-(1503,'FIN CAPITULO 8',0,0,NULL,NULL);
+(1503,'FIN CAPITULO 8',0,0,NULL,NULL),
+--CAP9.1
+(1504,'(Continuar)',0,0,1505,NULL),
+(1505,'(Continuar)',0,0,1506,NULL),
+(1506,'(Continuar)',0,0,1507,NULL),
+(1507,'(Continuar)',0,0,1508,NULL),
+(1508,'(Continuar)',0,0,1509,NULL),
+(1509,'(Continuar)',0,0,1510,NULL),
+(1510,'(Continuar)',0,0,null,NULL),
+(1511,'("No puedo seguir aquí. No más.")',0,0,1512,NULL),
+(1512,'(Continuar)',0,0,1513,NULL),
+(1513,'(Continuar)',0,0,1514,NULL),
+(1514,'(Continuar)',0,0,1515,NULL),
+(1515,'(Continuar)',0,0,1516,NULL),
+(1516,'(Continuar)',0,0,null,NULL),
+(1517,'(Continuar)',0,0,NULL,NULL),
+---E.2
+(1518,'(Prepara café con movimientos mecánicos.)',0,0,1519,NULL),
+(1519,'(Continuar)',0,0,1520,NULL),
+(1520,'Quiero hablar contigo un momento… antes de que te vayas. ',0,0,1521,NULL),
+(1521,'He estado pensando...',0,0,1522,NULL),
+(1522,' Ya no quiero seguir así.',0,0,1523,NULL),
+(1523,'No estoy bien, David. Esta relación me está apagando.',0,0,1524,NULL),
+(1524,'Quiero dejarlo.',0,0,1525,NULL),
+(1525,'(Continuar)',0,0,1526,NULL),
+(1526,'No quiero seguir con esto. No me hace bien',0,0,1527,NULL),
+(1527,'(Continuar)',0,0,1528,NULL),
+(1528,'(Continuar)',0,0,1529,NULL),
+(1529,'(Sin responder. Solo asiente muy leve. Guarda sus manos dentro del bolsillo de su bata.)',0,0,1530,NULL),
+(1530,'(Continuar)',0,0,1531,NULL),
+(1531,'(Continuar)',0,0,1532,NULL),
+
+(1532,' (Se queda un momento pensando y coge su movil)',0,0,1533,null),
+(1533,'(Continuar)',0,0,1534,null),
+(1534,'(Continuar)',0,0,1535,null),
+(1535,'(Abre la puerta tras comprobar dos veces la mirilla.)',0,0,null,null),
+(1536,'(Asiente.) —Ayúdame.',0,0,1537,null),
+(1537,'(Niega lentamente.)—No sabía cuándo… no estaba segura si iba a hacerlo.',0,0,1538,null),
+(1538,'A casa de mi tía, quizá… pero está lejos. No sé si ahora puedo…',0,0,1539,null),
+(1539,'(Asiente)',0,0,1540,null),
+(1540,'(Abre el cajón. Las manos le tiemblan. Mira una pulsera antigua que David le regaló al principio. La aparta)',0,0,1541,null),
+(1541,'Tengo que llevarme los documentos…',0,0,1542,null),
+(1542,'En el escritorio. En la carpeta azul.',0,0,1543,null),
+(1543,'(Revisa una última vez los cajones. Busca sin saber exactamente qué. Solo siente que algo más tiene que ir con ella.)',0,0,1544,null),
+(1544,'(La mira)',0,0,1545,null),
+(1545,'(Se queda callada. Luego va hacia la mesa del salón. Coge una hoja suelta de una libreta y un bolígrafo. Escribe sin pensar demasiado.) ',0,0,1546,null),
+(1546,'(Continuar)',0,0,1547,null),
+(1547,'(Dobla la hoja. La deja en el centro de la mesa del salón)',0,0,1548,null),
+(1548,'(Mira alrededor una última vez. Luego respira hondo y asiente.)—Sí. Vámonos.',0,0,1549,null),
+(1549,'(Continuar)',0,0,1550,null),
+(1550,'(Continuar)',0,0,1551,null),
+(1551,'(Continuar)',0,0,1552,null),
+(1552,'GRACIAS POR JUGAR',0,0,null,null),
+--CAP9.2
+(1553,'(Continuar)',0,0,1554,null),
+(1554,'(Continuar)',0,0,1555,null),
+(1555,'(Continuar)',0,0,1556,null),
+(1556,'(Continuar)',0,0,1557,null),
+(1557,'(Continuar)',0,0,1558,null),
+(1558,'(Continuar)',0,0,1559,null),
+(1559,'(Continuar)',0,0,1560,null),
+(1560,'(Hace clic en el primero sin mirar del todo.)',0,0,1561,null),
+(1561,'(Continuar)',0,0,1562,null),
+(1562,'(Continuar)',0,0,1563,null),
+(1563,'(Continuar)',0,0,1564,null),
+(1564,'(Mueve el cursor hasta el botón de cerrar ventana.)',0,0,1565,null),
+(1565,'(Cierra el portátil con manos que no parecen suyas. Se queda quieta.)',0,0,1566,null),
+(1566,'Esto… no está bien.',0,0,NULL,null),
+
+(1567,'(Continuar)',0,0,1568,null),
+(1568,'(Continuar)',0,0,1569,null),
+(1569,'(Continuar)',0,0,1570,null),
+(1570,'(Continuar)',0,0,1571,null),
+(1571,'(Saca una pequeña mochila)',0,0,1572,null),
+(1572,'(Continuar)',0,0,1573,null),
+(1573,'(Continuar)',0,0,1574,null),
+(1574,'(Continuar)',0,0,1575,null),
+(1575,'(Continuar)',0,0,1576,null),
+
+(1576,'(Se queda paralizada)',0,0,1577,null),
+(1577,'(Traga saliva. La voz le tiembla, pero no retrocede.)—Me voy.',0,0,1578,null),
+(1578,'No lo tiro. Me salvo.',0,0,1579,null),
+(1579,'(Respira hondo. Voz firme.)—Yo me necesito más.',0,0,1580,null),
+(1580,'David. No te estoy dejando “así”. Ya lo he decidido. Solo estoy… recuperando mi vida.',0,0,1581,null),
+(1581,'No quiero seguir discutiendo',0,0,1582,null),
+(1582,'(Continuar)',0,0,null,null),
+(1583,'(Camina rápido, luego más despacio.)',0,0,1584,null),
+(1584,'(Continuar)',0,0,1585,null),
+(1585,'(Continuar)',0,0,1586,null),
+(1586,'GRACIAS POR JUGAR',0,0,null,null);
+
 
 
 --INTRO H2
