@@ -1,7 +1,9 @@
 package com.us.TFG.manager;
 
 import com.us.TFG.MyTfgGame;
+import com.us.TFG.model.Game;
 import com.us.TFG.model.Option;
+import com.us.TFG.model.PsychologicalState;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,6 +47,48 @@ public class OptionManager {
 
         return optionsList;
     }
+
+    public static List<Option> getAvailableOptions(int currentDecisionId, Game game) {
+        String query = "SELECT id, decision_id, text, points_m, points_r, next_decision_id, required_psychological_state " +
+            "FROM options WHERE decision_id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        List<Option> optionsList = new ArrayList<>();
+
+        if (connection == null) {
+            throw new RuntimeException("No se pudo conectar a la base de datos.");
+        }
+
+        PsychologicalState currentState = game.getPsychologicalState();
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, currentDecisionId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String requiredStateStr = rs.getString("required_psychological_state");
+
+                    // Si es null o coincide con el estado psicológico actual, se añade
+                    if (requiredStateStr == null || requiredStateStr.equals(currentState.name())) {
+                        Option option = new Option();
+                        option.setId(rs.getInt("id"));
+                        option.setDecisionId(rs.getInt("decision_id"));
+                        option.setText(rs.getString("text"));
+                        option.setPointsM(rs.getInt("points_m"));
+                        option.setPointsR(rs.getInt("points_r"));
+                        option.setNextDecisionId(rs.getObject("next_decision_id") != null ? rs.getInt("next_decision_id") : null);
+                        option.setRequiredPsychologicalState(requiredStateStr);
+
+                        optionsList.add(option);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return optionsList;
+    }
+
 
     public static Option getOptionById(int optionId) {
         Option option = null;
