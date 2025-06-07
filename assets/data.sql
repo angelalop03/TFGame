@@ -20,7 +20,7 @@ VALUES
 
 
 INSERT INTO historys (id, title, published,image_path,description) VALUES
-(1, 'Bella y David', true,'Default_History.png','Descripcion1'),
+(1, 'Bella y David', true,'Default_History.png','Bella y David se acaban de mudar juntos, tienen una vida de pareja perfecta , o eso es lo que parece, no es oro todo lo que reluce ¡Conecta con ellos en esta historia!'),
 (2, 'History 2', false,'Default_History.png','Descripcion2');
 
 

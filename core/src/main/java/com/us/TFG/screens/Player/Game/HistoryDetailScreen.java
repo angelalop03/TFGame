@@ -87,9 +87,23 @@ public class HistoryDetailScreen implements Screen {
         // Nombre de la historia
         Label historyTitle = new Label(history.getTitle(), UIStyle.getLabelStyle());
 
-        // Descripción de la historia
+        // Descripción de la historia con scroll
         Label historyDescription = new Label(history.getDescription(), UIStyle.getLabelStyle());
         historyDescription.setWrap(true);
+
+        Table descriptionTable = new Table();
+        descriptionTable.add(historyDescription).width(580).left().top(); // ajusta ancho si es necesario
+
+        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle(); // Puedes personalizar si lo deseas
+        ScrollPane scrollPane = new ScrollPane(descriptionTable, scrollStyle);
+        scrollPane.setScrollingDisabled(true, false); // Solo scroll vertical
+        scrollPane.setFadeScrollBars(false); // Que siempre se vean los scrolls si aparecen
+        scrollPane.setScrollbarsOnTop(true);
+        scrollPane.setForceScroll(false, true); // solo si es necesario
+        scrollPane.setScrollingDisabled(false, false); // permitir ambos ejes si quieres
+        scrollPane.setScrollBarPositions(true, true); // scroll visible a la derecha
+        scrollPane.setSize(600, 150); // ajusta el tamaño visible
+
 
 
         // Campo para el nombre del juego con placeholder
@@ -147,7 +161,7 @@ public class HistoryDetailScreen implements Screen {
         // Agregar elementos al contentTable
         contentTable.add(historyTitle).padBottom(10);
         contentTable.row();
-        contentTable.add(historyDescription).width(600).padBottom(20);
+        contentTable.add(scrollPane).width(600).height(150).padBottom(20);
         contentTable.row();
         contentTable.add(gameNameField).width(600).padBottom(15).center();
         contentTable.row();
