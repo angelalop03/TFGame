@@ -114,7 +114,7 @@ public class HistoryDetailScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String gameName = gameNameField.getText().trim();
-                if (gameName.isEmpty()) {
+                if (gameName.isEmpty()|| gameName.equals(PLACEHOLDER_TEXT)) {
                     feedbackLabel.setText("Por favor, introduce un nombre para el juego.");
                     feedbackLabel.setColor(Color.RED);
                 } else {

@@ -72,8 +72,8 @@ public class CreateGameScreen implements Screen {
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
 
-        Pixmap pixmap = new Pixmap(1000, 500, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(1.0f, 0.41f, 0.71f, 0.8f));
+        Pixmap pixmap = new Pixmap(1000, 400, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(1.0f, 0.41f, 0.71f, 0.6f));
         pixmap.fill();
         TextureRegionDrawable background = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
