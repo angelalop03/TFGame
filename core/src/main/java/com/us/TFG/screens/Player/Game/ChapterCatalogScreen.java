@@ -35,6 +35,12 @@ public class ChapterCatalogScreen implements Screen {
     private static final int MAX_UNLOCKED_CHAPTERS = 10;
     private List<Chapter> chapters;
 
+    private ImageButton flechaDButton;
+    private ImageButton flechaButton;
+    private ImageButton backArrowButton;
+    private Table chapterTable;
+    private Label pageLabel;
+
     public ChapterCatalogScreen(String username, int gameId) {
         this.username = username;
         this.gameId = gameId;
@@ -50,8 +56,6 @@ public class ChapterCatalogScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         font = UIStyle.getFont();
-
-
         chapters = ChapterManager.getChaptersForPlayerandGame(PlayerManager.getPlayerData(username).getId(), gameId);
         chapters.removeIf(chapter -> "0".equals(chapter.getChapterNumber()));
 
@@ -62,9 +66,9 @@ public class ChapterCatalogScreen implements Screen {
         stage.clear();
         topBar = new TopBar(username, stage, font);
 
-        // Flecha de retroceso
+        // Flecha retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
@@ -76,67 +80,62 @@ public class ChapterCatalogScreen implements Screen {
 
         // Flechas navegación
         Texture flechaDTexture = new Texture(Gdx.files.internal("assets/photos/flechaD.png"));
-        ImageButton flechaDButton = new ImageButton(new TextureRegionDrawable(flechaDTexture));
+        flechaDButton = new ImageButton(new TextureRegionDrawable(flechaDTexture));
         flechaDButton.setSize(100, 100);
-        flechaDButton.setPosition(1150, Gdx.graphics.getHeight() - 750);
+        flechaDButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 750);
 
         Texture flechaTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton flechaButton = new ImageButton(new TextureRegionDrawable(flechaTexture));
+        flechaButton = new ImageButton(new TextureRegionDrawable(flechaTexture));
         flechaButton.setSize(100, 100);
         flechaButton.setPosition(20, Gdx.graphics.getHeight() - 750);
 
         // Tabla de capítulos
-        Table chapterTable = new Table();
+        chapterTable = new Table();
+        chapterTable.setFillParent(false);
         chapterTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         chapterTable.setPosition(0, 30);
         chapterTable.padLeft(150).padRight(150);
 
-        TextButton.TextButtonStyle unlockedButtonStyle = UIStyle.getCustomButtonStyle(300, 150, new Color(0.5f, 0.0f, 0.5f, 1.0f));
-        TextButton.TextButtonStyle lockedButtonStyle = UIStyle.getCustomButtonStyle(300, 150, new Color(0.5f, 0.5f, 0.5f, 0.5f));
-        lockedButtonStyle.fontColor = Color.DARK_GRAY;
+        TextButton.TextButtonStyle unlockedStyle = UIStyle.getCustomButtonStyle(300, 150, new Color(0.5f, 0.0f, 0.5f, 1f));
+        TextButton.TextButtonStyle lockedStyle = UIStyle.getCustomButtonStyle(300, 150, new Color(0.5f, 0.5f, 0.5f, 0.5f));
+        lockedStyle.fontColor = Color.DARK_GRAY;
 
         int start = currentPage * CHAPTERS_PER_PAGE;
         int end = Math.min(start + CHAPTERS_PER_PAGE, MAX_UNLOCKED_CHAPTERS);
 
         for (int i = start; i < end; i++) {
-            Table chapterRow = new Table();
+            Table row = new Table();
 
             if (i < chapters.size()) {
                 Chapter chapter = chapters.get(i);
+                Texture imgTex = new Texture(Gdx.files.internal("assets/photos/Chapters/" + chapter.getImagePath()));
+                Image img = new Image(new TextureRegionDrawable(imgTex));
+                img.setSize(100, 100);
+                row.add(img).size(100, 100).padRight(20).padLeft(40);
 
-                Texture chapterImageTexture = new Texture(Gdx.files.internal("assets/photos/Chapters/" + chapter.getImagePath()));
-                Image chapterImage = new Image(new TextureRegionDrawable(chapterImageTexture));
-                chapterImage.setSize(100, 100);
-                chapterRow.add(chapterImage).size(100, 100).padRight(20).padLeft(40);
-
-                TextButton chapterButton = new TextButton(chapter.getChapterNumber() + "\n" + chapter.getName(), unlockedButtonStyle);
-                chapterButton.addListener(new ClickListener() {
+                TextButton button = new TextButton(chapter.getChapterNumber() + "\n" + chapter.getName(), unlockedStyle);
+                button.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         Render.app.setScreen(new SceneGameScreen(gameId, chapter.getId(), username));
                     }
                 });
-
-                chapterRow.add(chapterButton).width(290).height(100).padRight(40);
-
+                row.add(button).width(290).height(100).padRight(40);
             } else {
-                Texture defaultImageTexture = new Texture(Gdx.files.internal("assets/photos/Chapters/Default_Chapter.png"));
-                Image defaultImage = new Image(new TextureRegionDrawable(defaultImageTexture));
-                defaultImage.setSize(100, 100);
-                chapterRow.add(defaultImage).size(100, 100).padRight(20).padLeft(40); // Espacio aumentado
+                Texture defaultImgTex = new Texture(Gdx.files.internal("assets/photos/Chapters/Default_Chapter.png"));
+                Image img = new Image(new TextureRegionDrawable(defaultImgTex));
+                img.setSize(100, 100);
+                row.add(img).size(100, 100).padRight(20).padLeft(40);
 
-                TextButton chapterButton = new TextButton("No desbloqueado", lockedButtonStyle);
-                chapterRow.add(chapterButton).width(290).height(100).padRight(40);
+                TextButton button = new TextButton("No desbloqueado", lockedStyle);
+                row.add(button).width(290).height(100).padRight(40);
             }
 
-            chapterTable.add(chapterRow).padBottom(20);
-
-            if ((i - start + 1) % 2 == 0) {
-                chapterTable.row();
-            }
+            chapterTable.add(row).padBottom(20);
+            if ((i - start + 1) % 2 == 0) chapterTable.row();
         }
 
-        // Click en pantalla para avanzar página
+        // Click pantalla para cambiar de página
         stage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -149,15 +148,15 @@ public class ChapterCatalogScreen implements Screen {
             }
         });
 
-        // Número de página abajo centrado
+        // Paginación
         int totalPages = (int) Math.ceil((float) MAX_UNLOCKED_CHAPTERS / CHAPTERS_PER_PAGE);
         String pageText = (currentPage + 1) + " / " + totalPages;
-        Label pageLabel = new Label(pageText, new Label.LabelStyle(font, Color.WHITE));
+        pageLabel = new Label(pageText, new Label.LabelStyle(font, Color.WHITE));
         pageLabel.setAlignment(Align.center);
         pageLabel.setFontScale(1.2f);
-        pageLabel.setPosition((Gdx.graphics.getWidth() - pageLabel.getPrefWidth()) / 2f, 10); // Pegado abajo
+        pageLabel.setPosition((Gdx.graphics.getWidth() - pageLabel.getPrefWidth()) / 2f, 10);
 
-        // Actores
+        // Añadir a stage
         stage.addActor(chapterTable);
         stage.addActor(backArrowButton);
         stage.addActor(flechaDButton);
@@ -179,6 +178,8 @@ public class ChapterCatalogScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
+
+        renderPage();  // Redibujar todos los elementos adaptados
     }
 
     @Override public void pause() {}
