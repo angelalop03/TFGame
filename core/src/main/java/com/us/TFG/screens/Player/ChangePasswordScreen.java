@@ -104,23 +104,20 @@ public class ChangePasswordScreen implements Screen {
             }
         });
 
-        // 📦 Fondo grisáceo detrás del formulario
         Table container = new Table();
-        container.setSize(600, 400);
-        container.setPosition(
-            (Gdx.graphics.getWidth() - 600) / 2f,
-            (Gdx.graphics.getHeight() - 400) / 2f
-        );
+        container.setFillParent(true); // Hace que se adapte a cualquier tamaño de pantalla
+        container.center(); // Centra el contenido dentro de la tabla principal
 
         Pixmap pixmap = new Pixmap(600, 400, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0.5f, 0.0f, 0.5f,  0.5f)); // morado con transparencia
+        pixmap.setColor(new Color(0.5f, 0.0f, 0.5f, 0.5f)); // morado translúcido
         pixmap.fill();
         TextureRegionDrawable background = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
 
-        container.setBackground(background);
+        Table fixedBox = new Table();
+        fixedBox.setBackground(background);
+        fixedBox.setSize(600, 400);
 
-        // Contenido del formulario dentro del contenedor
         Table form = new Table();
         form.center();
         form.add(new Label("Cambiar Contraseña", UIStyle.getLabelStyle())).colspan(2).padBottom(30);
@@ -135,8 +132,10 @@ public class ChangePasswordScreen implements Screen {
         form.row();
         form.add(feedbackLabel).width(350).padTop(8);
 
-        container.add(form);
+        fixedBox.add(form).center();
+        container.add(fixedBox).width(600).height(400).center();
         stage.addActor(container);
+
 
 
     }
@@ -154,6 +153,7 @@ public class ChangePasswordScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
     }
 
     @Override public void pause() {}

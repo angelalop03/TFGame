@@ -35,6 +35,8 @@ public class ChargeGameScreen implements Screen {
     private List<Game> playerGames;
     private int currentIndex;
     private ScrollPane scrollPane;
+    private ImageButton backArrowButton;
+
 
     public ChargeGameScreen(String username) {
         this.username = username;
@@ -59,7 +61,7 @@ public class ChargeGameScreen implements Screen {
 
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+         backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
@@ -179,6 +181,9 @@ public class ChargeGameScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - backArrowButton.getHeight() - 50);
+        }
     }
 
     @Override
