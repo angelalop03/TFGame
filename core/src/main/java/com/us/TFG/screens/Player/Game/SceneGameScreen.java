@@ -48,6 +48,8 @@ public class SceneGameScreen implements Screen {
     private int previousRelationshipPoints=-1;
     private Image dialogueBackground;
     private Music backgroundMusic;
+    private ImageButton settingsButton;
+
 
     public SceneGameScreen(int gameId, int chapterId, String username) {
         this.gameId = gameId;
@@ -162,6 +164,16 @@ public class SceneGameScreen implements Screen {
             backgroundMusic.setVolume(0.5f);
             backgroundMusic.play();
         }
+        Texture settingsTexture = new Texture(Gdx.files.internal("assets/photos/Settings.png")); // <- usa tu imagen real
+        settingsButton = new ImageButton(new TextureRegionDrawable(settingsTexture));
+        settingsButton.setSize(50, 50);
+        settingsButton.setPosition(Gdx.graphics.getWidth() - 60, Gdx.graphics.getHeight() - 60); // Arriba a la derecha
+        settingsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showVolumeSettingsDialog();
+            }
+        });
         // Check if the chapter has already been played
         if (ChapterManager.isChapterPlayed(gameId, chapterId)) {
             stage = new Stage(new ScreenViewport());
@@ -248,6 +260,8 @@ public class SceneGameScreen implements Screen {
             // Añadir las barras al escenario
             stage.addActor(psychologicalBar);
             stage.addActor(relationshipBar);
+            stage.addActor(settingsButton);
+
         }
     }
 
@@ -276,6 +290,7 @@ public class SceneGameScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        settingsButton.setPosition(width - 60, height - 60);
 
         if (characterImage != null) {
             characterImage.setSize(width * 0.3f, height * 0.775f);
@@ -369,48 +384,45 @@ public class SceneGameScreen implements Screen {
         stage.addActor(continueButton);
     }
 
-    private void showSettingsDialog() {
-        // Crear estilo del diálogo
+    private void showVolumeSettingsDialog() {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
-        dialogStyle.titleFont = font;
+        dialogStyle.titleFont = UIStyle.getFont();
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(400, 600, Color.PINK, 0.8f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(400, 200, new Color(0.5f, 0.0f, 0.5f, 1.0f), 0.8f)));
 
-        Dialog logoutDialog = new Dialog("", dialogStyle);
+        Dialog volumeDialog = new Dialog("", dialogStyle);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
+        labelStyle.font = UIStyle.getFont();
         labelStyle.fontColor = Color.WHITE;
 
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(300, 60, Color.GRAY, 0.7f)));
-        buttonStyle.down = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(300, 60, Color.LIGHT_GRAY, 0.7f)));
+        final Slider volumeSlider = new Slider(0f, 1f, 0.01f, false, UIStyle.getSliderStyle());
+        volumeSlider.setValue(backgroundMusic.getVolume());
 
-        // Botón de confirmar
-        TextButton confirmButton = new TextButton("Salir", buttonStyle);
-        confirmButton.addListener(new ClickListener() {
+        Label volumeLabel = new Label("Volumen: " + (int)(backgroundMusic.getVolume() * 100) + "%", labelStyle);
+        volumeSlider.addListener(event -> {
+            float value = volumeSlider.getValue();
+            backgroundMusic.setVolume(value);
+            volumeLabel.setText("Volumen: " + (int)(value * 100) + "%");
+            return false;
+        });
+
+        TextButton closeButton = new TextButton("Cerrar", UIStyle.getButtonStyle());
+        closeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new PlayerMenuScreen(username));
+                volumeDialog.hide();
             }
         });
 
-        // Botón de cancelar
-        TextButton cancelButton = new TextButton("Cerrar", buttonStyle);
-        cancelButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                logoutDialog.hide();
-            }
-        });
-        logoutDialog.getContentTable().row();
-        logoutDialog.getContentTable().add(confirmButton).padBottom(10).row();
-        logoutDialog.getContentTable().add(cancelButton).padBottom(10).row();
+        volumeDialog.getContentTable().pad(20);
+        volumeDialog.getContentTable().add(volumeLabel).padBottom(10).row();
+        volumeDialog.getContentTable().add(volumeSlider).width(300).padBottom(20).row();
+        volumeDialog.getContentTable().add(closeButton).width(150).center();
 
-        logoutDialog.show(stage);
+        volumeDialog.show(stage);
     }
+
 
 
     private void showOptions() {
