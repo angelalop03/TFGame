@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -16,12 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.model.Authorities;
-import com.us.TFG.screens.Admin.AdminMenuScreen;
 import com.us.TFG.screens.Admin.AdminPerfilScreen;
 import com.us.TFG.utils.*;
 import com.us.TFG.manager.UserManager;
 import com.us.TFG.utils.validators.InputValidator;
-
 
 public class ChangePasswordScreen implements Screen {
 
@@ -35,7 +32,6 @@ public class ChangePasswordScreen implements Screen {
     private SpriteBatch batch;
     private TopBar topBar;
 
-
     public ChangePasswordScreen(String username) {
         this.currentUsername = username;
     }
@@ -46,7 +42,7 @@ public class ChangePasswordScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         skin = UIStyle.getSkin();
 
-        fondo = new Imagen(Resources.FONDON);
+        fondo = new Imagen(Resources.STRONGBOX);
         fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch = Render.batch;
 
@@ -108,21 +104,40 @@ public class ChangePasswordScreen implements Screen {
             }
         });
 
-        Table table = new Table();
-        table.setFillParent(true);
-        table.add(new Label("Cambiar Contraseña", UIStyle.getLabelStyle())).colspan(2).padBottom(30);
-        table.row();
-        table.add(newPasswordField).width(400).padBottom(15);
-        table.row();
-        table.add(confirmPasswordField).width(400).padBottom(15);
-        table.row();
-        table.add(saveButton).width(300).padTop(15);
-        table.row();
-        table.add(backButton).width(300).padTop(15);
-        table.row();
-        table.add(feedbackLabel).width(350).padTop(8);
+        // 📦 Fondo grisáceo detrás del formulario
+        Table container = new Table();
+        container.setSize(600, 400);
+        container.setPosition(
+            (Gdx.graphics.getWidth() - 600) / 2f,
+            (Gdx.graphics.getHeight() - 400) / 2f
+        );
 
-        stage.addActor(table);
+        Pixmap pixmap = new Pixmap(600, 400, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(0.5f, 0.0f, 0.5f,  0.5f)); // morado con transparencia
+        pixmap.fill();
+        TextureRegionDrawable background = new TextureRegionDrawable(new Texture(pixmap));
+        pixmap.dispose();
+
+        container.setBackground(background);
+
+        // Contenido del formulario dentro del contenedor
+        Table form = new Table();
+        form.center();
+        form.add(new Label("Cambiar Contraseña", UIStyle.getLabelStyle())).colspan(2).padBottom(30);
+        form.row();
+        form.add(newPasswordField).width(400).padBottom(15);
+        form.row();
+        form.add(confirmPasswordField).width(400).padBottom(15);
+        form.row();
+        form.add(saveButton).width(300).padTop(15);
+        form.row();
+        form.add(backButton).width(300).padTop(15);
+        form.row();
+        form.add(feedbackLabel).width(350).padTop(8);
+
+        container.add(form);
+        stage.addActor(container);
+
 
     }
 
@@ -134,36 +149,20 @@ public class ChangePasswordScreen implements Screen {
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
-
     }
 
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
-
-
     }
 
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 
     @Override
     public void dispose() {
         stage.dispose();
-        font.dispose();
-
+        if (font != null) font.dispose();
     }
-
 }

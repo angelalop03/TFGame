@@ -380,7 +380,7 @@ public class SceneGameScreen implements Screen {
         buttonStyle.font = UIStyle.getFont();
         buttonStyle.fontColor = Color.WHITE;
 
-        int optionWidth = 600;
+        int optionWidth = 700;
         int optionHeight = 80;
 
         // Cantidad de opciones disponibles
