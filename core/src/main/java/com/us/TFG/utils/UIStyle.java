@@ -168,6 +168,30 @@ public class UIStyle {
     }
 
 
+    public static Slider.SliderStyle getSliderStyle() {
+        Pixmap pixmap = new Pixmap(300, 20, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(1f, 1f, 1f, 0.3f)); // fondo del slider
+        pixmap.fill();
+
+        TextureRegionDrawable background = new TextureRegionDrawable(new Texture(pixmap));
+
+        pixmap.dispose();
+        pixmap = new Pixmap(10, 20, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.PINK); // color del "knob" o barra de progreso
+        pixmap.fill();
+
+        TextureRegionDrawable knob = new TextureRegionDrawable(new Texture(pixmap));
+        TextureRegionDrawable knobBefore = new TextureRegionDrawable(new Texture(pixmap)); // parte llenada
+
+        pixmap.dispose();
+
+        Slider.SliderStyle style = new Slider.SliderStyle();
+        style.background = background;
+        style.knob = knob;
+        style.knobBefore = knobBefore;
+
+        return style;
+    }
 
 
 
