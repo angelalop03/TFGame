@@ -26,6 +26,7 @@ public class PlayerMenuScreen implements Screen {
     private TopBar topBar;
     private String username;
     private ImageButton creditsButton;
+    private ImageButton mobilButton;
 
     public PlayerMenuScreen(String username) {
         this.username = username;
@@ -105,6 +106,18 @@ public class PlayerMenuScreen implements Screen {
             }
         });
         stage.addActor(creditsButton);
+
+        // Resources
+        mobilButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("assets/photos/Movil.png"))));
+        mobilButton.setSize(150, 150);
+        mobilButton.setPosition(20, 20);
+        mobilButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new ResourcesScreen(username));
+            }
+        });
+        stage.addActor(mobilButton);
     }
 
     @Override
@@ -122,6 +135,7 @@ public class PlayerMenuScreen implements Screen {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
         creditsButton.setPosition(Gdx.graphics.getWidth() - 70, 50);
+        mobilButton.setPosition(20, 20);
     }
 
     @Override public void pause() {}
