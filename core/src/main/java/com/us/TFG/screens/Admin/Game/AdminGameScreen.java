@@ -33,6 +33,8 @@ public class AdminGameScreen implements Screen {
     private List<History> histories;
     private int currentIndex;
     private ScrollPane scrollPane;
+    private ImageButton backArrowButton;
+    private Table createContainer;
 
     public AdminGameScreen(String username) {
         this.username = username;
@@ -53,11 +55,12 @@ public class AdminGameScreen implements Screen {
         histories = HistoryManager.getHistories();
         currentIndex = 0;
 
-        // Crear la flecha de retroceso
+        // Flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
-        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
+        stage.addActor(backArrowButton);
+
         backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -65,7 +68,7 @@ public class AdminGameScreen implements Screen {
             }
         });
 
-        // Crear el contenedor principal
+        // Contenedor principal
         Table mainTable = new Table();
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
@@ -79,7 +82,6 @@ public class AdminGameScreen implements Screen {
         Table contentTable = new Table();
         contentTable.setBackground(background);
 
-        // Título
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
         labelStyle.fontColor = Color.WHITE;
@@ -105,7 +107,6 @@ public class AdminGameScreen implements Screen {
                 }
             });
         } else {
-            // Flecha izquierda
             Texture leftArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
             ImageButton leftArrowButton = new ImageButton(new TextureRegionDrawable(leftArrowTexture));
             leftArrowButton.addListener(new ClickListener() {
@@ -118,7 +119,6 @@ public class AdminGameScreen implements Screen {
                 }
             });
 
-            // Flecha derecha
             Texture rightArrowTexture = new Texture(Gdx.files.internal("assets/photos/flechaD.png"));
             ImageButton rightArrowButton = new ImageButton(new TextureRegionDrawable(rightArrowTexture));
             rightArrowButton.addListener(new ClickListener() {
@@ -131,7 +131,6 @@ public class AdminGameScreen implements Screen {
                 }
             });
 
-            // Crear carrusel de tarjetas
             ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
             Table carouselTable = new Table();
 
@@ -159,32 +158,23 @@ public class AdminGameScreen implements Screen {
             contentTable.add(rightArrowButton).width(100).height(100);
         }
 
-        // Añadir los elementos a la escena
         mainTable.add(contentTable).center();
-        stage.addActor(backArrowButton);
 
-
-        Table createContainer = new Table();
+        // === Botón Crear Historia ===
+        createContainer = new Table();
         createContainer.setSize(250, 100);
-        createContainer.setPosition(Gdx.graphics.getWidth() - 380, 60); // esquina inferior derecha
 
-        // Botón con símbolo "+" y estilo desde UIStyle
-        TextButton createButton = new TextButton("+ Crear Historia", UIStyle.getCustomButtonStyle(220, 80, new Color(0.8f, 0.3f, 0.5f, 1f))); // Color opcional
+        TextButton createButton = new TextButton("+ Crear Historia", UIStyle.getCustomButtonStyle(220, 80, new Color(0.8f, 0.3f, 0.5f, 1f)));
         createButton.pad(10);
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new AdminCreateHistoryScreen(username)); // Pantalla a la que redirige
+                Render.app.setScreen(new AdminCreateHistoryScreen(username));
             }
         });
 
         createContainer.add(createButton).center();
         stage.addActor(createContainer);
-//
-
-
-
-
     }
 
     @Override
@@ -201,16 +191,19 @@ public class AdminGameScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
+
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }
+
+        if (createContainer != null) {
+            createContainer.setPosition(width - createContainer.getWidth() - 30, 30);
+        }
     }
 
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 
     @Override
     public void dispose() {

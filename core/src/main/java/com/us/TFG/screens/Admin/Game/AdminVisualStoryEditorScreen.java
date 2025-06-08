@@ -49,7 +49,7 @@ public class AdminVisualStoryEditorScreen implements Screen {
 
     @Override
     public void show() {
-        fondo = new Imagen(Resources.FONDOBOOK2);
+        fondo = new Imagen(Resources.FONDOBLOC);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
@@ -139,7 +139,7 @@ public class AdminVisualStoryEditorScreen implements Screen {
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
         dialogStyle.background = new TextureRegionDrawable(new Texture(
-            UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f)));
+            UIStyle.createRoundedPixmap(500, 400, new Color(0.3f, 0.2f, 0.5f, 1f), 1f)));
 
         Dialog dialog = new Dialog("Nueva Decisión", dialogStyle);
 
@@ -230,7 +230,7 @@ public class AdminVisualStoryEditorScreen implements Screen {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(0.3f, 0.2f, 0.5f, 1f), 1f)));
 
         Dialog dialog = new Dialog("Editar Decisión", dialogStyle);
 
@@ -329,7 +329,7 @@ public class AdminVisualStoryEditorScreen implements Screen {
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
         dialogStyle.background = new TextureRegionDrawable(
-            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.6f, 0.2f, 0.2f, 1f), 1f))
+            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(0.6f, 0.2f, 0.2f, 1f), 1f))
         );
 
         Dialog confirmDialog = new Dialog("Eliminar Decisión", dialogStyle);
@@ -368,7 +368,7 @@ public class AdminVisualStoryEditorScreen implements Screen {
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
         dialogStyle.background = new TextureRegionDrawable(
-            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f))
+            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(0.3f, 0.2f, 0.5f, 1f), 1f))
         );
 
         Dialog dialog = new Dialog("Añadir Opción", dialogStyle);
@@ -456,7 +456,7 @@ public class AdminVisualStoryEditorScreen implements Screen {
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
         dialogStyle.background = new TextureRegionDrawable(
-            new Texture(UIStyle.createRoundedPixmap(500, 300, new Color(0.3f, 0.2f, 0.5f, 1f), 1f))
+            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(0.3f, 0.2f, 0.5f, 1f), 1f))
         );
 
         Dialog dialog = new Dialog("Editar Opción", dialogStyle);

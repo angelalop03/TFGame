@@ -33,6 +33,7 @@ public class AdminHistoryDetailScreen implements Screen {
     private String username;
     private History history;
     private List<Chapter> chapters;
+    private ImageButton backArrowButton;
 
     public AdminHistoryDetailScreen(String username, History history) {
         this.username = username;
@@ -115,16 +116,16 @@ public class AdminHistoryDetailScreen implements Screen {
         });
 
 
-        leftTable.add(titleTag).left().padBottom(5).row();
+        leftTable.add(titleTag).left().padTop(15).row();
         leftTable.add(titleLabel).left().padBottom(20).row();
         leftTable.add(descTag).left().padBottom(5).row();
         leftTable.add(descScroll).width(400).height(150).left().padBottom(30).row();
         if (!history.isPublished()) {
-            leftTable.add(editarBtn).left().padTop(10).row();
-            leftTable.add(eliminarBtn).left().padTop(10).row();
+            leftTable.add(editarBtn).left().row();
+            leftTable.add(eliminarBtn).left().row();
 
         }
-        leftTable.add(publicarBtn).left().padTop(10);
+        leftTable.add(publicarBtn).left().padTop(5).padBottom(10);
 
         Table rightTable = new Table();
         rightTable.setBackground(backgroundDrawable);
@@ -194,7 +195,7 @@ public class AdminHistoryDetailScreen implements Screen {
 
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
@@ -334,6 +335,9 @@ public class AdminHistoryDetailScreen implements Screen {
     @Override public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }
     }
     @Override public void pause() {}
     @Override public void resume() {}
@@ -347,7 +351,7 @@ public class AdminHistoryDetailScreen implements Screen {
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
         dialogStyle.background = new TextureRegionDrawable(
-            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(0.6f, 0.3f, 0.6f, 1f), 1f))
+            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(1f, 0f, 0.5f, 1f), 1f))
         );
 
         Dialog editDialog = new Dialog("Editar Historia", dialogStyle);

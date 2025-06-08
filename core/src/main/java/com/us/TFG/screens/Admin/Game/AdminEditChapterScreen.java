@@ -33,6 +33,7 @@ public class AdminEditChapterScreen implements Screen {
     private String username;
     private Chapter chapter;
     private History history;
+    private ImageButton backArrowButton;
 
     public AdminEditChapterScreen(String username, Chapter chapter, History history) {
         this.username = username;
@@ -162,7 +163,7 @@ public class AdminEditChapterScreen implements Screen {
         mainTable.add(rightTable).left().width(500).top();
 
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
@@ -184,7 +185,10 @@ public class AdminEditChapterScreen implements Screen {
     }
 
     @Override public void resize(int width, int height) { stage.getViewport().update(width, height, true);
-        topBar.updateSize();}
+        topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }}
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
@@ -195,7 +199,7 @@ public class AdminEditChapterScreen implements Screen {
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
         dialogStyle.background = new TextureRegionDrawable(
-            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(0.6f, 0.3f, 0.6f, 1f), 1f))
+            new Texture(UIStyle.createRoundedPixmap(500, 400, new Color(1f, 0f, 0.5f, 1f), 1f))
         );
 
         Dialog editDialog = new Dialog("Editar Capítulo", dialogStyle);
