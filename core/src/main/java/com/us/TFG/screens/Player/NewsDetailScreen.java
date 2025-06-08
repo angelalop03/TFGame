@@ -22,6 +22,7 @@ public class NewsDetailScreen implements Screen {
     private Skin skin;
     private TopBar topBar;
     private String username;
+    private ImageButton backArrowButton;
 
     public NewsDetailScreen(String username, NewsManager.NewsData news) {
         this.username = username;
@@ -40,48 +41,50 @@ public class NewsDetailScreen implements Screen {
 
         topBar = new TopBar(username, stage, UIStyle.getFont());
 
-
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
-        backArrowButton.setSize(100, 100); // Tamaño de la flecha
-        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150); // Posición en la esquina superior izquierda
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - backArrowButton.getHeight() - 10);
         backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new ForumScreen(username)); // Volver a ForumScreen
+                Render.app.setScreen(new ForumScreen(username));
             }
         });
 
-        // Crear contenedor principal con scroll
+        // Contenedor con fondo para la noticia
         Table contentTable = new Table();
-        contentTable.top();
+        contentTable.top().pad(30).padTop(50);
         contentTable.setBackground(UIStyle.getBackgroundDrawable());
 
-
-        // Mostrar título de la noticia
+        // Título de la noticia
         Label newsTitleLabel = new Label(news.getName(), UIStyle.getTitleLabelStyle());
         newsTitleLabel.setWrap(true);
         newsTitleLabel.setAlignment(1);
         contentTable.add(newsTitleLabel).width(Gdx.graphics.getWidth() * 0.9f).center().pad(10).row();
 
-        // Mostrar contenido de la noticia
+        // Contenido
         Label contentLabel = new Label(news.getText(), UIStyle.getLabelStyle());
         contentLabel.setWrap(true);
-        contentTable.add(contentLabel).width(Gdx.graphics.getWidth() * 0.9f).center().pad(20).row();
+        contentTable.add(contentLabel).width(Gdx.graphics.getWidth() * 0.9f).center().pad(10).row();
 
-        // ScrollPane para desplazamiento
+        // ScrollPane (por si es largo)
         ScrollPane scrollPane = new ScrollPane(contentTable);
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.setFadeScrollBars(false);
 
-        // Crear el contenedor principal y agregar el ScrollPane
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.add(scrollPane).expand().fill().padTop(60);
+        // Envolver scrollPane en una tabla centrada
+        Table wrapper = new Table();
+        wrapper.setFillParent(true);
+        wrapper.add(scrollPane)
+            .width(Gdx.graphics.getWidth() * 0.95f)
+            .height(Gdx.graphics.getHeight() * 0.85f)
+            .center()
+            .padTop(70);
 
-        // Añadir elementos al Stage
-        stage.addActor(mainTable);
+        // Añadir al stage
+        stage.addActor(wrapper);
         stage.addActor(backArrowButton);
     }
 
@@ -99,22 +102,16 @@ public class NewsDetailScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
+
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - backArrowButton.getHeight() - 50);
+        }
     }
 
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void hide() {
-    }
-
-    @Override
-    public void dispose() {
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
+    @Override public void dispose() {
         stage.dispose();
     }
 }

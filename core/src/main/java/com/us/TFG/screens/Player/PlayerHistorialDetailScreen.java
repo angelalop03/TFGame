@@ -32,6 +32,8 @@ public class PlayerHistorialDetailScreen implements Screen {
     private static final int DECISIONS_PER_PAGE = 1;
     private int currentPage = 0;
     private List<PlayerDecisionState> decisions;
+    private ImageButton backArrowButton, flechaIzqButton, flechaDerButton;
+
 
     public PlayerHistorialDetailScreen(String username, int gameId) {
         this.username = username;
@@ -61,9 +63,9 @@ public class PlayerHistorialDetailScreen implements Screen {
         topBar = new TopBar(username, stage, font);
 
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
-        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - backArrowButton.getHeight() - 50);
         backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -121,12 +123,7 @@ public class PlayerHistorialDetailScreen implements Screen {
 
                     decisionTable.add(decisionBox).pad(10).width(900).padTop(50).center().row();
 
-                    // Número de página
-                    int totalPages = (int) Math.ceil((float) decisions.size() / DECISIONS_PER_PAGE);
-                    String pageText = (currentPage + 1) + " / " + totalPages;
-                    Label pageLabel = new Label(pageText, new Label.LabelStyle(font, Color.WHITE));
-                    pageLabel.setAlignment(Align.center);
-                    decisionTable.add(pageLabel).padBottom(20).center().row();
+
 
                 } catch (Exception e) {
                     Label errorLabel = new Label("Error al obtener información de la decisión.", new Label.LabelStyle(font, Color.RED));
@@ -134,12 +131,22 @@ public class PlayerHistorialDetailScreen implements Screen {
                     e.printStackTrace();
                 }
             }
+            // Número de página
+            int totalPages = (int) Math.ceil((float) decisions.size() / DECISIONS_PER_PAGE);
+            String pageText = (currentPage + 1) + " / " + totalPages;
+            Label pageLabel = new Label(pageText, new Label.LabelStyle(font, Color.WHITE));
+            pageLabel.setAlignment(Align.center);
+            decisionTable.add(pageLabel).padBottom(20).center().row();
 
             // === FLECHAS DE NAVEGACIÓN ===
+// Elimina botones anteriores si existen
+            if (flechaIzqButton != null) flechaIzqButton.remove();
+            if (flechaDerButton != null) flechaDerButton.remove();
+
             Texture flechaIzqTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-            ImageButton flechaIzqButton = new ImageButton(new TextureRegionDrawable(flechaIzqTexture));
+            flechaIzqButton = new ImageButton(new TextureRegionDrawable(flechaIzqTexture));
             flechaIzqButton.setSize(100, 100);
-            flechaIzqButton.setPosition(20, Gdx.graphics.getHeight() - 700);
+            flechaIzqButton.setPosition(20, 20); // esquina inferior izquierda
             flechaIzqButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -151,9 +158,9 @@ public class PlayerHistorialDetailScreen implements Screen {
             });
 
             Texture flechaDerTexture = new Texture(Gdx.files.internal("assets/photos/flechaD.png"));
-            ImageButton flechaDerButton = new ImageButton(new TextureRegionDrawable(flechaDerTexture));
+            flechaDerButton = new ImageButton(new TextureRegionDrawable(flechaDerTexture));
             flechaDerButton.setSize(100, 100);
-            flechaDerButton.setPosition(1150, Gdx.graphics.getHeight() - 700);
+            flechaDerButton.setPosition(Gdx.graphics.getWidth() - 120, 20); // esquina inferior derecha
             flechaDerButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -166,6 +173,9 @@ public class PlayerHistorialDetailScreen implements Screen {
 
             stage.addActor(flechaIzqButton);
             stage.addActor(flechaDerButton);
+
+
+
         }
 
         stage.addActor(decisionTable);
@@ -183,10 +193,21 @@ public class PlayerHistorialDetailScreen implements Screen {
         stage.draw();
     }
 
-    @Override public void resize(int width, int height) {
+    @Override
+    public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - backArrowButton.getHeight() - 50);
+        }
+        if (flechaIzqButton != null) {
+            flechaIzqButton.setPosition(20, 20); // esquina inferior izquierda
+        }
+        if (flechaDerButton != null) {
+            flechaDerButton.setPosition(width - 100 - 20, 20); // esquina inferior derecha
+        }
     }
+
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}

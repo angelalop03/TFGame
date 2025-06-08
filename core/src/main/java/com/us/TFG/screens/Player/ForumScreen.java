@@ -23,6 +23,7 @@ public class ForumScreen implements Screen {
     private Imagen fondo;
     private TopBar topBar;
     private String username;
+    private ImageButton backArrowButton;
 
     public ForumScreen(String username) {
         this.username = username;
@@ -76,11 +77,11 @@ public class ForumScreen implements Screen {
         mainTable.add(scrollPane).fill().expand();
         stage.addActor(mainTable);
 
-        // Flecha de retroceso
+        // Flecha de retroceso (siempre arriba a la izquierda)
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
-        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 110);
 
         backArrowButton.addListener(new ClickListener() {
             @Override
@@ -97,6 +98,7 @@ public class ForumScreen implements Screen {
         batch.begin();
         fondo.draw();
         batch.end();
+
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
@@ -105,16 +107,16 @@ public class ForumScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
+
+        // Reposicionar flecha tras redimensionar
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }
     }
 
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 
     @Override
     public void dispose() {
