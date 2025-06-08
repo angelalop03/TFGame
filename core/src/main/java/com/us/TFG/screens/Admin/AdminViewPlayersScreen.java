@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -19,12 +18,10 @@ import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.manager.UserManager;
 import com.us.TFG.screens.Player.PlayerHistorialScreen;
-import com.us.TFG.screens.Player.PlayerPerfilScreen;
 import com.us.TFG.utils.*;
 import com.us.TFG.utils.validators.InputValidator;
 
 import java.util.List;
-
 
 public class AdminViewPlayersScreen implements Screen {
 
@@ -36,6 +33,10 @@ public class AdminViewPlayersScreen implements Screen {
     private BitmapFont font;
     private TopBar topBar;
 
+    private ScrollPane scrollPane;
+    private Image background;
+    private ImageButton backArrowButton;
+
 
     public AdminViewPlayersScreen(String adminUsername) {
         this.adminUsername = adminUsername;
@@ -43,80 +44,77 @@ public class AdminViewPlayersScreen implements Screen {
 
     @Override
     public void show() {
-        // Cargar el fondo
         fondo = new Imagen(Resources.FONDON);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
         font = UIStyle.getFont();
 
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
         skin = new Skin();
-        // Añadir la fuente generada al skin
         skin.add("Caveat", font);
 
-        // Crear y agregar la barra superior
         topBar = new TopBar(adminUsername, stage, font);
 
-        // Crear el fondo gris translúcido para la tabla
         Pixmap pixmap = new Pixmap(1000, 500, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0.8f, 0.8f, 0.8f, 0.6f));
         pixmap.fill();
         TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
 
-        Image background = new Image(backgroundDrawable);
-        background.setPosition((Gdx.graphics.getWidth() - 1000) / 2f, 100);
+        background = new Image(backgroundDrawable);
         stage.addActor(background);
 
-
-
-        // Crear la tabla de jugadores
         Table playersTable = createPlayersTable(UIStyle.getLabelStyle());
 
-        // Crear el ScrollPane para los jugadores
-        ScrollPane scrollPane = new ScrollPane(playersTable);
+        scrollPane = new ScrollPane(playersTable);
         scrollPane.setSize(1000, 500);
-        scrollPane.setPosition((Gdx.graphics.getWidth() - 1000) / 2f, 100);
-        scrollPane.setScrollingDisabled(true, false); // Solo permitir desplazamiento vertical
-        scrollPane.setFadeScrollBars(true); // Mostrar siempre las barras de desplazamiento
-
-        // Añadir encabezados y ScrollPane al stage
+        scrollPane.setScrollingDisabled(true, false);
+        scrollPane.setFadeScrollBars(true);
         stage.addActor(scrollPane);
+
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150); // Posicionado arriba a la izquierda
+        backArrowButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminMenuScreen(adminUsername)); // Ajusta al destino correcto
+            }
+        });
+        stage.addActor(backArrowButton);
+
     }
 
     private Table createPlayersTable(Label.LabelStyle labelStyle) {
         Table table = new Table();
-        table.top(); // Alineación inicial de la tabla
+        table.top();
 
-
-        // Obtener la lista de jugadores desde PlayerManager
         List<PlayerManager.PlayerData> players = PlayerManager.getAllPlayers();
         for (PlayerManager.PlayerData player : players) {
             table.add(new Label(player.getFirstname() + " " + player.getLastname(), labelStyle)).width(300).pad(10).center();
             table.add(new Label(player.getEmail(), labelStyle)).width(300).pad(10).center();
 
-            // Botón de Editar
             TextButton editButton = new TextButton("Editar", UIStyle.getButtonStyle());
             editButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     showEditDialog(player);
-
                 }
             });
             table.add(editButton).width(100).pad(10).center();
 
-            // Botón de Historial
             Table actionTable = new Table();
 
             TextButton historyButton = new TextButton("Historial", UIStyle.getButtonStyle());
             historyButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Render.app.setScreen(new AdminHistorialScreen(adminUsername,UserManager.findUserByPlayerId(player.getId()))); // Cambia a la pantalla del historial
+                    Render.app.setScreen(new AdminHistorialScreen(adminUsername, UserManager.findUserByPlayerId(player.getId())));
                 }
             });
             actionTable.add(historyButton).width(110).padRight(10);
@@ -151,6 +149,18 @@ public class AdminViewPlayersScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
+        float centeredX = (width - 1000) / 2f;
+        float yPosition = 100;
+
+        if (scrollPane != null) {
+            scrollPane.setPosition(centeredX, yPosition);
+        }
+        if (background != null) {
+            background.setPosition(centeredX, yPosition);
+        }
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150); // Reposiciona arriba izq
+        }
     }
 
     @Override
@@ -168,24 +178,19 @@ public class AdminViewPlayersScreen implements Screen {
         font.dispose();
     }
 
-
     private void showEditDialog(PlayerManager.PlayerData player) {
-        // Crear un estilo para el diálogo
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
         dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(400, 300, Color.VIOLET, 1.0f)));
 
-        // Crear el diálogo
         Dialog editDialog = new Dialog("", dialogStyle);
 
-        // Crear campos de texto con valores iniciales
         TextField usernameField = new TextField(PlayerManager.getUsername(player.getId()), UIStyle.getTextFieldStyle());
         TextField firstnameField = new TextField(player.getFirstname(), UIStyle.getTextFieldStyle());
         TextField lastnameField = new TextField(player.getLastname(), UIStyle.getTextFieldStyle());
         TextField emailField = new TextField(player.getEmail(), UIStyle.getTextFieldStyle());
 
-        // Añadir campos al diálogo
         editDialog.getContentTable().add(new Label("Usuario:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
         editDialog.getContentTable().add(usernameField).width(300).pad(5).row();
         editDialog.getContentTable().add(new Label("Nombre:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
@@ -195,12 +200,10 @@ public class AdminViewPlayersScreen implements Screen {
         editDialog.getContentTable().add(new Label("Correo:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
         editDialog.getContentTable().add(emailField).width(300).pad(5).row();
 
-        // Etiqueta para mostrar mensajes de feedback
         Label feedbackLabel = new Label("", UIStyle.getLabelStyle());
         feedbackLabel.setWrap(false);
-        feedbackLabel.setAlignment(Align.center); // Centra el texto horizontalmente
+        feedbackLabel.setAlignment(Align.center);
 
-        // Botón Cambiar Contraseña
         TextButton changePasswordButton = new TextButton("Cambiar Contraseña", UIStyle.getButtonStyle());
         changePasswordButton.addListener(new ClickListener() {
             @Override
@@ -208,12 +211,10 @@ public class AdminViewPlayersScreen implements Screen {
                 showChangePasswordDialog(player);
                 editDialog.hide();
                 editDialog.remove();
-
             }
         });
         editDialog.getContentTable().add(changePasswordButton).colspan(2).center().pad(10).row();
 
-        //Boton Guardar
         TextButton saveButton = new TextButton("Guardar", UIStyle.getButtonStyle());
         saveButton.addListener(new ClickListener() {
             @Override
@@ -250,7 +251,6 @@ public class AdminViewPlayersScreen implements Screen {
         });
         editDialog.getButtonTable().add(saveButton).pad(10);
 
-        // Botón de Cancelar
         TextButton cancelButton = new TextButton("Cerrar", UIStyle.getButtonStyle());
         cancelButton.addListener(new ClickListener() {
             @Override
@@ -262,13 +262,10 @@ public class AdminViewPlayersScreen implements Screen {
         editDialog.getButtonTable().add(cancelButton).pad(10);
         editDialog.getContentTable().add(feedbackLabel).colspan(2).center().pad(10).row();
 
-        // Mostrar el diálogo
         editDialog.show(stage);
-
     }
 
     private void showChangePasswordDialog(PlayerManager.PlayerData player) {
-        // Crear un estilo para el diálogo
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
@@ -276,7 +273,6 @@ public class AdminViewPlayersScreen implements Screen {
 
         Dialog passwordDialog = new Dialog("", dialogStyle);
 
-        // Etiqueta para mostrar mensajes de feedback
         Label feedbackLabel = new Label("", UIStyle.getLabelStyle());
         feedbackLabel.setWrap(false);
         feedbackLabel.setAlignment(Align.center);
@@ -291,11 +287,9 @@ public class AdminViewPlayersScreen implements Screen {
 
         passwordDialog.getContentTable().add(new Label("Nueva Contraseña:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
         passwordDialog.getContentTable().add(newPasswordField).width(300).pad(5).row();
-
         passwordDialog.getContentTable().add(new Label("Confirmar Contraseña:", new Label.LabelStyle(font, Color.WHITE))).pad(5);
         passwordDialog.getContentTable().add(confirmPasswordField).width(300).pad(5).row();
 
-        //Boton guardar
         TextButton saveButton = new TextButton("Guardar", UIStyle.getButtonStyle());
         saveButton.addListener(new ClickListener() {
             @Override
@@ -308,8 +302,6 @@ public class AdminViewPlayersScreen implements Screen {
                     feedbackLabel.setText("Las contraseñas no coinciden.");
                     feedbackLabel.setColor(Color.RED);
                 } else {
-                    //Necesito la funcion updatePassword que esta en otra rama
-                    //Ahora pone que las contraseñas no coinciden
                     boolean success = UserManager.updatePassword(
                         PlayerManager.getUsername(player.getId()),
                         newPasswordField.getText()
@@ -322,7 +314,6 @@ public class AdminViewPlayersScreen implements Screen {
                         feedbackLabel.setText("Error al actualizar la contraseña.");
                         feedbackLabel.setColor(Color.RED);
                     }
-
                 }
             }
         });
@@ -334,8 +325,6 @@ public class AdminViewPlayersScreen implements Screen {
                 passwordDialog.hide();
                 passwordDialog.remove();
                 showEditDialog(player);
-
-
             }
         });
 
@@ -347,19 +336,14 @@ public class AdminViewPlayersScreen implements Screen {
     }
 
     private void showDeleteDialog(PlayerManager.PlayerData player) {
-        // Crear un estilo para el diálogo
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
         dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(400, 300, Color.RED, 1f)));
 
         Dialog deleteDialog = new Dialog("", dialogStyle);
-
-
-        // Crear contenido del diálogo
         deleteDialog.text(new Label("¿Estás seguro de eliminar este perfil?", UIStyle.getLabelStyle())).pad(10);
 
-        // Botón de Confirmar
         TextButton confirmButton = new TextButton("Confirmar", UIStyle.getButtonStyle());
         confirmButton.addListener(new ClickListener() {
             @Override
@@ -367,15 +351,14 @@ public class AdminViewPlayersScreen implements Screen {
                 if (UserManager.deleteUser(PlayerManager.getUsername(player.getId()))) {
                     deleteDialog.hide();
                     deleteDialog.remove();
-                    Render.app.setScreen(new AdminViewPlayersScreen(adminUsername)); // Actualizar la pantalla
+                    Render.app.setScreen(new AdminViewPlayersScreen(adminUsername));
                 } else {
                     deleteDialog.text(new Label("Error al eliminar el perfil.", UIStyle.getLabelStyle())).pad(10);
                 }
             }
         });
 
-        // Botón de Cancelar
-        TextButton cancelButton = new TextButton("Cancelar",  UIStyle.getButtonStyle());
+        TextButton cancelButton = new TextButton("Cancelar", UIStyle.getButtonStyle());
         cancelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -389,8 +372,4 @@ public class AdminViewPlayersScreen implements Screen {
 
         deleteDialog.show(stage);
     }
-
-
-
-
 }

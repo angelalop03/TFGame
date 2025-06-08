@@ -33,6 +33,8 @@ public class AdminForumScreen implements Screen {
     private BitmapFont font;
     private TopBar topBar;
     private String username;
+    private ImageButton backArrowButton;
+
 
     public AdminForumScreen(String username) {
         this.username = username;
@@ -122,6 +124,18 @@ public class AdminForumScreen implements Screen {
         mainTable.add(scrollPane).fill().expand();
 
         stage.addActor(mainTable);
+        Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 110);
+        backArrowButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new AdminMenuScreen(username));
+            }
+        });
+        stage.addActor(backArrowButton);
+
     }
 
     private Table createNewsCard(NewsManager.NewsData news) {
@@ -183,6 +197,9 @@ public class AdminForumScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }
     }
 
     @Override
