@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.NewsManager;
@@ -29,7 +30,7 @@ public class ForumScreen implements Screen {
 
     @Override
     public void show() {
-        fondo = new Imagen(Resources.FONDON);
+        fondo = new Imagen(Resources.NEWSPAPER);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
@@ -74,6 +75,21 @@ public class ForumScreen implements Screen {
 
         mainTable.add(scrollPane).fill().expand();
         stage.addActor(mainTable);
+
+        // Flecha de retroceso
+        Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
+
+        backArrowButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new PlayerMenuScreen(username));
+            }
+        });
+
+        stage.addActor(backArrowButton);
     }
 
     @Override

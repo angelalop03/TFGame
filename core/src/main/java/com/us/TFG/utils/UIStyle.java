@@ -65,7 +65,7 @@ public class UIStyle {
 
     public static TextureRegionDrawable getBackgroundDrawable() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0.6f, 0.6f, 0.6f, 0.4f));
+        pixmap.setColor(new Color(0.6f, 0.6f, 0.6f, 0.6f));
         pixmap.fill();
         TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
@@ -76,7 +76,7 @@ public class UIStyle {
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = font;
         textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 70, Color.DARK_GRAY, 0.5f)));
+        textFieldStyle.background = new TextureRegionDrawable(new Texture(createRoundedPixmap(400, 70, Color.DARK_GRAY, 0.6f)));
         return textFieldStyle;
     }
 

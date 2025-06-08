@@ -214,6 +214,18 @@ public class TutorialGameScreen implements Screen {
         // Añadir las barras al escenario
         stage.addActor(psychologicalBar);
         stage.addActor(relationshipBar);
+
+        Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
+        backArrowButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new PlayerMenuScreen(username));
+            }
+        });
+        stage.addActor(backArrowButton);
     }
 
     @Override

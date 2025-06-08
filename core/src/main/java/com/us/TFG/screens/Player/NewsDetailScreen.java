@@ -30,7 +30,7 @@ public class NewsDetailScreen implements Screen {
 
     @Override
     public void show() {
-        fondo = new Imagen(Resources.FONDON);
+        fondo = new Imagen(Resources.NEWS);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
