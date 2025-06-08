@@ -2,13 +2,16 @@ package com.us.TFG.screens.Player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.screens.Player.Game.ChargeGameScreen;
@@ -101,6 +104,22 @@ public class PlayerMenuScreen implements Screen {
         stage.addActor(historialButton);
         stage.addActor(newsForumButton);
         stage.addActor(instructionsButton);
+
+        // Botón de créditos con imagen de interrogación
+        Texture questionTexture = new Texture(Gdx.files.internal("assets/photos/question.png"));
+        ImageButton creditsButton = new ImageButton(new TextureRegionDrawable(questionTexture));
+        creditsButton.setSize(40, 40); // tamaño ajustable
+        creditsButton.setPosition(Gdx.graphics.getWidth() - 70, 20); // esquina inferior derecha
+
+        creditsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new CreditsScreen(username));
+            }
+        });
+
+        stage.addActor(creditsButton);
+
     }
 
     @Override
