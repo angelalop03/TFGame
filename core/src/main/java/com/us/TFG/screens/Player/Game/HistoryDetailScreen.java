@@ -20,11 +20,13 @@ import com.us.TFG.manager.PlayerManager;
 import com.us.TFG.model.Chapter;
 import com.us.TFG.model.Game;
 import com.us.TFG.model.History;
+import com.us.TFG.screens.Player.PlayerMenuScreen;
 import com.us.TFG.utils.*;
 
 public class HistoryDetailScreen implements Screen {
     private Stage stage;
     private SpriteBatch batch;
+    private Skin skin;
     private Imagen fondo;
     private BitmapFont font;
     private TopBar topBar;
@@ -34,11 +36,12 @@ public class HistoryDetailScreen implements Screen {
     private History history;
     private final String PLACEHOLDER_TEXT = "Introduce un nombre";
     private ImageButton backArrowButton;
-    private Table contentTable;
 
-    public HistoryDetailScreen(String username, History history) {
-        this.username = username;
-        this.history = history;
+
+    public HistoryDetailScreen(String username,History history ){
+        this.username= username;
+        this.history= history;
+
     }
 
     @Override
@@ -51,12 +54,14 @@ public class HistoryDetailScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         font = UIStyle.getFont();
+
         topBar = new TopBar(username, stage, font);
 
-        // Retroceso
+        // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+         backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -64,40 +69,47 @@ public class HistoryDetailScreen implements Screen {
             }
         });
 
-        // Tabla raíz
-        Table root = new Table();
-        root.setFillParent(true);
-        stage.addActor(root);
+        // Crear el contenedor principal centrado con el recuadro grisáceo
+        Table mainTable = new Table();
+        mainTable.setFillParent(true);
+        stage.addActor(mainTable);
 
-        // Contenedor fijo
-        contentTable = new Table();
-        contentTable.pad(30);
-
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        Pixmap pixmap = new Pixmap(700, 500, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(1.0f, 0.41f, 0.71f, 0.6f));
         pixmap.fill();
-        Texture backgroundTex = new Texture(pixmap);
+        TextureRegionDrawable background = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
 
-        contentTable.setBackground(new TextureRegionDrawable(backgroundTex));
+        Table contentTable = new Table();
+        contentTable.setBackground(background);
 
-        // Título
+
+
+        // Nombre de la historia
         Label historyTitle = new Label(history.getTitle(), UIStyle.getLabelStyle());
 
-        // Descripción con scroll
+        // Descripción de la historia con scroll
         Label historyDescription = new Label(history.getDescription(), UIStyle.getLabelStyle());
         historyDescription.setWrap(true);
 
         Table descriptionTable = new Table();
-        descriptionTable.add(historyDescription).expandX().left().top().pad(10);
+        descriptionTable.add(historyDescription).width(580).left().top(); // ajusta ancho si es necesario
 
-        ScrollPane scrollPane = new ScrollPane(descriptionTable);
-        scrollPane.setScrollingDisabled(true, false);
-        scrollPane.setFadeScrollBars(false);
+        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle(); // Puedes personalizar si lo deseas
+        ScrollPane scrollPane = new ScrollPane(descriptionTable, scrollStyle);
+        scrollPane.setScrollingDisabled(true, false); // Solo scroll vertical
+        scrollPane.setFadeScrollBars(false); // Que siempre se vean los scrolls si aparecen
+        scrollPane.setScrollbarsOnTop(true);
+        scrollPane.setForceScroll(false, true); // solo si es necesario
+        scrollPane.setScrollingDisabled(false, false); // permitir ambos ejes si quieres
+        scrollPane.setScrollBarPositions(true, true); // scroll visible a la derecha
+        scrollPane.setSize(600, 150); // ajusta el tamaño visible
 
-        // Campo de texto
+
+
+        // Campo para el nombre del juego con placeholder
         gameNameField = new TextField(PLACEHOLDER_TEXT, UIStyle.getTextFieldStyle());
-        gameNameField.setMessageText(PLACEHOLDER_TEXT);
+        gameNameField.setMessageText(PLACEHOLDER_TEXT); // Placeholder
         gameNameField.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -107,56 +119,59 @@ public class HistoryDetailScreen implements Screen {
             }
         });
 
-        // Mensaje
+        // Etiqueta para mostrar mensajes de feedback
         feedbackLabel = new Label("", UIStyle.getLabelStyle());
         feedbackLabel.setWrap(true);
 
-        // Botón
+        // Botón para guardar el juego
         TextButton saveButton = new TextButton("Crear Juego", UIStyle.getButtonStyle());
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String gameName = gameNameField.getText().trim();
-                if (gameName.isEmpty() || gameName.equals(PLACEHOLDER_TEXT)) {
+                if (gameName.isEmpty()|| gameName.equals(PLACEHOLDER_TEXT)) {
                     feedbackLabel.setText("Por favor, introduce un nombre para el juego.");
                     feedbackLabel.setColor(Color.RED);
                 } else {
                     if (!GameManager.doesGameExist(gameName, PlayerManager.getPlayerData(username).getId())) {
-                        Game game = GameManager.createGame(gameName, PlayerManager.getPlayerData(username).getId(), history.getId());
+                        Game game =GameManager.createGame(gameName, PlayerManager.getPlayerData(username).getId(), history.getId());
                         feedbackLabel.setText("Juego creado con éxito.");
                         feedbackLabel.setColor(Color.GREEN);
+
                         Gdx.app.postRunnable(() -> {
                             try {
                                 Thread.sleep(3000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
+                            //Que te lleve al catalogo de capitulos
                             Chapter introChapter = ChapterManager.getIntroChapterForHistory(history.getId());
-                            Render.app.setScreen(new SceneGameScreen(game.getId(), introChapter.getId(), username));
+                            Render.app.setScreen(new SceneGameScreen(game.getId(),introChapter.getId(),username));
                         });
-                    } else {
-                        feedbackLabel.setText("Ya existe una partida con ese nombre: " + gameName);
+                    }else{
+                        feedbackLabel.setText("Ya existe una partida con ese nombre" + gameName);
                         feedbackLabel.setColor(Color.RED);
+
                     }
+
+
                 }
             }
         });
 
-        // Armar contenido
-        contentTable.add(historyTitle).padBottom(20);
+        // Agregar elementos al contentTable
+        contentTable.add(historyTitle).padBottom(10);
         contentTable.row();
-        contentTable.add(scrollPane).height(150).width(600).padBottom(20);
+        contentTable.add(scrollPane).width(600).height(150).padBottom(20);
         contentTable.row();
-        contentTable.add(gameNameField).width(600).padBottom(15);
+        contentTable.add(gameNameField).width(600).padBottom(15).center();
         contentTable.row();
-        contentTable.add(saveButton).width(300).padTop(15);
+        contentTable.add(saveButton).colspan(2).padTop(20).center();
         contentTable.row();
-        contentTable.add(feedbackLabel).width(500).padTop(10);
+        contentTable.add(feedbackLabel).colspan(2).width(600).padTop(10).center();
 
-        // Añadir con tamaño fijo
-        root.add(contentTable).width(700).height(500).center();
-
-        // Añadir flecha por encima
+        // Agregar contentTable al mainTable
+        mainTable.add(contentTable).center();
         stage.addActor(backArrowButton);
     }
 
@@ -174,17 +189,24 @@ public class HistoryDetailScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         topBar.updateSize();
-
         if (backArrowButton != null) {
             backArrowButton.setPosition(10, height - backArrowButton.getHeight() - 50);
         }
     }
 
-    @Override public void pause() {}
-    @Override public void resume() {}
-    @Override public void hide() {}
-    @Override public void dispose() {
+    @Override
+    public void pause() {}
+
+    @Override
+    public void resume() {}
+
+    @Override
+    public void hide() {}
+
+    @Override
+    public void dispose() {
         stage.dispose();
         font.dispose();
     }
+
 }

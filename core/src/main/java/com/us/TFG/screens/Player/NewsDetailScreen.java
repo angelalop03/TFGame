@@ -23,6 +23,7 @@ public class NewsDetailScreen implements Screen {
     private TopBar topBar;
     private String username;
     private ImageButton backArrowButton;
+    private Table wrapper;
 
     public NewsDetailScreen(String username, NewsManager.NewsData news) {
         this.username = username;
@@ -62,12 +63,12 @@ public class NewsDetailScreen implements Screen {
         Label newsTitleLabel = new Label(news.getName(), UIStyle.getTitleLabelStyle());
         newsTitleLabel.setWrap(true);
         newsTitleLabel.setAlignment(1);
-        contentTable.add(newsTitleLabel).width(Gdx.graphics.getWidth() * 0.9f).center().pad(10).row();
+        contentTable.add(newsTitleLabel).width(Value.percentWidth(0.9f, contentTable)).center().pad(10).row();
 
         // Contenido
         Label contentLabel = new Label(news.getText(), UIStyle.getLabelStyle());
         contentLabel.setWrap(true);
-        contentTable.add(contentLabel).width(Gdx.graphics.getWidth() * 0.9f).center().pad(10).row();
+        contentTable.add(contentLabel).width(Value.percentWidth(0.9f, contentTable)).center().pad(10).row();
 
         // ScrollPane (por si es largo)
         ScrollPane scrollPane = new ScrollPane(contentTable);
@@ -75,11 +76,11 @@ public class NewsDetailScreen implements Screen {
         scrollPane.setFadeScrollBars(false);
 
         // Envolver scrollPane en una tabla centrada
-        Table wrapper = new Table();
+        wrapper = new Table();
         wrapper.setFillParent(true);
         wrapper.add(scrollPane)
-            .width(Gdx.graphics.getWidth() * 0.95f)
-            .height(Gdx.graphics.getHeight() * 0.85f)
+            .width(Value.percentWidth(0.95f, wrapper))
+            .height(Value.percentHeight(0.85f, wrapper))
             .center()
             .padTop(70);
 
