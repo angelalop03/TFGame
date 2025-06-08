@@ -10,5 +10,6 @@ public class Resources {
     public static final String FONDOBOOK2 = "assets/photos/Book.png";
     public static final String FONDOBLOC ="assets/photos/Bloc.png";
     public static final String WARDROBE = "assets/photos/Wardrobe.png";
+    public static final String FONDOBOOK3 = "assets/photos/Book3.png";
 
 }
