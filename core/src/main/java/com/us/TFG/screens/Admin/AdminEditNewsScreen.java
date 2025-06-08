@@ -33,6 +33,7 @@ public class AdminEditNewsScreen implements Screen {
     private BitmapFont font;
     private NewsManager.NewsData news;
     private String username;
+    private ImageButton backArrowButton;
 
     public AdminEditNewsScreen(String username, NewsManager.NewsData news) {
         this.username = username;
@@ -41,42 +42,35 @@ public class AdminEditNewsScreen implements Screen {
 
     @Override
     public void show() {
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         skin = new Skin();
 
-        // Cargar el fondo
         fondo = new Imagen(Resources.FONDON);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
-        // Generar la fuente
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 34;
         font = generator.generateFont(parameter);
         generator.dispose();
 
-        // Añadir la fuente generada al skin
         skin.add("Caveat", font);
 
-        // Crear y agregar la barra superior
         topBar = new TopBar(username, stage, font);
 
-        // Crear flecha para volver
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Render.app.setScreen(new AdminNewsDetailScreen(username,news));
+                Render.app.setScreen(new AdminNewsDetailScreen(username, news));
             }
         });
 
-        // Estilos
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = font;
         textFieldStyle.fontColor = Color.WHITE;
@@ -92,30 +86,30 @@ public class AdminEditNewsScreen implements Screen {
         buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 50, Color.GRAY, 0.5f)));
         buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 50, Color.DARK_GRAY, 0.5f)));
 
-        // Crear campos de texto y cargar datos actuales
-        titleField = new TextArea(news.getName(), textFieldStyle); // Usa TextArea para manejar múltiples líneas
-        titleField.setPrefRows(2); // Ajusta filas visibles
+        titleField = new TextArea(news.getName(), textFieldStyle);
+        titleField.setPrefRows(2);
 
-        contentField = new TextArea(news.getText(), textFieldStyle); // Usa TextArea para manejar texto largo
+        contentField = new TextArea(news.getText(), textFieldStyle);
         contentField.setPrefRows(5);
 
-        // Etiqueta para mostrar mensajes de feedback
         feedbackLabel = new Label("", labelStyle);
         feedbackLabel.setWrap(true);
 
-
-
-        // Botón para guardar los cambios
         TextButton saveButton = new TextButton("Guardar", buttonStyle);
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Guardar cambios
                 String newTitle = titleField.getText().trim();
                 String newText = contentField.getText().trim();
+
+                if (newTitle.isEmpty() || newText.isEmpty()) {
+                    feedbackLabel.setText("El título y el contenido no pueden estar vacíos.");
+                    feedbackLabel.setColor(Color.RED);
+                    return;
+                }
+
                 boolean success = NewsManager.updateNews(news.getId(), newTitle, newText);
 
-                // Mostrar feedback
                 if (success) {
                     feedbackLabel.setText("Noticia actualizada con éxito");
                     feedbackLabel.setColor(Color.GREEN);
@@ -126,7 +120,6 @@ public class AdminEditNewsScreen implements Screen {
             }
         });
 
-        // Crear tabla para los elementos
         Table table = new Table();
         table.setFillParent(true);
         table.row();
@@ -134,19 +127,18 @@ public class AdminEditNewsScreen implements Screen {
         table.add(titleField).width(600).padBottom(15).center();
         table.row();
         table.add(new Label("Contenido", labelStyle)).left().padBottom(10);
-        table.add(contentField).width(600).height(300).padBottom(15).center(); // Amplía para texto largo
+        table.add(contentField).width(600).height(300).padBottom(15).center();
         table.row();
         table.add(saveButton).colspan(2).padTop(20).center();
         table.row();
         table.add(feedbackLabel).colspan(2).width(400).padTop(10).center();
 
-        // ScrollPane para permitir desplazamiento
         ScrollPane scrollPane = new ScrollPane(table);
         scrollPane.setFillParent(true);
         scrollPane.setFadeScrollBars(false);
+
         stage.addActor(scrollPane);
         stage.addActor(backArrowButton);
-
     }
 
     @Override
@@ -162,16 +154,15 @@ public class AdminEditNewsScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }
     }
 
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 
     @Override
     public void dispose() {

@@ -35,6 +35,7 @@ public class HistoryDetailScreen implements Screen {
     private String username;
     private History history;
     private final String PLACEHOLDER_TEXT = "Introduce un nombre";
+    private ImageButton backArrowButton;
 
 
     public HistoryDetailScreen(String username,History history ){
@@ -58,7 +59,7 @@ public class HistoryDetailScreen implements Screen {
 
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+         backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
@@ -87,9 +88,23 @@ public class HistoryDetailScreen implements Screen {
         // Nombre de la historia
         Label historyTitle = new Label(history.getTitle(), UIStyle.getLabelStyle());
 
-        // Descripción de la historia
+        // Descripción de la historia con scroll
         Label historyDescription = new Label(history.getDescription(), UIStyle.getLabelStyle());
         historyDescription.setWrap(true);
+
+        Table descriptionTable = new Table();
+        descriptionTable.add(historyDescription).width(580).left().top(); // ajusta ancho si es necesario
+
+        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle(); // Puedes personalizar si lo deseas
+        ScrollPane scrollPane = new ScrollPane(descriptionTable, scrollStyle);
+        scrollPane.setScrollingDisabled(true, false); // Solo scroll vertical
+        scrollPane.setFadeScrollBars(false); // Que siempre se vean los scrolls si aparecen
+        scrollPane.setScrollbarsOnTop(true);
+        scrollPane.setForceScroll(false, true); // solo si es necesario
+        scrollPane.setScrollingDisabled(false, false); // permitir ambos ejes si quieres
+        scrollPane.setScrollBarPositions(true, true); // scroll visible a la derecha
+        scrollPane.setSize(600, 150); // ajusta el tamaño visible
+
 
 
         // Campo para el nombre del juego con placeholder
@@ -114,7 +129,7 @@ public class HistoryDetailScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String gameName = gameNameField.getText().trim();
-                if (gameName.isEmpty()) {
+                if (gameName.isEmpty()|| gameName.equals(PLACEHOLDER_TEXT)) {
                     feedbackLabel.setText("Por favor, introduce un nombre para el juego.");
                     feedbackLabel.setColor(Color.RED);
                 } else {
@@ -147,7 +162,7 @@ public class HistoryDetailScreen implements Screen {
         // Agregar elementos al contentTable
         contentTable.add(historyTitle).padBottom(10);
         contentTable.row();
-        contentTable.add(historyDescription).width(600).padBottom(20);
+        contentTable.add(scrollPane).width(600).height(150).padBottom(20);
         contentTable.row();
         contentTable.add(gameNameField).width(600).padBottom(15).center();
         contentTable.row();
@@ -173,6 +188,10 @@ public class HistoryDetailScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - backArrowButton.getHeight() - 50);
+        }
     }
 
     @Override

@@ -89,4 +89,11 @@ public class TopBar {
     public Table getTopBar() {
         return topBar;
     }
+
+    public void updateSize() {
+        int barHeight = 60;
+        topBar.setSize(Gdx.graphics.getWidth(), barHeight);
+        topBar.setPosition(0, Gdx.graphics.getHeight() - barHeight);
+    }
+
 }

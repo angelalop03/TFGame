@@ -33,6 +33,7 @@ public class AdminCreateNewsScreen implements Screen {
     private SpriteBatch batch;
     private BitmapFont font;
     private String username;
+    private ImageButton backArrowButton;
 
     public AdminCreateNewsScreen(String username) {
         this.username = username;
@@ -40,32 +41,26 @@ public class AdminCreateNewsScreen implements Screen {
 
     @Override
     public void show() {
-        // Crear Stage y Skin
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         skin = new Skin();
 
-        // Cargar el fondo
         fondo = new Imagen(Resources.FONDON);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
 
-        // Generar la fuente
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Caveat.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 34;
         font = generator.generateFont(parameter);
         generator.dispose();
 
-        // Añadir la fuente generada al skin
         skin.add("Caveat", font);
 
-        // Crear y agregar la barra superior
         topBar = new TopBar(username, stage, font);
 
-        // Crear flecha para volver
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
@@ -75,7 +70,6 @@ public class AdminCreateNewsScreen implements Screen {
             }
         });
 
-        // Estilos
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = font;
         textFieldStyle.fontColor = Color.WHITE;
@@ -91,34 +85,34 @@ public class AdminCreateNewsScreen implements Screen {
         buttonStyle.up = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 50, Color.GRAY, 0.5f)));
         buttonStyle.down = new TextureRegionDrawable(new Texture(createRoundedPixmap(300, 50, Color.DARK_GRAY, 0.5f)));
 
-        // Crear campos de texto
         titleField = new TextArea("", textFieldStyle);
         titleField.setPrefRows(2);
 
         contentField = new TextArea("", textFieldStyle);
         contentField.setPrefRows(5);
 
-        // Etiqueta de feedback
         feedbackLabel = new Label("", labelStyle);
         feedbackLabel.setWrap(true);
 
-        // Botón para guardar
         TextButton saveButton = new TextButton("Guardar", buttonStyle);
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Guardar la noticia
                 String newTitle = titleField.getText().trim();
                 String newText = contentField.getText().trim();
 
+                if (newTitle.isEmpty() || newText.isEmpty()) {
+                    feedbackLabel.setText("El título y el contenido no pueden estar vacíos.");
+                    feedbackLabel.setColor(Color.RED);
+                    return;
+                }
+
                 boolean success = NewsManager.createNews(newTitle, newText);
 
-                // Mostrar feedback
                 if (success) {
                     feedbackLabel.setText("Noticia creada con éxito");
                     feedbackLabel.setColor(Color.GREEN);
 
-                    // Esperar 3 segundos y volver a AdminForumScreen
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
@@ -132,7 +126,6 @@ public class AdminCreateNewsScreen implements Screen {
             }
         });
 
-        // Crear tabla para los elementos
         Table table = new Table();
         table.setFillParent(true);
         table.row();
@@ -146,12 +139,10 @@ public class AdminCreateNewsScreen implements Screen {
         table.row();
         table.add(feedbackLabel).colspan(2).width(400).padTop(10).center();
 
-        // ScrollPane para permitir desplazamiento
         ScrollPane scrollPane = new ScrollPane(table);
         scrollPane.setFillParent(true);
         scrollPane.setFadeScrollBars(false);
 
-        // Agregar elementos al escenario
         stage.addActor(scrollPane);
         stage.addActor(backArrowButton);
     }
@@ -169,16 +160,15 @@ public class AdminCreateNewsScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }
     }
 
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 
     @Override
     public void dispose() {

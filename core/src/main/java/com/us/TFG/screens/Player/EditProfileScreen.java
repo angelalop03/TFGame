@@ -13,10 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.us.TFG.elements.Imagen;
 import com.us.TFG.manager.UserManager;
-import com.us.TFG.utils.Render;
-import com.us.TFG.utils.Resources;
-import com.us.TFG.utils.TopBar;
-import com.us.TFG.utils.UIStyle;
+import com.us.TFG.utils.*;
 import com.us.TFG.utils.validators.InputValidator;
 
 public class EditProfileScreen implements Screen {
@@ -32,6 +29,8 @@ public class EditProfileScreen implements Screen {
     private String currentProfileImage;
     private final String[] profileImages = {"default_image.png", "Perfil_2.png", "Perfil_3.jpg", "Perfil_4.jpg"};
     private int currentImageIndex = 0;
+    private ImageButton backArrowButton;
+
 
     public EditProfileScreen(String username) {
         this.currentUsername = username;
@@ -39,12 +38,14 @@ public class EditProfileScreen implements Screen {
 
     @Override
     public void show() {
+        fondo = new Imagen(Resources.WARDROBE);
+        fondo.setSize(Config.WIDTH, Config.HEIGHT);
+        batch = Render.batch;
+
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         skin = UIStyle.getSkin();
-        batch = Render.batch;
-        fondo = new Imagen(Resources.WARDROBE);
-        fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 
         topBar = new TopBar(currentUsername, stage, UIStyle.getFont());
 
@@ -58,7 +59,7 @@ public class EditProfileScreen implements Screen {
 
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+         backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100); // Tamaño de la flecha
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150); // Posición en la esquina superior izquierda
         backArrowButton.addListener(new ClickListener() {
@@ -135,6 +136,10 @@ public class EditProfileScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - backArrowButton.getHeight() - 50);
+        }
     }
 
     @Override

@@ -26,8 +26,7 @@ import java.util.List;
 
 
 public class TutorialGameScreen implements Screen {
-    private static final int CHAPTER_ID = 1; // Capítulo estático del tutorial
-
+    private static final int CHAPTER_ID = 1;
 
     private Stage stage;
     private Scene currentScene;
@@ -42,19 +41,19 @@ public class TutorialGameScreen implements Screen {
     private Skin skin;
     private Texture bgTexture, characterTexture;
     private ProgressBar psychologicalBar, relationshipBar;
-    private int previousPsychologicalPoints =-1;
-    private int previousRelationshipPoints=-1;
+    private int previousPsychologicalPoints = -1;
+    private int previousRelationshipPoints = -1;
     private Image dialogueBackground;
-    private int currentPsychologicalPoints =0;
-    private int   currentRelationshipPoints =0;
+    private int currentPsychologicalPoints = 0;
+    private int currentRelationshipPoints = 0;
     private boolean updateBarsFlag = false;
+    private ImageButton backArrowButton;
 
     public TutorialGameScreen(String username) {
-
         this.username = username;
         setupBars();
-
     }
+
     private void loadGameData() {
         this.currentScene = SceneManager.getFirstSceneOfChapter(CHAPTER_ID);
         this.currentDecision = DecisionManager.getFirstDecisionBySceneId(currentScene.getId());
@@ -77,55 +76,39 @@ public class TutorialGameScreen implements Screen {
                 pixmap.fill();
                 bgTexture = new Texture(pixmap);
                 pixmap.dispose();
-
             }
         }
     }
 
     private void setupBars() {
         stage = new Stage(new ScreenViewport());
-
         int maxPoints = 100;
-        int psychologicalPoints = 0;
-        int relationshipPoints = 0;
-
-        psychologicalBar = createBar(psychologicalPoints, maxPoints);
-        relationshipBar = createBar(relationshipPoints, maxPoints);
-
-        psychologicalBar.setPosition(Gdx.graphics.getWidth() - 70, Gdx.graphics.getHeight() - 400);
-        relationshipBar.setPosition(Gdx.graphics.getWidth() - 120, Gdx.graphics.getHeight() - 400);
-
+        psychologicalBar = createBar(0, maxPoints);
+        relationshipBar = createBar(0, maxPoints);
         stage.addActor(psychologicalBar);
         stage.addActor(relationshipBar);
-
-        Gdx.input.setInputProcessor(stage);  // Necesario para que el Stage reciba eventos de input
+        Gdx.input.setInputProcessor(stage);
     }
+
 
     private ProgressBar createBar(int value, int max) {
         ProgressBar.ProgressBarStyle style = new ProgressBar.ProgressBarStyle();
         Pixmap pixmap = new Pixmap(20, 200, Pixmap.Format.RGBA8888);
-
-        // Fondo de la barra (gris oscuro)
         pixmap.setColor(Color.LIGHT_GRAY);
         pixmap.fill();
         style.background = new TextureRegionDrawable(new Texture(pixmap));
-
         pixmap.dispose();
+
         pixmap = new Pixmap(20, 200, Pixmap.Format.RGBA8888);
-
-        // Parte de progreso de la barra (rosado)
-        Color pink = new Color(1f, 0.4f, 0.7f, 1f);
-        pixmap.setColor(pink);
+        pixmap.setColor(new Color(1f, 0.4f, 0.7f, 1f));
         pixmap.fill();
-        style.knobBefore = new TextureRegionDrawable(new Texture(pixmap)); // La parte llenada
-
+        style.knobBefore = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
 
-        ProgressBar bar = new ProgressBar(0, max, 1, true, style); // Orientación vertical
+        ProgressBar bar = new ProgressBar(0, max, 1, true, style);
         bar.setValue(value);
-        bar.setSize(20, 200); // Establece el tamaño real de la barra
-        bar.setAnimateDuration(0.5f); // Permitir animación suave
-
+        bar.setSize(20, 200);
+        bar.setAnimateDuration(0.5f);
         return bar;
     }
 
@@ -133,7 +116,6 @@ public class TutorialGameScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
         loadGameData();
 
         if (currentDecision == null) {
@@ -162,31 +144,25 @@ public class TutorialGameScreen implements Screen {
             if (Gdx.files.internal(characterPath).exists()) {
                 characterTexture = new Texture(Gdx.files.internal(characterPath));
                 characterImage = new Image(new TextureRegionDrawable(characterTexture));
-                characterImage.setSize(390, 600);
-                characterImage.setPosition(180, 0);
+                float w = Gdx.graphics.getWidth();
+                float h = Gdx.graphics.getHeight();
+                characterImage.setSize(w * 0.3f, h * 0.6f);
+                characterImage.setPosition(w * 0.14f, 0);
                 stage.addActor(characterImage);
             }
         }
 
-        // Crear el fondo blanco con bordes redondeados para los diálogos
-        int cornerRadius = 20;  // Radio de las esquinas redondeadas
         int backgroundWidth = 500;
         int backgroundHeight = 200;
-
+        int cornerRadius = 20;
         Pixmap pixmap = new Pixmap(backgroundWidth, backgroundHeight, Pixmap.Format.RGBA8888);
-        pixmap.setBlending(Pixmap.Blending.SourceOver);
-        pixmap.setColor(Color.CLEAR);
-        pixmap.fill();
-
         pixmap.setColor(Color.WHITE);
-
         pixmap.fillRectangle(cornerRadius, 0, backgroundWidth - 2 * cornerRadius, backgroundHeight);
         pixmap.fillRectangle(0, cornerRadius, backgroundWidth, backgroundHeight - 2 * cornerRadius);
         pixmap.fillCircle(cornerRadius, cornerRadius, cornerRadius);
         pixmap.fillCircle(backgroundWidth - cornerRadius - 1, cornerRadius, cornerRadius);
         pixmap.fillCircle(cornerRadius, backgroundHeight - cornerRadius - 1, cornerRadius);
         pixmap.fillCircle(backgroundWidth - cornerRadius - 1, backgroundHeight - cornerRadius - 1, cornerRadius);
-
         Texture backgroundTexture = new Texture(pixmap);
         pixmap.dispose();
 
@@ -196,24 +172,35 @@ public class TutorialGameScreen implements Screen {
         dialogueLabel = new Label(currentDecision.getDialogue(), new Label.LabelStyle(UIStyle.getFont(), Color.GRAY));
         dialogueLabel.setWrap(true);
         dialogueLabel.setAlignment(Align.topLeft);
-        dialogueLabel.setWidth(backgroundWidth - 40);  // Restar padding para que el texto no quede pegado a los bordes
-        dialogueLabel.setPosition(Gdx.graphics.getWidth() - 650, Gdx.graphics.getHeight() - 250); // Cambia la posición según necesites
-
+        dialogueLabel.setWidth(backgroundWidth - 40);
+        dialogueLabel.setPosition(Gdx.graphics.getWidth() - 650, Gdx.graphics.getHeight() - 250);
         dialogueBackground.setPosition(dialogueLabel.getX() - 20, dialogueLabel.getY() - 20);
         dialogueBackground.setSize(backgroundWidth, backgroundHeight);
 
-        stage.addActor(dialogueBackground);
         stage.addActor(dialogueLabel);
+        stage.addActor(dialogueBackground);
 
         optionsTable = new Table();
         optionsTable.setFillParent(true);
-        optionsTable.bottom().pad(20);
+        optionsTable.bottom().right().padBottom(20).padRight(20);
         stage.addActor(optionsTable);
 
         showOptions();
-        // Añadir las barras al escenario
         stage.addActor(psychologicalBar);
         stage.addActor(relationshipBar);
+
+        Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton.setName("backArrow");
+        backArrowButton.setSize(100, 100);
+        backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
+        backArrowButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Render.app.setScreen(new PlayerMenuScreen(username));
+            }
+        });
+        stage.addActor(backArrowButton);
     }
 
     @Override
@@ -222,18 +209,16 @@ public class TutorialGameScreen implements Screen {
 
         Gdx.gl.glClearColor(0.36f, 0.27f, 0.49f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         if (dialogueLabel != null && dialogueBackground != null) {
-
-            float padding = 20f; // Margen alrededor del texto
-            float padding2 = 15f; // Margen alrededor del texto
-
-            dialogueLabel.layout(); // Calcular el tamaño del texto
+            float padding = 20f;
+            dialogueLabel.layout();
             float labelWidth = dialogueLabel.getWidth();
             float labelHeight = dialogueLabel.getPrefHeight();
-
             dialogueBackground.setSize(labelWidth + 35f, labelHeight + padding * 2);
-            dialogueBackground.setPosition(dialogueLabel.getX() - padding*2, dialogueLabel.getY()  - labelHeight+padding );
+            dialogueBackground.setPosition(dialogueLabel.getX() - padding * 2, dialogueLabel.getY() - labelHeight + padding);
         }
+
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
@@ -242,29 +227,51 @@ public class TutorialGameScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
 
+        // Escalar personaje
+        if (characterImage != null) {
+            characterImage.setSize(width * 0.3f, height * 0.775f);
+            characterImage.setPosition(width * 0.14f, 0);
+        }
 
+        // Reposicionar flecha
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }
+
+        // Reposicionar diálogo
+        if (dialogueLabel != null && dialogueBackground != null) {
+            dialogueLabel.setPosition(width - 650, height - 250);
+            float padding = 20f;
+            dialogueLabel.layout();
+            float labelWidth = dialogueLabel.getWidth();
+            float labelHeight = dialogueLabel.getPrefHeight();
+            dialogueBackground.setSize(labelWidth + 35f, labelHeight + padding * 2);
+            dialogueBackground.setPosition(dialogueLabel.getX() - padding * 2, dialogueLabel.getY() - labelHeight + padding);
+        }
+
+        // Redimensionar y mover las barras
+        if (psychologicalBar != null && relationshipBar != null) {
+            float barWidth = width * 0.025f; // 1.5% del ancho
+            float barHeight = height * 0.35f; // 25% del alto
+            float barSpacing = barWidth + 10;
+
+            psychologicalBar.setSize(barWidth, barHeight);
+            relationshipBar.setSize(barWidth, barHeight);
+
+            psychologicalBar.setPosition(width - barSpacing, height - barHeight - 250);
+            relationshipBar.setPosition(width - barSpacing *2, height - barHeight - 250);
+        }
+
+        showOptions();
     }
 
-    @Override
-    public void pause() {
 
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
+    @Override public void dispose() {
         stage.dispose();
         font.dispose();
-
     }
     private void updateBars() {
         if (updateBarsFlag) {  // Solo actualiza si el flag está activo
@@ -372,7 +379,7 @@ public class TutorialGameScreen implements Screen {
 
         // Configurar la tabla de opciones para que esté a la derecha de la pantalla
         optionsTable.setFillParent(true);
-        optionsTable.top().right().padTop(topPadding).padRight(20);
+        optionsTable.bottom().right().padTop(topPadding).padRight(20);
 
         for (Option option : options) {
 
@@ -480,12 +487,18 @@ public class TutorialGameScreen implements Screen {
             if (Gdx.files.internal(characterPath).exists()) {
                 characterTexture = new Texture(Gdx.files.internal(characterPath));
                 characterImage = new Image(new TextureRegionDrawable(characterTexture));
-                characterImage.setSize(390, 600);
-                characterImage.setPosition(180, 0);
+
+                // Escalado dinámico (como en show() y resize())
+                float w = Gdx.graphics.getWidth();
+                float h = Gdx.graphics.getHeight();
+                characterImage.setSize(w * 0.3f, h * 0.775f);
+                characterImage.setPosition(w * 0.14f, 0);
+
                 stage.addActor(characterImage);
             }
         }
     }
+
 
     private void updateBackgroundImage() {
         if (background != null) {

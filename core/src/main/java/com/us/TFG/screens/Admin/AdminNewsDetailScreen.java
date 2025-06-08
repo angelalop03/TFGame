@@ -29,6 +29,7 @@ public class AdminNewsDetailScreen implements Screen {
     private Skin skin;
     private TopBar topBar;
     private String username;
+    private ImageButton backArrowButton;
 
     public AdminNewsDetailScreen(String username, NewsManager.NewsData news) {
         this.username = username;
@@ -46,7 +47,6 @@ public class AdminNewsDetailScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         font = UIStyle.getFont();
-        topBar = new TopBar(username, stage, font);
         skin = new Skin();
         // Añadir la fuente generada al skin
         skin.add("Caveat", font);
@@ -56,7 +56,7 @@ public class AdminNewsDetailScreen implements Screen {
 
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100); // Tamaño de la flecha
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150); // Posición en la esquina superior izquierda
         backArrowButton.addListener(new ClickListener() {
@@ -185,6 +185,10 @@ public class AdminNewsDetailScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }
     }
 
     @Override

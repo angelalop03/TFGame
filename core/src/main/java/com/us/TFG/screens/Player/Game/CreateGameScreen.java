@@ -34,6 +34,8 @@ public class CreateGameScreen implements Screen {
     private List<History> histories;
     private int currentIndex;
     private ScrollPane scrollPane;
+    private ImageButton backArrowButton;
+
 
     public CreateGameScreen(String username) {
         this.username = username;
@@ -57,7 +59,7 @@ public class CreateGameScreen implements Screen {
 
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+         backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
@@ -72,8 +74,8 @@ public class CreateGameScreen implements Screen {
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
 
-        Pixmap pixmap = new Pixmap(1000, 500, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(1.0f, 0.41f, 0.71f, 0.8f));
+        Pixmap pixmap = new Pixmap(1000, 400, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(1.0f, 0.41f, 0.71f, 0.6f));
         pixmap.fill();
         TextureRegionDrawable background = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
@@ -180,6 +182,10 @@ public class CreateGameScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - backArrowButton.getHeight() - 50);
+        }
     }
 
     @Override

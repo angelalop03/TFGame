@@ -36,6 +36,7 @@ public class AdminHistorialScreen implements Screen {
     private List<Game> playerGames;
     private int currentIndex;
     private ScrollPane scrollPane;
+    private ImageButton backArrowButton;
 
     public AdminHistorialScreen(String adminUsername,String playerUsername) {
 
@@ -62,7 +63,7 @@ public class AdminHistorialScreen implements Screen {
 
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+        backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
@@ -181,6 +182,10 @@ public class AdminHistorialScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - 150);
+        }
     }
 
     @Override

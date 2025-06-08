@@ -270,8 +270,36 @@ public class SceneGameScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
 
+        if (characterImage != null) {
+            characterImage.setSize(width * 0.3f, height * 0.775f);
+            characterImage.setPosition(width * 0.14f, 0);
+        }
 
+        if (psychologicalBar != null && relationshipBar != null) {
+            float barWidth = width * 0.02f;
+            float barHeight = height * 0.3f;
+            float spacing = barWidth + 10;
+
+            psychologicalBar.setSize(barWidth, barHeight);
+            relationshipBar.setSize(barWidth, barHeight);
+
+            psychologicalBar.setPosition(width - spacing, height - barHeight - 250);
+            relationshipBar.setPosition(width - spacing * 2, height - barHeight - 250);
+        }
+
+        if (dialogueLabel != null && dialogueBackground != null) {
+            dialogueLabel.setPosition(width - 650, height - 250);
+            float padding = 20f;
+            dialogueLabel.layout();
+            float labelWidth = dialogueLabel.getWidth();
+            float labelHeight = dialogueLabel.getPrefHeight();
+            dialogueBackground.setSize(labelWidth + padding * 2, labelHeight + padding * 2);
+            dialogueBackground.setPosition(dialogueLabel.getX() - padding * 2, dialogueLabel.getY() - labelHeight + padding);
+        }
+
+        showOptions();
     }
+
 
     @Override
     public void pause() {
@@ -380,7 +408,7 @@ public class SceneGameScreen implements Screen {
         buttonStyle.font = UIStyle.getFont();
         buttonStyle.fontColor = Color.WHITE;
 
-        int optionWidth = 600;
+        int optionWidth = 700;
         int optionHeight = 80;
 
         // Cantidad de opciones disponibles
@@ -398,7 +426,7 @@ public class SceneGameScreen implements Screen {
 
         // Configurar la tabla de opciones para que esté a la derecha de la pantalla
         optionsTable.setFillParent(true);
-        optionsTable.top().right().padTop(topPadding).padRight(20);
+        optionsTable.bottom().right().padTop(topPadding).padRight(20);
 
         for (Option option : options) {
 
@@ -563,8 +591,13 @@ public class SceneGameScreen implements Screen {
             characterTexture = assetManager.get(characterPath, Texture.class);
 
             characterImage = new Image(new TextureRegionDrawable(characterTexture));
-            characterImage.setSize(395, 600);
-            characterImage.setPosition(180, 0);
+            float w = Gdx.graphics.getWidth();
+            float h = Gdx.graphics.getHeight();
+
+            characterImage.setSize(w * 0.3f, h * 0.775f);
+            characterImage.setPosition(w * 0.14f, 0);
+
+
             stage.addActor(characterImage);
         }
     }
