@@ -3,6 +3,7 @@ package com.us.TFG.screens.Player.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -46,7 +47,7 @@ public class SceneGameScreen implements Screen {
     private int previousPsychologicalPoints =-1;
     private int previousRelationshipPoints=-1;
     private Image dialogueBackground;
-
+    private Music backgroundMusic;
 
     public SceneGameScreen(int gameId, int chapterId, String username) {
         this.gameId = gameId;
@@ -155,6 +156,12 @@ public class SceneGameScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+        if (backgroundMusic == null) {
+            backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/music/MUSICA LOFI (Sin Copyright) #25.mp3"));
+            backgroundMusic.setLooping(true);
+            backgroundMusic.setVolume(0.5f);
+            backgroundMusic.play();
+        }
         // Check if the chapter has already been played
         if (ChapterManager.isChapterPlayed(gameId, chapterId)) {
             stage = new Stage(new ScreenViewport());
@@ -313,6 +320,9 @@ public class SceneGameScreen implements Screen {
 
     @Override
     public void hide() {
+        if (backgroundMusic != null && backgroundMusic.isPlaying()) {
+            backgroundMusic.stop();
+        }
 
     }
 
@@ -320,6 +330,10 @@ public class SceneGameScreen implements Screen {
     public void dispose() {
         stage.dispose();
         font.dispose();
+        if (backgroundMusic != null) {
+            backgroundMusic.stop();
+            backgroundMusic.dispose();
+        }
 
     }
     private void updateBars() {
@@ -493,8 +507,8 @@ public class SceneGameScreen implements Screen {
         } else {
             // Comprobar si todas las decisiones de la escena están completas
 
-                goToNextSceneOrChapter();
-                System.out.println("GotoNextSceneOrChapter");
+            goToNextSceneOrChapter();
+            System.out.println("GotoNextSceneOrChapter");
 
         }
     }
