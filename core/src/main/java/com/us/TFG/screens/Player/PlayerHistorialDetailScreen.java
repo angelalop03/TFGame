@@ -99,7 +99,7 @@ public class PlayerHistorialDetailScreen implements Screen {
                     // === DECISION BOX ===
                     Table decisionBox = new Table();
                     decisionBox.pad(30);
-                    decisionBox.setBackground(new TextureRegionDrawable(createColoredTexture(1, 1, new Color(1f, 0.7f, 0.8f, 0.5f)))); // rosa translúcido
+                    decisionBox.setBackground(new TextureRegionDrawable(UIStyle.createColoredTexture(1, 1, new Color(1f, 0.7f, 0.8f, 0.5f)))); // rosa translúcido
 
                     // Imagen más pequeña
                     String chapterImgPath = chapter.getImagePath();
@@ -171,15 +171,7 @@ public class PlayerHistorialDetailScreen implements Screen {
         stage.addActor(decisionTable);
     }
 
-    // === Método auxiliar para fondo rosa translúcido ===
-    private Texture createColoredTexture(int width, int height, Color color) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setColor(color);
-        pixmap.fill();
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        return texture;
-    }
+
 
     @Override
     public void render(float delta) {
@@ -193,6 +185,7 @@ public class PlayerHistorialDetailScreen implements Screen {
 
     @Override public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
     }
     @Override public void pause() {}
     @Override public void resume() {}
