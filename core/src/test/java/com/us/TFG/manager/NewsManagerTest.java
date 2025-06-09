@@ -98,7 +98,7 @@ public class NewsManagerTest {
 
     @Test
     public void testUpdateNewsWithNullFields() {
-        // Asegúrate de que el ID 1 exista o usa un ID válido de tu base de datos de prueba
+
         boolean updated = NewsManager.updateNews(1, null, null);
         assertFalse("Actualizar noticia con campos nulos debería devolver false", updated);
     }
