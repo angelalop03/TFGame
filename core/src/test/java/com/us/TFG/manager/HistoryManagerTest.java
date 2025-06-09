@@ -117,5 +117,29 @@ public class HistoryManagerTest {
         assertFalse("La historia debería haber sido eliminada", exists);
     }
 
+    @Test
+    public void testCreateValidHistory() {
+        History history = new History();
+        history.setTitle("Historia válida");
+        history.setPublished(true);
+        history.setImagePath("imagenes/historia_valida.png");
+        history.setDescription("Una historia de prueba válida para insertar en la base de datos.");
+
+        boolean result = HistoryManager.createHistory(history);
+        assertTrue("La historia válida debería insertarse correctamente", result);
+
+        // Verificar que fue insertada
+        List<History> allHistories = HistoryManager.getHistories();
+        boolean found = allHistories.stream().anyMatch(h ->
+            "Historia válida".equals(h.getTitle()) &&
+                "imagenes/historia_valida.png".equals(h.getImagePath()) &&
+                h.isPublished() &&
+                "Una historia de prueba válida para insertar en la base de datos.".equals(h.getDescription())
+        );
+
+        assertTrue("La historia recién insertada debería estar en la base de datos", found);
+    }
+
+
 
 }
