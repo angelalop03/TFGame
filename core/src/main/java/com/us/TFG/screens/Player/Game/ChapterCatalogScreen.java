@@ -32,7 +32,7 @@ public class ChapterCatalogScreen implements Screen {
     private int gameId;
     private int currentPage = 0;
     private static final int CHAPTERS_PER_PAGE = 5;
-    private static final int MAX_UNLOCKED_CHAPTERS = 10;
+    private static final int MAX_UNLOCKED_CHAPTERS = 9;
     private List<Chapter> chapters;
 
     private ImageButton flechaDButton;
