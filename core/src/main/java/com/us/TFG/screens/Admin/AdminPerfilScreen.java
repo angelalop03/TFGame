@@ -28,6 +28,7 @@ public class AdminPerfilScreen implements Screen {
     private Skin skin;
     private BitmapFont font;
     private TopBar topBar;
+    private Table centerTable;
 
     public AdminPerfilScreen(String username) {
         this.username = username;
@@ -35,66 +36,60 @@ public class AdminPerfilScreen implements Screen {
 
     @Override
     public void show() {
-        // Cargar el fondo
         fondo = new Imagen(Resources.FONDON);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         b = Render.batch;
-        // Crear Stage y Skin
+
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         font = UIStyle.getFont();
         topBar = new TopBar(username, stage, font);
         skin = new Skin();
-        // Añadir la fuente generada al skin
         skin.add("Caveat", font);
 
-
-        // Crear el cuadro gris translúcido
+        // Recuadro
         Pixmap pixmap = new Pixmap(700, 200, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0.8f, 0.8f, 0.8f, 0.6f)); // Gris claro con transparencia
+        pixmap.setColor(new Color(0.5f, 0.0f, 0.5f, 0.6f));
         pixmap.fill();
         TextureRegionDrawable backgroundDrawable = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
 
         Image background = new Image(backgroundDrawable);
-        background.setPosition((Gdx.graphics.getWidth() - 700) / 2, 230);
-        stage.addActor(background);
 
-        // Crear la tabla para mostrar la información
-        Table table = new Table();
-        table.setFillParent(true);
+        // Tabla central
+        centerTable = new Table();
+        centerTable.setBackground(backgroundDrawable);
+        centerTable.pad(40);
+        centerTable.center();
 
         Label usernameLabel = new Label("Usuario: " + username, UIStyle.getLabelStyle());
-        table.add(usernameLabel).padBottom(10);
-        table.row();
+        centerTable.add(usernameLabel).padBottom(20).row();
 
-        // Botón para editar perfil
         TextButton changepasswordButton = new TextButton("Cambiar Contraseña", UIStyle.getButtonStyle());
-        changepasswordButton.addListener(new ClickListener(){
+        changepasswordButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
                 Render.app.setScreen(new ChangePasswordScreen(username));
             }
-
         });
-        table.add(changepasswordButton).size(250, 60).padBottom(10);
-        table.row();
+        centerTable.add(changepasswordButton).size(250, 60).padBottom(10).row();
 
-        // Botón para cerrar sesión
         TextButton logOutButton = new TextButton("Cerrar Sesión", UIStyle.getButtonStyle());
         logOutButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
                 showLogoutDialog();
             }
         });
-        table.add(logOutButton).size(250, 60).padBottom(10);
+        centerTable.add(logOutButton).size(250, 60).padBottom(10).row();
 
-        // Ajustar la posición de la tabla sobre el cuadro gris
-        table.setPosition(0, -50);
-        stage.addActor(table);
+        // Contenedor para centrar la tabla siempre
+        Table wrapper = new Table();
+        wrapper.setFillParent(true);
+        wrapper.center();
+        wrapper.add(centerTable);
+
+        stage.addActor(wrapper);
     }
 
     @Override
@@ -110,16 +105,12 @@ public class AdminPerfilScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
     }
 
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 
     @Override
     public void dispose() {
@@ -127,9 +118,7 @@ public class AdminPerfilScreen implements Screen {
         font.dispose();
     }
 
-
     private void showLogoutDialog() {
-        // Crear estilo del diálogo
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = font;
         dialogStyle.titleFontColor = Color.WHITE;
@@ -147,10 +136,8 @@ public class AdminPerfilScreen implements Screen {
         buttonStyle.up = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(150, 80, Color.GRAY, 0.7f)));
         buttonStyle.down = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(150, 80, Color.LIGHT_GRAY, 0.7f)));
 
-        // Etiqueta de confirmación
         Label confirmLabel = new Label("¿Estás seguro de que deseas cerrar sesión?", labelStyle);
 
-        // Botón de confirmar
         TextButton confirmButton = new TextButton("Confirmar", buttonStyle);
         confirmButton.addListener(new ClickListener() {
             @Override
@@ -159,7 +146,6 @@ public class AdminPerfilScreen implements Screen {
             }
         });
 
-        // Botón de cancelar
         TextButton cancelButton = new TextButton("Cancelar", buttonStyle);
         cancelButton.addListener(new ClickListener() {
             @Override
@@ -171,8 +157,6 @@ public class AdminPerfilScreen implements Screen {
         logoutDialog.getContentTable().add(confirmLabel).padBottom(10).row();
         logoutDialog.getButtonTable().add(confirmButton).pad(10);
         logoutDialog.getButtonTable().add(cancelButton).pad(10);
-
         logoutDialog.show(stage);
     }
-
 }

@@ -46,7 +46,7 @@ public class PlayerPerfilScreen implements Screen {
 
     @Override
     public void show() {
-        fondo = new Imagen(Resources.FONDON);
+        fondo = new Imagen(Resources.WARDROBE);
         fondo.setSize(Config.WIDTH, Config.HEIGHT);
         batch = Render.batch;
         stage = new Stage(new ScreenViewport());
@@ -117,6 +117,7 @@ public class PlayerPerfilScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
     }
 
     @Override
@@ -141,7 +142,7 @@ public class PlayerPerfilScreen implements Screen {
         Window.WindowStyle dialogStyle = new Window.WindowStyle();
         dialogStyle.titleFont = UIStyle.getFont();
         dialogStyle.titleFontColor = Color.WHITE;
-        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(500, 300, Color.VIOLET, 1f)));
+        dialogStyle.background = new TextureRegionDrawable(new Texture(UIStyle.createRoundedPixmap(500, 300, Color.RED, 1f)));
 
         Dialog deleteDialog = new Dialog("", dialogStyle);
 

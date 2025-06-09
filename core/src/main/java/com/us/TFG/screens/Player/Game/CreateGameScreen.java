@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -35,6 +34,8 @@ public class CreateGameScreen implements Screen {
     private List<History> histories;
     private int currentIndex;
     private ScrollPane scrollPane;
+    private ImageButton backArrowButton;
+
 
     public CreateGameScreen(String username) {
         this.username = username;
@@ -53,12 +54,12 @@ public class CreateGameScreen implements Screen {
         topBar = new TopBar(username, stage, font);
 
         // Cargar las partidas del jugador
-        histories = HistoryManager.getHistories();
+        histories = HistoryManager.getHistoriesPublished();
         currentIndex = 0;
 
         // Crear la flecha de retroceso
         Texture backArrowTexture = new Texture(Gdx.files.internal("assets/photos/flecha.png"));
-        ImageButton backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
+         backArrowButton = new ImageButton(new TextureRegionDrawable(backArrowTexture));
         backArrowButton.setSize(100, 100);
         backArrowButton.setPosition(10, Gdx.graphics.getHeight() - 150);
         backArrowButton.addListener(new ClickListener() {
@@ -73,8 +74,8 @@ public class CreateGameScreen implements Screen {
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
 
-        Pixmap pixmap = new Pixmap(1000, 500, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(1.0f, 0.41f, 0.71f, 0.8f));
+        Pixmap pixmap = new Pixmap(1000, 400, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(1.0f, 0.41f, 0.71f, 0.6f));
         pixmap.fill();
         TextureRegionDrawable background = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
@@ -95,17 +96,18 @@ public class CreateGameScreen implements Screen {
             contentTable.add(noGamesLabel).colspan(3).padTop(50);
         } else if (histories.size() == 1) {
             History history = histories.get(0);
+
             Table cardTable = new Table(skin);
+            cardTable.setBackground(new TextureRegionDrawable(new Texture("assets/photos/Histories/" + history.getImagePath())));
             Label gameNameLabel = new Label(history.getTitle(), labelStyle);
             cardTable.add(gameNameLabel).center().pad(10);
 
             cardTable.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Render.app.setScreen(new ChapterCatalogScreen(username, history.getId()));
+                    Render.app.setScreen(new HistoryDetailScreen(username, history));
                 }
             });
-
             contentTable.add(cardTable).width(300).height(200).padTop(50).colspan(3);
         } else {
             // Flecha izquierda
@@ -180,6 +182,10 @@ public class CreateGameScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        topBar.updateSize();
+        if (backArrowButton != null) {
+            backArrowButton.setPosition(10, height - backArrowButton.getHeight() - 50);
+        }
     }
 
     @Override

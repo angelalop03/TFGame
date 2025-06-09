@@ -18,7 +18,37 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserManager {
-    private static Label feedbackLabel;
+
+    public static String findUserByPlayerId(int playerId) {
+        String query = "SELECT u.username FROM users u JOIN players p ON u.id = p.user_id WHERE p.id = ?";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+
+        if (connection == null) {
+            System.out.println("Error: No se pudo conectar a la base de datos.");
+            return null;
+        }
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, playerId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String username = rs.getString("username");
+                rs.close();
+                stmt.close();
+                return username;
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 
     public static boolean registerUser(String username, String password, String firstname, String lastname, String email) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());

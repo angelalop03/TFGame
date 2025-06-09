@@ -1,17 +1,21 @@
 package com.us.TFG.manager;
 
 import com.us.TFG.MyTfgGame;
+import com.us.TFG.model.PlayerDecisionState;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
-    public class PlayerDecisionStateManager {
+public class PlayerDecisionStateManager {
 
 
-        public static void updateDecisionState(int playerId, int gameId, int decisionId, boolean completed) {
-            String query = "INSERT INTO player_decision_state (player_id, game_id, decision_id, completed) VALUES (?,?,?,?)";
+        public static void updateDecisionState(int playerId, int gameId, int decisionId, int optionId, boolean completed) {
+            String query = "INSERT INTO player_decision_state (player_id, game_id, decision_id, option_id, completed) VALUES (?,?,?,?,?)";
             Connection connection = MyTfgGame.databaseManager.getConnection();
 
             if (connection == null) {
@@ -22,7 +26,8 @@ import java.sql.SQLException;
                 stmt.setInt(1, playerId);      // ID del jugador
                 stmt.setInt(2, gameId);        // ID del juego
                 stmt.setInt(3, decisionId);    // ID de la decisión
-                stmt.setBoolean(4, completed); // Marcar como completada o no
+                stmt.setInt(4, optionId);      // ID de la opción elegida
+                stmt.setBoolean(5, completed); // Marcar como completada o no
 
 
                 int rowsAffected = stmt.executeUpdate();
@@ -37,11 +42,11 @@ import java.sql.SQLException;
             }
         }
 
-        public static boolean areAllDecisionsComplete(int playerId, int gameId, int sceneId) {
-            String query = " SELECT COUNT(*) AS incomplete_count FROM decisions d LEFT JOIN player_decision_state" +
-            " pds ON d.id = pds.decision_id AND pds.player_id = ? AND pds.game_id = ? WHERE d.scene_id = ?"+
-            " AND (pds.completed IS NULL OR pds.completed = 0) ";
-
+        public static List<PlayerDecisionState> getPositivePointDecisions(int playerId, int gameId) {
+            List<PlayerDecisionState> decisions = new ArrayList<>();
+            String query = "SELECT pds.* FROM player_decision_state pds " +
+                "JOIN options o ON pds.option_id = o.id " +
+                "WHERE pds.player_id = ? AND pds.game_id = ? AND (o.points_m > 0 OR o.points_r > 0)";
             Connection connection = MyTfgGame.databaseManager.getConnection();
 
             if (connection == null) {
@@ -51,21 +56,24 @@ import java.sql.SQLException;
             try (PreparedStatement stmt = connection.prepareStatement(query)) {
                 stmt.setInt(1, playerId);
                 stmt.setInt(2, gameId);
-                stmt.setInt(3, sceneId);
+                ResultSet rs = stmt.executeQuery();
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        int incompleteCount = rs.getInt("incomplete_count");
-                        return incompleteCount == 0; // Si no hay decisiones incompletas, todas están completas
-                    }
+                while (rs.next()) {
+                    PlayerDecisionState decision = new PlayerDecisionState();
+                    decision.setId(rs.getInt("id"));
+                    decision.setPlayerId(rs.getInt("player_id"));
+                    decision.setGameId(rs.getInt("game_id"));
+                    decision.setDecisionId(rs.getInt("decision_id"));
+                    decision.setOptionId(rs.getInt("option_id"));
+                    decision.setCompleted(rs.getBoolean("completed"));
+                    decisions.add(decision);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
 
-            return false; // Si ocurre un error o no se encuentran datos, devolver falso
+            return decisions;
         }
-
 
 
 
