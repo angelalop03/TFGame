@@ -1,25 +1,32 @@
 package com.us.TFG.manager;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.us.TFG.FireBase.PlayerFireBase;
 import com.us.TFG.MyTfgGame;
 import com.us.TFG.model.Authorities;
 import com.us.TFG.model.Player;
+import com.us.TFG.model.User;
+import com.us.TFG.FireBase.UserFireBase;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class UserManager {
 
     public static String findUserByPlayerId(int playerId) {
+        // 🔁 Intentar buscar en Firebase primero
+        String firebaseUsername = UserFireBase.getUsernameByPlayerIdFirebase(playerId);
+        if (firebaseUsername != null) return firebaseUsername;
+
+        // 🧱 Si falla Firebase, usar SQLite local
         String query = "SELECT u.username FROM users u JOIN players p ON u.id = p.user_id WHERE p.id = ?";
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
@@ -50,69 +57,76 @@ public class UserManager {
     }
 
 
+
     public static boolean registerUser(String username, String password, String firstname, String lastname, String email) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        if (usernameExists(username)) {
-            System.out.println(usernameExists(username));
-            return false;
-        }
+        if (usernameExists(username)) return false;
 
-        String userSql = "INSERT INTO users (username, password, authority" +
-            ") VALUES (?, ?, ?)";
+        String userSql = "INSERT INTO users (username, password, authority) VALUES (?, ?, ?)";
         String playerSql = "INSERT INTO players (firstname, lastname, email, image, user_id) VALUES (?, ?, ?, 'default_image.png', ?)";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
         try {
             connection.setAutoCommit(false);
 
-            // Insertar usuario
+            int userId = -1;
             try (PreparedStatement userStmt = connection.prepareStatement(userSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 userStmt.setString(1, username);
-                userStmt.setString(2, hashedPassword); // Guardar contraseña encriptada
-                userStmt.setInt(3, 2); // Establecer authorities a 2
+                userStmt.setString(2, hashedPassword);
+                userStmt.setInt(3, 2); // PLAYER
                 userStmt.executeUpdate();
 
-                ResultSet generatedKeys = userStmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int userId = generatedKeys.getInt(1);
-
-                    // Insertar jugador
-                    try (PreparedStatement playerStmt = connection.prepareStatement(playerSql)) {
-                        playerStmt.setString(1, firstname);
-                        playerStmt.setString(2, lastname);
-                        playerStmt.setString(3, email);
-                        playerStmt.setInt(4, userId);
-                        playerStmt.executeUpdate();
-                    }
+                ResultSet keys = userStmt.getGeneratedKeys();
+                if (keys.next()) {
+                    userId = keys.getInt(1);
                 }
             }
+
+            try (PreparedStatement playerStmt = connection.prepareStatement(playerSql)) {
+                playerStmt.setString(1, firstname);
+                playerStmt.setString(2, lastname);
+                playerStmt.setString(3, email);
+                playerStmt.setInt(4, userId);
+                playerStmt.executeUpdate();
+            }
+
             connection.commit();
+
+            // 🔁 Guardar también en Firebase
+            User user = new User(username, hashedPassword, Authorities.PLAYER);
+            user.setId(userId);
+            UserFireBase.registerUserFire(user);
+
+            Player player = new Player(firstname,lastname,email, "default_image.png", userId);
+            UserFireBase.registerPlayerFire(player);
+
+
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
             try {
                 connection.rollback();
-            } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
+            e.printStackTrace();
             return false;
         }
     }
 
 
-
-
-
     public static boolean usernameExists(String username) {
+        // 1. Buscar en Firebase
+        if (UserFireBase.usernameExistsInFirebase(username)) {
+            return true;
+        }
+
+        // 2. Fallback a SQLite
         String query = "SELECT COUNT(*) FROM users WHERE username = ?";
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
-        if (connection == null) {
-            System.out.println("Error: No se pudo conectar a la base de datos.");
-            return false;
-        }
+        if (connection == null) return false;
 
         try {
             PreparedStatement stmt = connection.prepareStatement(query);
@@ -129,86 +143,122 @@ public class UserManager {
         }
     }
 
-    public static boolean updateProfile(String currentUsername, String newUsername, String firstname,
-                                        String lastname, String email, String profileImage) {
-        System.out.println(usernameExists(newUsername));
-        // Si no se proporciona una nueva imagen, se usa la imagen actual (o una predeterminada si es necesario)
+
+    public static boolean updateProfile(String currentUsername, String newUsername,
+                                        String firstname, String lastname,
+                                        String email, String profileImage) {
+
         if (profileImage == null || profileImage.isEmpty()) {
-            profileImage = PlayerManager.getCurrentProfileImage(currentUsername); // Obtener imagen actual si no se proporciona una nueva
+            profileImage = PlayerManager.getCurrentProfileImage(currentUsername);
         }
 
-        // Comprobar si el nuevo nombre de usuario ya existe, excepto si es el mismo que el actual
-        if (!newUsername.equals(currentUsername)) {
-            if (usernameExists(newUsername)) {
-                System.out.println(usernameExists(newUsername));
-                return false;
-            }
+        if (!newUsername.equals(currentUsername) && usernameExists(newUsername)) {
+            return false;
         }
 
+        String updateUserSql = "UPDATE users SET username = ? WHERE username = ?";
+        String updatePlayerSql = "UPDATE players SET firstname = ?, lastname = ?, email = ?, image = ? WHERE user_id = (SELECT id FROM users WHERE username = ?)";
 
-            String updateUserSql = "UPDATE users SET username = ?, password = ? WHERE username = ?";
-            String updatePlayerSql = "UPDATE players SET firstname = ?, lastname = ?, email = ?, image = ? WHERE user_id = (SELECT id FROM users WHERE username = ?)";
+        Connection connection = MyTfgGame.databaseManager.getConnection();
+        if (connection == null) {
+            System.out.println("Error: No se pudo conectar a la base de datos.");
+            return false;
+        }
 
+        try {
+            connection.setAutoCommit(false);
 
-            Connection connection = MyTfgGame.databaseManager.getConnection();
-            if (connection == null) {
-                System.out.println("Error: No se pudo conectar a la base de datos.");
-                return false;
-            }
+            PreparedStatement userStmt = connection.prepareStatement(updateUserSql);
+            userStmt.setString(1, newUsername);
+            userStmt.setString(2, currentUsername);
+            userStmt.executeUpdate();
 
-            try {
-                connection.setAutoCommit(false);
+            PreparedStatement playerStmt = connection.prepareStatement(updatePlayerSql);
+            playerStmt.setString(1, firstname);
+            playerStmt.setString(2, lastname);
+            playerStmt.setString(3, email);
+            playerStmt.setString(4, profileImage);
+            playerStmt.setString(5, newUsername);
+            playerStmt.executeUpdate();
 
-                PreparedStatement userStmt = connection.prepareStatement(updateUserSql);
-                userStmt.setString(1, newUsername);
-                userStmt.setString(2, currentUsername);
-                userStmt.executeUpdate();
+            // Obtener ID del user y del player
+            int userId = -1;
+            int playerId = -1;
 
-                PreparedStatement playerStmt = connection.prepareStatement(updatePlayerSql);
-                playerStmt.setString(1, firstname);
-                playerStmt.setString(2, lastname);
-                playerStmt.setString(3, email);
-                playerStmt.setString(4, profileImage); // Asignar la imagen
-                playerStmt.setString(5, newUsername);
-                playerStmt.executeUpdate();
-
-                userStmt.close();
-                playerStmt.close();
-
-                connection.commit();
-                currentUsername = newUsername;
-                return true;
-
-
-            } catch (SQLException e) {
-                try {
-                    connection.rollback();
-                } catch (SQLException rollbackEx) {
-                    rollbackEx.printStackTrace();
+            try (PreparedStatement idStmt = connection.prepareStatement(
+                "SELECT u.id as uid, p.id as pid FROM users u JOIN players p ON u.id = p.user_id WHERE u.username = ?")) {
+                idStmt.setString(1, newUsername);
+                ResultSet rs = idStmt.executeQuery();
+                if (rs.next()) {
+                    userId = rs.getInt("uid");
+                    playerId = rs.getInt("pid");
                 }
-                e.printStackTrace();
-                return false;
+                rs.close();
             }
 
+            connection.commit();
+
+            // 🔁 Sincronizar con Firebase
+            UserFireBase.updateUserAndPlayerFire(currentUsername, newUsername,
+                firstname, lastname, email, profileImage, userId, playerId);
+
+            return true;
+
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+            e.printStackTrace();
+            return false;
+        }
     }
 
 
 
 
 
-    public static boolean verifyLogin(String username, String password) {
-        String sql = "SELECT password FROM users WHERE username = ?";
-        try (PreparedStatement statement = MyTfgGame.databaseManager.getConnection().prepareStatement(sql)) {
-            statement.setString(1, username);
-            ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()) {
-                String storedPassword = resultSet.getString("password");
-                return BCrypt.checkpw(password, storedPassword); // Comparar contraseñas
+    public static boolean verifyLogin(String username, String password) {
+        // 🔍 1. Intentar en Firebase primero
+        User user = UserFireBase.verifyLoginFire(username);
+
+        if (user != null) {
+            // Comparar contraseña usando BCrypt
+            if (BCrypt.checkpw(password, user.getPassword())) {
+                System.out.println("Login verificado desde Firebase");
+                return true;
+            } else {
+                System.out.println("Contraseña incorrecta en Firebase");
+                return false;
             }
-        } catch (SQLException e) {
-            System.err.println("Error al verificar login: " + e.getMessage());
         }
+
+        // 🔁 2. Fallback: buscar en la base de datos local (SQLite)
+        String sql = "SELECT password FROM users WHERE username = ?";
+
+        try (PreparedStatement stmt = MyTfgGame.databaseManager.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String storedPassword = rs.getString("password");
+
+                if (BCrypt.checkpw(password, storedPassword)) {
+                    System.out.println("Login verificado desde SQLite");
+                    return true;
+                } else {
+                    System.out.println("Contraseña incorrecta en SQLite");
+                    return false;
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al verificar login en SQLite: " + e.getMessage());
+        }
+
+        System.out.println("Usuario no encontrado en Firebase ni SQLite");
         return false;
     }
 
@@ -216,9 +266,34 @@ public class UserManager {
 
 
 
+
     public static void loadUserProfile(String currentUsername, TextField usernameField,
-                                 TextField firstnameField, TextField lastnameField, TextField emailField, String currentProfileImage , Image profileImage) {
-        String query = "SELECT username, firstname, lastname, email,image FROM users u JOIN players p ON u.id = p.user_id WHERE username = ?";
+                                       TextField firstnameField, TextField lastnameField,
+                                       TextField emailField, String currentProfileImage, Image profileImage) {
+
+        // 1. Obtener username desde Firebase
+        Map<String, String> userData = UserFireBase.getUserProfileFromFirebase(currentUsername);
+        // 2. Obtener playerData desde Firebase
+        PlayerManager.PlayerData playerData = PlayerFireBase.getPlayerDataByUsernameFire(currentUsername);
+
+        if (!userData.isEmpty() && playerData != null) {
+            // Setear campos
+            usernameField.setText(userData.get("username"));
+            firstnameField.setText(playerData.getFirstname());
+            lastnameField.setText(playerData.getLastname());
+            emailField.setText(playerData.getEmail());
+            currentProfileImage = playerData.getImage();
+
+
+            if (currentProfileImage != null && !currentProfileImage.isEmpty()) {
+                profileImage.setDrawable(new TextureRegionDrawable(
+                    new Texture(Gdx.files.internal("assets/photos/players/" + currentProfileImage))));
+            }
+            return;
+        }
+
+        // 3. Fallback: cargar desde SQLite
+        String query = "SELECT username, firstname, lastname, email, image FROM users u JOIN players p ON u.id = p.user_id WHERE username = ?";
         Connection connection = MyTfgGame.databaseManager.getConnection();
 
         if (connection == null) {
@@ -236,7 +311,8 @@ public class UserManager {
                 lastnameField.setText(rs.getString("lastname"));
                 emailField.setText(rs.getString("email"));
                 currentProfileImage = rs.getString("image");
-                profileImage.setDrawable(new TextureRegionDrawable(new Texture(Gdx.files.internal("assets/photos/players/" + currentProfileImage))));
+                profileImage.setDrawable(new TextureRegionDrawable(
+                    new Texture(Gdx.files.internal("assets/photos/players/" + currentProfileImage))));
             }
             rs.close();
             stmt.close();
@@ -244,71 +320,71 @@ public class UserManager {
             e.printStackTrace();
         }
     }
+
+
 
     public static Authorities getAuthority(String username) {
-        String query = "SELECT authority FROM users WHERE username = ?";
-        Connection connection = MyTfgGame.databaseManager.getConnection();
-
-        if (connection == null) {
-            throw new RuntimeException("Error: No se pudo conectar a la base de datos.");
-        }
-
         try {
-            PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                int authorityValue = rs.getInt("authority");
-                rs.close();
-                stmt.close();
-                return Authorities.fromValue(authorityValue); // Convertir el valor entero al enum Authorities
+            // 1. Buscar en Firebase
+            User user = UserFireBase.verifyLoginFire(username);
+            if (user != null && user.getAuthority() != null) {
+                return user.getAuthority();
             }
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+            // 2. Fallback: Buscar en SQLite
+            String query = "SELECT authority FROM users WHERE username = ?";
+            Connection connection = MyTfgGame.databaseManager.getConnection();
+
+            if (connection != null) {
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    stmt.setString(1, username);
+                    ResultSet rs = stmt.executeQuery();
+
+                    if (rs.next()) {
+                        int authorityValue = rs.getInt("authority");
+                        return Authorities.fromValue(authorityValue);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error al obtener autoridad: " + e.getMessage());
         }
 
-        // Si no se encuentra el usuario o hay un error, lanzar una excepción o manejar de forma adecuada
-        throw new RuntimeException("No se encontró el usuario o la autoridad no es válida.");
+        // Si no se encontró en Firebase ni SQLite
+        System.out.println("No se encontró el usuario ni su autoridad");
+        return Authorities.PLAYER; // O puedes devolver null o lanzar excepción controlada si prefieres
     }
+
 
 
 
     public static boolean updatePassword(String currentUsername, String newPassword) {
-        // Encriptar la nueva contraseña
-        String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
-
-        String sql = "UPDATE users SET password = ? WHERE username = ?";
-        Connection connection = MyTfgGame.databaseManager.getConnection();
-
-        if (connection == null) {
-            System.out.println("Error: No se pudo conectar a la base de datos.");
-            return false;
-        }
-
         try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1, hashedPassword);
-            stmt.setString(2, currentUsername);
-            int rowsUpdated = stmt.executeUpdate();
+            // Encriptar nueva contraseña
+            String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
 
-            stmt.close();
-            return rowsUpdated > 0; // Devuelve true si se actualizó al menos una fila
+            // Actualizar directamente en Firebase
+            UserFireBase.updatePasswordFire(currentUsername, hashedPassword);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("✅ Contraseña actualizada correctamente en Firebase.");
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al actualizar la contraseña en Firebase: " + e.getMessage());
             return false;
         }
     }
+
+
+
+
 
     public static boolean deleteUser(String username) {
         String deletePlayerSql = "DELETE FROM players WHERE user_id = (SELECT id FROM users WHERE username = ?)";
         String deleteUserSql = "DELETE FROM users WHERE username = ?";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
-
         if (connection == null) {
             System.out.println("Error: No se pudo conectar a la base de datos.");
             return false;
@@ -330,18 +406,23 @@ public class UserManager {
             }
 
             connection.commit();
+
+            // 🔁 También eliminar en Firebase
+            UserFireBase.deleteUserFromFirebase(username);
+
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
             try {
                 connection.rollback();
             } catch (SQLException rollbackEx) {
                 rollbackEx.printStackTrace();
             }
+            e.printStackTrace();
             return false;
         }
     }
+
 
 }
 

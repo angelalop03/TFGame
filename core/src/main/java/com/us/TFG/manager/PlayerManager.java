@@ -1,5 +1,6 @@
 package com.us.TFG.manager;
 
+import com.us.TFG.FireBase.PlayerFireBase;
 import com.us.TFG.MyTfgGame;
 
 import java.sql.Connection;
@@ -12,6 +13,13 @@ import java.util.List;
 public class PlayerManager {
 
     public static String getCurrentProfileImage(String currentUsername) {
+
+        // 🔁 Intentar buscar en Firebase primero
+        String firebaseImage = PlayerFireBase.getProfileImageByUsername(currentUsername);
+        if (firebaseImage != null && !firebaseImage.trim().isEmpty()) {
+            return firebaseImage;
+        }
+
         String query = "SELECT image FROM players WHERE user_id = (SELECT id FROM users WHERE username = ?)";
         Connection connection = MyTfgGame.databaseManager.getConnection();
         String currentImage = "default_image.png"; // Imagen predeterminada
@@ -39,12 +47,15 @@ public class PlayerManager {
     }
 
     public static String getUsername(int playerId) {
-        String query = "SELECT u.username " +
-            "FROM users u " +
-            "JOIN players p ON u.id = p.user_id " +
-            "WHERE p.id = ?";
+        // 🔁 Intentar buscar en Firebase primero
+        String firebaseUsername = PlayerFireBase.getUsernameByPlayerId(playerId);
+        if (firebaseUsername != null && !firebaseUsername.trim().isEmpty()) {
+            return firebaseUsername;
+        }
+
+        // 🧱 Si falla Firebase o es null, usar SQLite local
+        String query = "SELECT u.username FROM users u JOIN players p ON u.id = p.user_id WHERE p.id = ?";
         Connection connection = MyTfgGame.databaseManager.getConnection();
-        String username = null;
 
         if (connection == null) {
             throw new RuntimeException("No se pudo conectar a la base de datos.");
@@ -56,7 +67,7 @@ public class PlayerManager {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                username = rs.getString("username");
+                return rs.getString("username");
             }
 
             rs.close();
@@ -65,41 +76,17 @@ public class PlayerManager {
             e.printStackTrace();
         }
 
-        return username;
+        return null;
     }
 
-    public static String getPassword(int playerId) {
-        String query = "SELECT u.password " +
-            "FROM users u " +
-            "JOIN players p ON u.id = p.user_id " +
-            "WHERE p.id = ?";
-        Connection connection = MyTfgGame.databaseManager.getConnection();
-        String password = null;
-
-        if (connection == null) {
-            throw new RuntimeException("No se pudo conectar a la base de datos.");
-        }
-
-        try {
-            PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setInt(1, playerId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                password = rs.getString("password");
-            }
-
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return password;
-    }
 
 
     public static PlayerData getPlayerData(String username) {
+        // 🔁 Intentar obtener desde Firebase primero
+        PlayerData firebasePlayer = PlayerFireBase.getPlayerDataByUsernameFire(username);
+        if (firebasePlayer != null) return firebasePlayer;
+
+        // 🧱 Fallback: obtener desde SQLite
         String query = "SELECT p.id, p.firstname, p.lastname, p.email, p.image " +
             "FROM players p JOIN users u ON p.user_id = u.id " +
             "WHERE u.username = ?";
@@ -116,7 +103,7 @@ public class PlayerManager {
 
             if (resultSet.next()) {
                 return new PlayerData(
-                    resultSet.getInt("id"), // Incluye el id
+                    resultSet.getInt("id"),
                     resultSet.getString("firstname"),
                     resultSet.getString("lastname"),
                     resultSet.getString("email"),
@@ -128,10 +115,19 @@ public class PlayerManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null; // Si no se encuentra el jugador
+
+        return null;
     }
 
+
     public static List<PlayerData> getAllPlayers() {
+        // 🔁 Intentar primero desde Firebase
+        List<PlayerData> firebasePlayers = PlayerFireBase.getAllPlayersFromFirebase();
+        if (firebasePlayers != null && !firebasePlayers.isEmpty()) {
+            return firebasePlayers;
+        }
+
+        // 🧱 Si Firebase falla, usar SQLite local
         String query = "SELECT id, firstname, lastname, email, image FROM players";
         Connection connection = MyTfgGame.databaseManager.getConnection();
         List<PlayerData> players = new ArrayList<>();
@@ -162,6 +158,7 @@ public class PlayerManager {
 
         return players;
     }
+
 
 
     // Clase auxiliar para encapsular los datos del jugador
