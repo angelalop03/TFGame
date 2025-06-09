@@ -139,60 +139,6 @@ public class UserFireBase {
         }
     }
 
-    //-------
-
-    public static void updateUserAndPlayerFire(String currentUsername, String newUsername,
-                                               String firstname, String lastname,
-                                               String email, String profileImage, int userId, int playerId) {
-        try {
-            // Actualizar usuario en Firebase
-            URL userUrl = new URL(FIRESTORE_BASE_URL + "/users/" + currentUsername);
-            HttpURLConnection userConn = (HttpURLConnection) userUrl.openConnection();
-            userConn.setRequestMethod("POST");
-            userConn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
-            userConn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            userConn.setDoOutput(true);
-
-            String userJson = "{\n" +
-                "  \"fields\": {\n" +
-                "    \"username\": { \"stringValue\": \"" + newUsername + "\" }\n" +
-                "  }\n" +
-                "}";
-
-            try (OutputStream os = userConn.getOutputStream()) {
-                os.write(userJson.getBytes(StandardCharsets.UTF_8));
-            }
-
-            // Actualizar player en Firebase
-            URL playerUrl = new URL(FIRESTORE_BASE_URL + "/players/" + playerId);
-            HttpURLConnection playerConn = (HttpURLConnection) playerUrl.openConnection();
-            playerConn.setRequestMethod("POST");
-            playerConn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
-            playerConn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            playerConn.setDoOutput(true);
-
-            String playerJson = "{\n" +
-                "  \"fields\": {\n" +
-                "    \"firstname\": { \"stringValue\": \"" + firstname + "\" },\n" +
-                "    \"lastname\": { \"stringValue\": \"" + lastname + "\" },\n" +
-                "    \"email\": { \"stringValue\": \"" + email + "\" },\n" +
-                "    \"image\": { \"stringValue\": \"" + profileImage + "\" },\n" +
-                "    \"userId\": { \"integerValue\": \"" + userId + "\" }\n" +
-                "  }\n" +
-                "}";
-
-            try (OutputStream os = playerConn.getOutputStream()) {
-                os.write(playerJson.getBytes(StandardCharsets.UTF_8));
-            }
-
-            System.out.println("✅ Perfil actualizado en Firebase");
-
-        } catch (Exception e) {
-            System.err.println("❌ Error al actualizar perfil en Firebase: " + e.getMessage());
-        }
-    }
-
-
     public static Map<String, String> getUserProfileFromFirebase(String username) {
         Map<String, String> data = new HashMap<>();
 
@@ -285,8 +231,107 @@ public class UserFireBase {
         }
     }
 
+    //-------
 
+    public static void updateUserAndPlayerFire(String currentUsername, String newUsername,
+                                               String firstname, String lastname,
+                                               String email, String profileImage, int userId, int playerId) {
+        try {
+            if (!currentUsername.equals(newUsername)) {
+                // 1. Obtener datos actuales del usuario
+                URL currentUserUrl = new URL(FIRESTORE_BASE_URL + "/users/" + currentUsername);
+                HttpURLConnection getConn = (HttpURLConnection) currentUserUrl.openConnection();
+                getConn.setRequestMethod("GET");
+                getConn.setRequestProperty("Content-Type", "application/json");
 
+                if (getConn.getResponseCode() == 200) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(getConn.getInputStream()));
+                    StringBuilder currentJson = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        currentJson.append(line);
+                    }
+                    reader.close();
+
+                    // 2. Crear nuevo documento con ID = newUsername
+                    URL newUserUrl = new URL(FIRESTORE_BASE_URL + "/users/" + newUsername);
+                    HttpURLConnection createConn = (HttpURLConnection) newUserUrl.openConnection();
+                    createConn.setRequestMethod("POST");
+                    createConn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+                    createConn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    createConn.setDoOutput(true);
+
+                    String newUserJson = "{\n" +
+                        "  \"fields\": {\n" +
+                        "    \"username\": { \"stringValue\": \"" + newUsername + "\" },\n" +
+                        "    \"password\": { \"stringValue\": " + extraerCampoFire(currentJson.toString(), "password") + " },\n" +
+                        "    \"authority\": { \"stringValue\": " + extraerCampoFire(currentJson.toString(), "authority") + " },\n" +
+                        "    \"id\": { \"integerValue\": \"" + userId + "\" }\n" +
+                        "  }\n" +
+                        "}";
+
+                    try (OutputStream os = createConn.getOutputStream()) {
+                        os.write(newUserJson.getBytes(StandardCharsets.UTF_8));
+                    }
+
+                    // 3. Eliminar el antiguo documento
+                    URL deleteUrl = new URL(FIRESTORE_BASE_URL + "/users/" + currentUsername);
+                    HttpURLConnection deleteConn = (HttpURLConnection) deleteUrl.openConnection();
+                    deleteConn.setRequestMethod("DELETE");
+                    deleteConn.getResponseCode(); // Ejecuta
+
+                } else {
+                    System.out.println("⚠️ No se pudo obtener el usuario original desde Firebase");
+                }
+
+            } else {
+                // Solo actualizar el campo username (aunque sea el mismo)
+                URL userUrl = new URL(FIRESTORE_BASE_URL + "/users/" + currentUsername);
+                HttpURLConnection userConn = (HttpURLConnection) userUrl.openConnection();
+                userConn.setRequestMethod("POST");
+                userConn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+                userConn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                userConn.setDoOutput(true);
+
+                String userJson = "{\n" +
+                    "  \"fields\": {\n" +
+                    "    \"username\": { \"stringValue\": \"" + newUsername + "\" }\n" +
+                    "  }\n" +
+                    "}";
+
+                try (OutputStream os = userConn.getOutputStream()) {
+                    os.write(userJson.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+
+            // Actualizar player (igual en ambos casos)
+            URL playerUrl = new URL(FIRESTORE_BASE_URL + "/players/" + playerId);
+            HttpURLConnection playerConn = (HttpURLConnection) playerUrl.openConnection();
+            playerConn.setRequestMethod("POST");
+            playerConn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+            playerConn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            playerConn.setDoOutput(true);
+
+            String playerJson = "{\n" +
+                "  \"fields\": {\n" +
+                "    \"firstname\": { \"stringValue\": \"" + firstname + "\" },\n" +
+                "    \"lastname\": { \"stringValue\": \"" + lastname + "\" },\n" +
+                "    \"email\": { \"stringValue\": \"" + email + "\" },\n" +
+                "    \"image\": { \"stringValue\": \"" + profileImage + "\" },\n" +
+                "    \"userId\": { \"integerValue\": \"" + userId + "\" }\n" +
+                "  }\n" +
+                "}";
+
+            try (OutputStream os = playerConn.getOutputStream()) {
+                os.write(playerJson.getBytes(StandardCharsets.UTF_8));
+            }
+
+            System.out.println("✅ Perfil actualizado en Firebase");
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al actualizar perfil en Firebase: " + e.getMessage());
+        }
+    }
 
 
 
@@ -337,8 +382,6 @@ public class UserFireBase {
 
         return null;
     }
-
-
 
 
     // 🔍 Extrae campos simples del JSON de Firestore

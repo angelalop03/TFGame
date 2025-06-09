@@ -157,51 +157,60 @@ public class UserManager {
         }
 
         String updateUserSql = "UPDATE users SET username = ? WHERE username = ?";
-        String updatePlayerSql = "UPDATE players SET firstname = ?, lastname = ?, email = ?, image = ? WHERE user_id = (SELECT id FROM users WHERE username = ?)";
+        String updatePlayerSql = "UPDATE players SET firstname = ?, lastname = ?, email = ?, image = ? WHERE user_id = ?";
 
         Connection connection = MyTfgGame.databaseManager.getConnection();
         if (connection == null) {
-            System.out.println("Error: No se pudo conectar a la base de datos.");
+            System.out.println("❌ No se pudo conectar a la base de datos.");
             return false;
         }
+
+        int userId = -1;
+        int playerId = -1;
 
         try {
             connection.setAutoCommit(false);
 
+            // ✅ Obtener los IDs antes de cambiar el username
+            PreparedStatement idStmt = connection.prepareStatement(
+                "SELECT u.id AS uid, p.id AS pid FROM users u JOIN players p ON u.id = p.user_id WHERE u.username = ?");
+            idStmt.setString(1, currentUsername);
+            ResultSet rs = idStmt.executeQuery();
+            if (rs.next()) {
+                userId = rs.getInt("uid");
+                playerId = rs.getInt("pid");
+            } else {
+                System.out.println("❌ No se encontró el usuario antes del cambio.");
+                return false;
+            }
+            rs.close();
+            idStmt.close();
+
+            // 🔁 Actualizar usuario
             PreparedStatement userStmt = connection.prepareStatement(updateUserSql);
             userStmt.setString(1, newUsername);
             userStmt.setString(2, currentUsername);
             userStmt.executeUpdate();
+            userStmt.close();
 
+            // 🔁 Actualizar player
             PreparedStatement playerStmt = connection.prepareStatement(updatePlayerSql);
             playerStmt.setString(1, firstname);
             playerStmt.setString(2, lastname);
             playerStmt.setString(3, email);
             playerStmt.setString(4, profileImage);
-            playerStmt.setString(5, newUsername);
+            playerStmt.setInt(5, userId);
             playerStmt.executeUpdate();
-
-            // Obtener ID del user y del player
-            int userId = -1;
-            int playerId = -1;
-
-            try (PreparedStatement idStmt = connection.prepareStatement(
-                "SELECT u.id as uid, p.id as pid FROM users u JOIN players p ON u.id = p.user_id WHERE u.username = ?")) {
-                idStmt.setString(1, newUsername);
-                ResultSet rs = idStmt.executeQuery();
-                if (rs.next()) {
-                    userId = rs.getInt("uid");
-                    playerId = rs.getInt("pid");
-                }
-                rs.close();
-            }
+            playerStmt.close();
 
             connection.commit();
 
-            // 🔁 Sincronizar con Firebase
-            UserFireBase.updateUserAndPlayerFire(currentUsername, newUsername,
-                firstname, lastname, email, profileImage, userId, playerId);
+            // 🔄 Firebase
+            UserFireBase.updateUserAndPlayerFire(
+                currentUsername, newUsername, firstname, lastname, email, profileImage, userId, playerId
+            );
 
+            System.out.println("✅ Perfil actualizado correctamente en SQLite y Firebase.");
             return true;
 
         } catch (SQLException e) {
@@ -214,6 +223,8 @@ public class UserManager {
             return false;
         }
     }
+
+
 
 
 
