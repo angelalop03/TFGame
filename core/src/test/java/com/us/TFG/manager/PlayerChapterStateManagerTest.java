@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 public class PlayerChapterStateManagerTest {
 
     private static final String ORIGINAL_DB_PATH = "../game.db";
-    private static final String TEST_DB_PATH = "game_test.db";
+    private static final String TEST_DB_PATH = "game_test_PlayerChapterStateManagerTest.db";
 
     @Before
     public void setup() {
@@ -38,12 +38,21 @@ public class PlayerChapterStateManagerTest {
         try {
             if (MyTfgGame.databaseManager != null) {
                 MyTfgGame.databaseManager.close();
+                MyTfgGame.databaseManager = null; // Limpieza explícita
             }
         } catch (Exception e) {
+            System.err.println("Error al cerrar la base de datos:");
             e.printStackTrace();
         }
-        new File(TEST_DB_PATH).delete();
+
+        File testDbFile = new File(TEST_DB_PATH);
+        if (testDbFile.exists()) {
+            if (!testDbFile.delete()) {
+                throw new RuntimeException("No se pudo eliminar " + TEST_DB_PATH + ". Puede estar en uso o bloqueado.");
+            }
+        }
     }
+
 
     @Test
     public void testUnlockChapterForPlayer() throws SQLException {

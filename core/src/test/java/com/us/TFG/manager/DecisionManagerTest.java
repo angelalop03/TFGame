@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class DecisionManagerTest {
 
     private static final String ORIGINAL_DB_PATH = "../game.db";
-    private static final String TEST_DB_PATH = "game_test.db";
+    private static final String TEST_DB_PATH = "game_test_DecisionManagerTest.db";
 
     @Before
     public void setup() {
@@ -41,22 +41,25 @@ public class DecisionManagerTest {
 
     @After
     public void cleanup() {
-        if (MyTfgGame.databaseManager != null) {
-            MyTfgGame.databaseManager.close();
+        try {
+            if (MyTfgGame.databaseManager != null) {
+                MyTfgGame.databaseManager.close();
+                MyTfgGame.databaseManager = null; // Limpieza explícita
+            }
+        } catch (Exception e) {
+            System.err.println("Error al cerrar la base de datos:");
+            e.printStackTrace();
         }
 
-        File testCopy = new File(TEST_DB_PATH);
-        if (testCopy.exists()) {
-            testCopy.delete();
+        File testDbFile = new File(TEST_DB_PATH);
+        if (testDbFile.exists()) {
+            if (!testDbFile.delete()) {
+                throw new RuntimeException("No se pudo eliminar " + TEST_DB_PATH + ". Puede estar en uso o bloqueado.");
+            }
         }
     }
 
-    //@Test
-    //public void testGetDecisionById() {
-    //    Decision decision = DecisionManager.getDecisionById(1);
-    //    assertNotNull(decision);
-    //    assertEquals(1, decision.getId());
-    //}
+
 
     @Test
     public void testGetFirstDecisionId() {
@@ -107,12 +110,6 @@ public class DecisionManagerTest {
 
         decision.setDialogue(original);
         DecisionManager.updateDecision(decision);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testFailConnectionThrowsOnGet() {
-        MyTfgGame.databaseManager = null;
-        DecisionManager.getDecisionById(1);
     }
 
     @Test

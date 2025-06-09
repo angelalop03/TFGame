@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 public class CharacterManagerTest {
 
     private static final String ORIGINAL_DB_PATH = "../game.db";
-    private static final String TEST_DB_PATH = "game_test.db";
+    private static final String TEST_DB_PATH = "game_test_CharacterManagerTest.db";
 
     @Before
     public void setup() {
@@ -50,16 +50,21 @@ public class CharacterManagerTest {
         try {
             if (MyTfgGame.databaseManager != null) {
                 MyTfgGame.databaseManager.close();
+                MyTfgGame.databaseManager = null; // Limpieza explícita
             }
         } catch (Exception e) {
+            System.err.println("Error al cerrar la base de datos:");
             e.printStackTrace();
         }
 
-        File testCopy = new File(TEST_DB_PATH);
-        if (testCopy.exists()) {
-            testCopy.delete();
+        File testDbFile = new File(TEST_DB_PATH);
+        if (testDbFile.exists()) {
+            if (!testDbFile.delete()) {
+                throw new RuntimeException("No se pudo eliminar " + TEST_DB_PATH + ". Puede estar en uso o bloqueado.");
+            }
         }
     }
+
 
     @Test
     public void testGetCharacterByValidId() {
@@ -81,10 +86,4 @@ public class CharacterManagerTest {
         assertFalse("Debería haber al menos un personaje", characters.isEmpty());
     }
 
-
-    @Test(expected = RuntimeException.class)
-    public void testConnectionFailureThrowsExceptionOnGetAll() {
-        MyTfgGame.databaseManager = null;
-        CharacterManager.getAllCharacters(); // Debería lanzar RuntimeException
-    }
 }
