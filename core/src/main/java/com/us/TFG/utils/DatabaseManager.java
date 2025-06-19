@@ -12,8 +12,11 @@ import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
+
 
 public class DatabaseManager {
+    private static final Logger logger = Logger.getLogger(DatabaseManager.class.getName());
 
     private Connection connection;
 
@@ -43,15 +46,12 @@ public class DatabaseManager {
                 History.class
             );
 
-            // Resetear todas las tablas al iniciar el juego
-            //resetTables(tableClasses);
-
 
             if (!dbExists) {
-                System.out.println("Base de datos no existe. Se ejecuta el SQL de inicialización.");
+                logger.info("Base de datos no existe. Se ejecuta el SQL de inicialización.");
                 executeManualSQL("data.sql");
             } else {
-                System.out.println("Base de datos ya existente. No se ejecuta SQL de inicialización.");
+                logger.info("Base de datos ya existente. No se ejecuta SQL de inicialización.");
             }
 
         } catch (SQLException e) {
