@@ -6,6 +6,7 @@ import com.us.TFG.model.*;
 import com.us.TFG.model.CharacterGame;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.Arrays;
@@ -18,7 +19,11 @@ public class DatabaseManager {
     public DatabaseManager() {
         try {
             // Conectar a la base de datos SQLite
-            connection = DriverManager.getConnection("jdbc:sqlite:game.db");
+            String dbPath = System.getenv("APPDATA") + "/BellasHeart/game.db";
+            File dbFile = new File(dbPath);
+            boolean dbExists = dbFile.exists();
+
+            connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             System.out.println("Conexión a la base de datos establecida.");
 
             // Lista de clases que tienen anotaciones @Table
@@ -38,11 +43,15 @@ public class DatabaseManager {
             );
 
             // Resetear todas las tablas al iniciar el juego
-            resetTables(tableClasses);
+            //resetTables(tableClasses);
 
 
-            // Ejecutar el archivo SQL manual
-            executeManualSQL("data.sql");
+            if (!dbExists) {
+                System.out.println("Base de datos no existe. Se ejecuta el SQL de inicialización.");
+                executeManualSQL("data.sql");
+            } else {
+                System.out.println("Base de datos ya existente. No se ejecuta SQL de inicialización.");
+            }
 
         } catch (SQLException e) {
             System.err.println("Error al conectar con la base de datos: " + e.getMessage());
@@ -74,7 +83,7 @@ public class DatabaseManager {
         try {
             // Obtener el archivo SQL usando Gdx.files.internal o desde el sistema de archivos
             FileHandle fileHandle = Gdx.files.internal(path);  // Si estás usando LibGDX
-            BufferedReader reader = new BufferedReader(new InputStreamReader(fileHandle.read()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(fileHandle.read(), "UTF-8"));
 
             StringBuilder sql = new StringBuilder();
             String line;
