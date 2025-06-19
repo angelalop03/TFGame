@@ -1,34 +1,43 @@
 package com.us.TFG;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.us.TFG.screens.Admin.AdminMenuScreen;
+import com.us.TFG.screens.General.LogoScreen;
+import com.us.TFG.screens.Player.PlayerMenuScreen;
+import com.us.TFG.utils.DatabaseManager;
+import com.us.TFG.utils.RegistrationSystem;
+import com.us.TFG.utils.Render;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class MyTfgGame extends ApplicationAdapter {
-    private SpriteBatch batch;
-    private Texture image;
+public class MyTfgGame extends Game {
+
+    private RegistrationSystem registrationSystem;
+    public static DatabaseManager databaseManager; // Instancia global para la base de datos
 
     @Override
     public void create() {
-        batch = new SpriteBatch();
-        image = new Texture("libgdx.png");
+        Render.app =this;
+        Render.batch = new SpriteBatch();
+
+        // Inicializar DatabaseManager solo una vez
+        databaseManager = new DatabaseManager();
+
+        this.setScreen(new LogoScreen());
+        //this.setScreen(new PlayerMenuScreen("Player1"));
+        //this.setScreen(new AdminMenuScreen("Admin1"));
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        batch.begin();
-        batch.draw(image, 140, 210);
-        batch.end();
+        super.render();
+
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        image.dispose();
+        Render.batch.dispose();
+        if (registrationSystem != null) {
+            registrationSystem.close();
+        }
     }
 }
