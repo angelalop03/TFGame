@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 
 public class NewsManagerTest {
 
-    private static final String ORIGINAL_DB_PATH = "../game.db";
+    private static final String ORIGINAL_DB_PATH = "../assets/game.db";
     private static final String TEST_DB_PATH = "game_test_NewsManagerTest.db";
 
     @Before
