@@ -16,8 +16,27 @@ dependencies {
 
   implementation 'org.mindrot:jbcrypt:0.4'
 
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.mockito:mockito-core:5.8.0'
 
-  if(enableGraalNative == 'true') {
+  if (enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
   }
 }
+
+apply plugin: 'jacoco'
+
+jacoco {
+  toolVersion = "0.8.10"
+}
+
+jacocoTestReport {
+  dependsOn test
+  reports {
+    xml.required = true
+    csv.required = false
+    html.outputLocation = layout.buildDirectory.dir('reports/jacoco/test/html')
+  }
+}
+
+test.finalizedBy jacocoTestReport

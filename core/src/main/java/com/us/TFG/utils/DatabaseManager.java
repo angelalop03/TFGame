@@ -7,6 +7,7 @@ import com.us.TFG.model.CharacterGame;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.Arrays;
@@ -78,41 +79,51 @@ public class DatabaseManager {
             }
         }
     }
-    // Método para ejecutar el archivo SQL manual
     private void executeManualSQL(String path) {
         try {
-            // Obtener el archivo SQL usando Gdx.files.internal o desde el sistema de archivos
-            FileHandle fileHandle = Gdx.files.internal(path);  // Si estás usando LibGDX
-            BufferedReader reader = new BufferedReader(new InputStreamReader(fileHandle.read(), "UTF-8"));
+            BufferedReader reader;
+
+            if (Gdx.files != null) {
+                // En modo juego
+                FileHandle fileHandle = Gdx.files.internal(path);
+                reader = new BufferedReader(new InputStreamReader(fileHandle.read()));
+            } else {
+                // En modo test
+                File file = new File("../assets/" + path);
+                if (!file.exists()) {
+                    System.err.println("Archivo SQL no encontrado: core/assets/" + path);
+                    return;
+                }
+                reader = new BufferedReader(new FileReader(file));
+            }
+
 
             StringBuilder sql = new StringBuilder();
             String line;
 
-            // Leer línea por línea el archivo SQL
             while ((line = reader.readLine()) != null) {
-                // Ignorar los comentarios y líneas vacías
-                if (line.trim().startsWith("--") || line.trim().isEmpty()) {
-                    continue;
-                }
+                if (line.trim().startsWith("--") || line.trim().isEmpty()) continue;
 
                 sql.append(line);
-                // Ejecutar cuando se encuentre un punto y coma ';'
                 if (line.trim().endsWith(";")) {
                     try (PreparedStatement pstmt = connection.prepareStatement(sql.toString().trim())) {
-                        pstmt.executeUpdate();  // Ejecutar la sentencia SQL
-                        sql.setLength(0);  // Limpiar el buffer después de ejecutar la sentencia
+                        pstmt.executeUpdate();
+                        sql.setLength(0);
                     } catch (SQLException e) {
                         System.err.println("Error en la sentencia SQL: " + sql);
-                        e.printStackTrace();  // Mostrar detalles del error
+                        e.printStackTrace();
                     }
                 }
             }
+
             reader.close();
         } catch (Exception e) {
             System.err.println("Error al ejecutar el archivo SQL manual: " + e.getMessage());
-            e.printStackTrace();  // Mostrar detalles del error
+            e.printStackTrace();
         }
     }
+
+
 
 
 
@@ -132,6 +143,17 @@ public class DatabaseManager {
             System.err.println("Error al cerrar la conexión: " + e.getMessage());
         }
     }
+
+    public void connect(String url) {
+        try {
+            this.connection = DriverManager.getConnection(url);
+            System.out.println("Conectado a: " + url);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al conectar a la base de datos: " + url, e);
+        }
+    }
+
 
 
 }
