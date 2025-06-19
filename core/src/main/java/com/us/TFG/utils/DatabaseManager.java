@@ -20,7 +20,11 @@ public class DatabaseManager {
     public DatabaseManager() {
         try {
             // Conectar a la base de datos SQLite
-            connection = DriverManager.getConnection("jdbc:sqlite:game.db");
+            String dbPath = System.getenv("APPDATA") + "/BellasHeart/game.db";
+            File dbFile = new File(dbPath);
+            boolean dbExists = dbFile.exists();
+
+            connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             System.out.println("Conexión a la base de datos establecida.");
 
             // Lista de clases que tienen anotaciones @Table
@@ -40,11 +44,15 @@ public class DatabaseManager {
             );
 
             // Resetear todas las tablas al iniciar el juego
-            resetTables(tableClasses);
+            //resetTables(tableClasses);
 
 
-            // Ejecutar el archivo SQL manual
-            executeManualSQL("data.sql");
+            if (!dbExists) {
+                System.out.println("Base de datos no existe. Se ejecuta el SQL de inicialización.");
+                executeManualSQL("data.sql");
+            } else {
+                System.out.println("Base de datos ya existente. No se ejecuta SQL de inicialización.");
+            }
 
         } catch (SQLException e) {
             System.err.println("Error al conectar con la base de datos: " + e.getMessage());
@@ -88,6 +96,7 @@ public class DatabaseManager {
                 }
                 reader = new BufferedReader(new FileReader(file));
             }
+
 
             StringBuilder sql = new StringBuilder();
             String line;

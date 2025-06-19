@@ -22,8 +22,8 @@ public class MyTfgGame extends Game {
         // Inicializar DatabaseManager solo una vez
         databaseManager = new DatabaseManager();
 
-        //this.setScreen(new LogoScreen());
-        this.setScreen(new PlayerMenuScreen("Player1"));
+        this.setScreen(new LogoScreen());
+        //this.setScreen(new PlayerMenuScreen("Player1"));
         //this.setScreen(new AdminMenuScreen("Admin1"));
     }
 
